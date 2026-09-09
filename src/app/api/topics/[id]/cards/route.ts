@@ -3,27 +3,11 @@ import { NextResponse } from "next/server";
 import { generateCards } from "@/lib/ai";
 import { chunkDocuments, gatherSource } from "@/lib/chunk";
 import { createClient } from "@/lib/supabase/server";
-import type { CardType } from "@/lib/types";
+import { buildCardRows } from "@/lib/cards";
 
 export const maxDuration = 300;
 
 const FALLBACK_SOURCE_CHARS = 20_000;
-
-type CardRow = {
-  user_id: string;
-  course_id: string;
-  topic_id: string;
-  type: CardType;
-  prompt: string;
-  answer: string;
-  options: string[];
-  correct_index: number | null;
-  pairs: { left: string; right: string }[];
-  explanation: string;
-  difficulty: number;
-};
-
-const clampDifficulty = (n: number) => Math.min(3, Math.max(1, Math.round(n || 2)));
 
 /** Generates every card format for one topic. Called once per topic by the client. */
 export async function POST(
@@ -80,87 +64,11 @@ export async function POST(
       source,
     });
 
-    const base = { user_id: user.id, course_id: topic.course_id, topic_id: topicId };
-    const rows: CardRow[] = [];
-
-    for (const c of generated.flashcards) {
-      if (!c.front?.trim() || !c.back?.trim()) continue;
-      rows.push({
-        ...base,
-        type: "flashcard",
-        prompt: c.front,
-        answer: c.back,
-        options: [],
-        correct_index: null,
-        pairs: [],
-        explanation: "",
-        difficulty: clampDifficulty(c.difficulty),
-      });
-    }
-
-    for (const c of generated.mcqs) {
-      // A question whose key points outside its own options is unanswerable.
-      if (c.options.length < 2 || c.correct_index < 0 || c.correct_index >= c.options.length) {
-        continue;
-      }
-      rows.push({
-        ...base,
-        type: "mcq",
-        prompt: c.question,
-        answer: c.options[c.correct_index],
-        options: c.options,
-        correct_index: c.correct_index,
-        pairs: [],
-        explanation: c.explanation ?? "",
-        difficulty: clampDifficulty(c.difficulty),
-      });
-    }
-
-    for (const c of generated.fill_blanks) {
-      if (!c.sentence.includes("___") || !c.answer?.trim()) continue;
-      rows.push({
-        ...base,
-        type: "fill_blank",
-        prompt: c.sentence,
-        answer: c.answer,
-        options: c.accepted ?? [],
-        correct_index: null,
-        pairs: [],
-        explanation: "",
-        difficulty: clampDifficulty(c.difficulty),
-      });
-    }
-
-    for (const c of generated.match_sets) {
-      const pairs = c.pairs.filter((p) => p.left?.trim() && p.right?.trim());
-      if (pairs.length < 3) continue;
-      rows.push({
-        ...base,
-        type: "match",
-        prompt: c.instruction || `Match each item to its partner`,
-        answer: "",
-        options: [],
-        correct_index: null,
-        pairs,
-        explanation: "",
-        difficulty: 2,
-      });
-    }
-
-    for (const c of generated.jargon) {
-      if (!c.term?.trim() || !c.definition?.trim()) continue;
-      rows.push({
-        ...base,
-        type: "jargon",
-        prompt: c.term,
-        answer: c.definition,
-        options: [],
-        correct_index: null,
-        pairs: [],
-        explanation: "",
-        difficulty: clampDifficulty(c.difficulty),
-      });
-    }
+    const rows = buildCardRows(generated, {
+      user_id: user.id,
+      course_id: topic.course_id,
+      topic_id: topicId,
+    });
 
     if (!rows.length) throw new Error("No usable cards came back for this topic.");
 

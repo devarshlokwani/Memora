@@ -56,5 +56,3 @@ export async function extractDocument(
     `${filename}: only PDF, DOCX, TXT and Markdown files can be read right now.`,
   );
 }
-
-export const ACCEPTED_FILE_TYPES = ".pdf,.docx,.txt,.md,.markdown,.csv";

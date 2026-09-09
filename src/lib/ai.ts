@@ -2,8 +2,8 @@ import "server-only";
 
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
-import * as z from "zod/v4";
 
+import { CardsSchema, OutlineSchema, type GeneratedCards, type Outline } from "./ai-schema";
 import { renderChunks, type Chunk } from "./chunk";
 import { CARDS_SYSTEM, OUTLINE_SYSTEM, cardsUserPrompt, outlineUserPrompt } from "./prompts";
 
@@ -14,6 +14,9 @@ const CORPUS_CHAR_BUDGET = 350_000;
 const MIN_EXCERPT_CHARS = 300;
 const MAX_EXCERPT_CHARS = 900;
 
+const MAX_ATTEMPTS = 4;
+const BASE_BACKOFF_MS = 2_000;
+
 let client: Anthropic | null = null;
 
 function anthropic() {
@@ -22,66 +25,54 @@ function anthropic() {
       "ANTHROPIC_API_KEY is not set. Add it to .env.local -- Memora cannot generate anything without it.",
     );
   }
-  client ??= new Anthropic();
+  client ??= new Anthropic({ maxRetries: 0 });
   return client;
 }
 
-// ------------------------------------------------------------------ schemas
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const OutlineSchema = z.object({
-  title: z.string(),
-  description: z.string(),
-  modules: z.array(
-    z.object({
-      title: z.string(),
-      summary: z.string(),
-      topics: z.array(
-        z.object({
-          title: z.string(),
-          summary: z.string(),
-          key_terms: z.array(z.string()),
-          chunk_refs: z.array(z.number().int()),
-        }),
-      ),
-    }),
-  ),
-});
+/**
+ * Retries the transient failures a long generation run actually hits: rate
+ * limits, overloaded capacity, and 5xx. Anything else (a bad key, a malformed
+ * request) fails on the first attempt rather than burning three more minutes.
+ */
+async function withRetry<T>(label: string, call: () => Promise<T>): Promise<T> {
+  let lastError: unknown;
 
-export type Outline = z.infer<typeof OutlineSchema>;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      return await call();
+    } catch (error) {
+      lastError = error;
 
-const CardsSchema = z.object({
-  flashcards: z.array(
-    z.object({ front: z.string(), back: z.string(), difficulty: z.number().int() }),
-  ),
-  mcqs: z.array(
-    z.object({
-      question: z.string(),
-      options: z.array(z.string()),
-      correct_index: z.number().int(),
-      explanation: z.string(),
-      difficulty: z.number().int(),
-    }),
-  ),
-  fill_blanks: z.array(
-    z.object({
-      sentence: z.string(),
-      answer: z.string(),
-      accepted: z.array(z.string()),
-      difficulty: z.number().int(),
-    }),
-  ),
-  match_sets: z.array(
-    z.object({
-      instruction: z.string(),
-      pairs: z.array(z.object({ left: z.string(), right: z.string() })),
-    }),
-  ),
-  jargon: z.array(
-    z.object({ term: z.string(), definition: z.string(), difficulty: z.number().int() }),
-  ),
-});
+      const status = error instanceof Anthropic.APIError ? error.status : undefined;
+      const retryable =
+        error instanceof Anthropic.APIConnectionError ||
+        status === 408 ||
+        status === 409 ||
+        status === 429 ||
+        (status !== undefined && status >= 500);
 
-export type GeneratedCards = z.infer<typeof CardsSchema>;
+      if (!retryable || attempt === MAX_ATTEMPTS) break;
+
+      // Honour the server's own backoff hint when it sends one.
+      const retryAfter = Number(
+        error instanceof Anthropic.APIError ? error.headers?.get?.("retry-after") : undefined,
+      );
+      const wait =
+        Number.isFinite(retryAfter) && retryAfter > 0
+          ? retryAfter * 1000
+          : BASE_BACKOFF_MS * 2 ** (attempt - 1);
+
+      await sleep(wait);
+    }
+  }
+
+  if (lastError instanceof Anthropic.APIError) {
+    throw new Error(`${label} failed (${lastError.status}): ${lastError.message}`);
+  }
+  throw lastError;
+}
 
 // ------------------------------------------------------------------ outline
 
@@ -109,13 +100,15 @@ export async function generateOutline(
 ): Promise<Outline> {
   const { corpus, truncated } = buildCorpus(chunks);
 
-  const response = await anthropic().messages.parse({
-    model: MODEL,
-    max_tokens: 32_000,
-    system: OUTLINE_SYSTEM,
-    messages: [{ role: "user", content: outlineUserPrompt(filenames, corpus, truncated) }],
-    output_config: { effort: "high", format: zodOutputFormat(OutlineSchema) },
-  });
+  const response = await withRetry("Structuring", () =>
+    anthropic().messages.parse({
+      model: MODEL,
+      max_tokens: 32_000,
+      system: OUTLINE_SYSTEM,
+      messages: [{ role: "user", content: outlineUserPrompt(filenames, corpus, truncated) }],
+      output_config: { effort: "high", format: zodOutputFormat(OutlineSchema) },
+    }),
+  );
 
   const outline = response.parsed_output;
   if (!outline) throw new Error("The model did not return a usable course structure.");
@@ -143,13 +136,15 @@ export async function generateCards(args: {
   // No prompt caching here on purpose: each topic sends a different slice of source,
   // so there is no shared prefix long enough to cache, and paying the 1.25x write
   // cost per topic would be strictly worse than sending the slice uncached.
-  const response = await anthropic().messages.parse({
-    model: MODEL,
-    max_tokens: 32_000,
-    system: CARDS_SYSTEM,
-    messages: [{ role: "user", content: cardsUserPrompt(args) }],
-    output_config: { effort: "medium", format: zodOutputFormat(CardsSchema) },
-  });
+  const response = await withRetry("Card writing", () =>
+    anthropic().messages.parse({
+      model: MODEL,
+      max_tokens: 32_000,
+      system: CARDS_SYSTEM,
+      messages: [{ role: "user", content: cardsUserPrompt(args) }],
+      output_config: { effort: "medium", format: zodOutputFormat(CardsSchema) },
+    }),
+  );
 
   const cards = response.parsed_output;
   if (!cards) throw new Error("The model did not return usable cards for this topic.");

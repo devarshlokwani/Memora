@@ -95,3 +95,6 @@ export type CardProgress = {
 
 /** 0 = blanked out, 1 = shaky, 2 = got it, 3 = instant. */
 export type Grade = 0 | 1 | 2 | 3;
+
+/** Kept here rather than in extract.ts so the client upload form can read it. */
+export const ACCEPTED_FILE_TYPES = ".pdf,.docx,.txt,.md,.markdown,.csv";

@@ -151,7 +151,8 @@ create index card_progress_due_idx on card_progress (user_id, course_id, due_at)
 create table study_sessions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users on delete cascade,
-  course_id uuid not null references courses on delete cascade,
+  -- Null for a review drawn from every course at once.
+  course_id uuid references courses on delete cascade,
   topic_id uuid references topics on delete cascade,
   mode text not null,
   answered integer not null default 0,
@@ -200,3 +201,35 @@ create policy "own files write" on storage.objects for insert
   with check (bucket_id = 'documents' and (storage.foldername(name))[1] = auth.uid()::text);
 create policy "own files delete" on storage.objects for delete
   using (bucket_id = 'documents' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- ---------------------------------------------------------------- stats view
+
+-- Dashboard counters in one round trip. security_invoker keeps RLS applied as
+-- the querying user; count(distinct ...) undoes the fan-out from the two joins.
+create view course_stats with (security_invoker = on) as
+select
+  c.id as course_id,
+  c.user_id,
+  count(distinct t.id) as topic_count,
+  count(distinct t.id) filter (where t.status = 'ready') as ready_topic_count,
+  count(distinct cd.id) as card_count,
+  count(distinct cp.card_id) as seen_count,
+  count(distinct cp.card_id) filter (where cp.due_at <= now()) as due_count
+from courses c
+left join topics t on t.course_id = c.id
+left join cards cd on cd.course_id = c.id
+left join card_progress cp on cp.card_id = cd.id and cp.user_id = c.user_id
+group by c.id, c.user_id;
+
+-- ---------------------------------------------------------------- due queue
+
+-- Everything the student owes right now: cards they have never answered, plus
+-- cards whose scheduled date has arrived. security_invoker keeps RLS applied.
+create view due_cards with (security_invoker = on) as
+select
+  c.*,
+  p.due_at,
+  p.repetitions
+from cards c
+left join card_progress p on p.card_id = c.id and p.user_id = c.user_id
+where p.card_id is null or p.due_at <= now();

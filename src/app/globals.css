@@ -67,15 +67,17 @@ body {
   background-size: 28px 28px;
 }
 
-/* Ruled lines on a study card, like the back of an index card. */
-.card-ruled {
-  background-image: repeating-linear-gradient(
+/* The one rule near the top of an index card. A full sheet of ruling never
+   lines up with mixed type sizes, so this is a single deliberate line. */
+.card-index {
+  background-image: linear-gradient(
     to bottom,
-    transparent,
-    transparent 31px,
-    var(--color-rule-soft) 31px,
-    var(--color-rule-soft) 32px
+    transparent calc(3.5rem - 1px),
+    var(--color-highlight) calc(3.5rem - 1px),
+    var(--color-highlight) calc(3.5rem + 1px),
+    transparent calc(3.5rem + 1px)
   );
+  background-repeat: no-repeat;
 }
 
 /* The signature device: progress reads as a highlighter swipe across a line. */
@@ -84,10 +86,19 @@ body {
   border-radius: 1px;
 }
 
-/* Headline text with a highlighter pass behind it. */
+/* Headline text with a highlighter pass behind it. Sized against the line box
+   so the band sits over the x-height rather than under the baseline. */
 .marked {
-  background: linear-gradient(to top, var(--color-highlight) 0.36em, transparent 0.36em);
+  background-image: linear-gradient(
+    var(--color-highlight),
+    var(--color-highlight)
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 50%;
+  background-position: 0 35%;
   padding-inline: 0.08em;
+  /* The band is yellow in both themes, so its text is always ink. */
+  color: #16233a;
 }
 
 .flip-scene {
