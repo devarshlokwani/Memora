@@ -124,23 +124,6 @@ body {
   );
 }
 
-/* A drawn underline beneath a phrase, rather than a highlighter block. */
-.marked {
-  position: relative;
-  white-space: nowrap;
-}
-.marked::after {
-  content: "";
-  position: absolute;
-  left: -0.06em;
-  right: -0.06em;
-  bottom: -0.06em;
-  height: 0.34em;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 16' preserveAspectRatio='none'%3E%3Cpath d='M2 11 C40 4 68 13 104 7 C140 2 168 10 198 5' fill='none' stroke='%2317150f' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  pointer-events: none;
-}
 /* The single rule near the top of an index card. */
 .card-index {
   background-image: linear-gradient(

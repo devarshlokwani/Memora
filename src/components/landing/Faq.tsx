@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { useRef, useState } from "react";
 
 import { SectionIntro } from "@/components/landing/SectionIntro";
+import { Marked } from "@/components/ui/Marked";
 import { EASE, prefersReducedMotion } from "@/lib/motion";
 
 type Entry = { question: string; answer: string };
@@ -72,7 +73,7 @@ export function Faq() {
     <div className="mx-auto max-w-3xl">
       <SectionIntro
         eyebrow="Before you ask,"
-        title="Questions, answered"
+        title={<>Questions, <Marked>answered</Marked></>}
         blurb="The things people want to know before they hand over a term's worth of notes."
       />
 

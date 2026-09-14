@@ -40,7 +40,7 @@ function drawnRect(width: number, height: number, seed: string) {
   const w = Math.max(width - INSET * 2, 20);
   const h = Math.max(height - INSET * 2, 20);
   // Corners stay a fixed size so a tall card does not get long oval ends.
-  const r = Math.min(26, w * 0.12, h * 0.12);
+  const r = Math.min(46, w * 0.17, h * 0.17);
 
   return [
     `M ${r} ${jitter()}`,

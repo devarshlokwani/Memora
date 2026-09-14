@@ -5,6 +5,7 @@ import { DemoCard } from "@/components/landing/DemoCard";
 import { Faq } from "@/components/landing/Faq";
 import { LandingShell } from "@/components/landing/LandingShell";
 import { SectionIntro } from "@/components/landing/SectionIntro";
+import { Marked } from "@/components/ui/Marked";
 import { PushButton } from "@/components/ui/PushButton";
 import { SketchCard } from "@/components/ui/SketchFrame";
 import { CARD_TYPES, MODE_BLURBS, MODE_LABELS } from "@/lib/types";
@@ -49,7 +50,7 @@ function TrySection() {
       <SectionIntro
         heading="h1"
         eyebrow="Dear crammers,"
-        title={<>Hand over the PDF. Get back a way to <span className="marked">study it</span>.</>}
+        title={<>Hand over the PDF. Get back a way to <Marked>study it</Marked>.</>}
         blurb="Memora reads your course material, builds the structure your lecturer never gave you, and turns every topic into cards you can actually drill."
       />
       <PushButton href="/signup" className="mt-7">
@@ -74,7 +75,7 @@ function HowSection() {
     <div>
       <SectionIntro
         eyebrow="Behind the curtain,"
-        title="How a course gets made"
+        title={<>How a course <Marked>gets made</Marked></>}
         blurb="Two passes over your material: one to work out the shape of it, then one per topic to write the cards."
       />
 
@@ -120,7 +121,7 @@ function FormatsSection() {
     <div>
       <SectionIntro
         eyebrow="Five ways in,"
-        title="One topic, five ways to learn it"
+        title={<>One topic, <Marked>five ways</Marked> to learn it</>}
         blurb="Recognition and recall are different skills, and exams test both. Switch formats when a topic stops sinking in — the material is the same, the demand on you is not."
       />
 

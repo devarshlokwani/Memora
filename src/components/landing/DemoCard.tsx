@@ -3,6 +3,7 @@
 import gsap from "gsap";
 import { useLayoutEffect, useRef, useState } from "react";
 
+import { DrawnMark } from "@/components/ui/DrawnMark";
 import { CheckMark, CrossMark } from "@/components/ui/Marks";
 import { PushButton } from "@/components/ui/PushButton";
 import { SketchFrame } from "@/components/ui/SketchFrame";
@@ -69,10 +70,10 @@ export function DemoCard() {
   const previous = useRef<number | null>(null);
 
   /**
-   * Cycling the deck: the card you just answered lifts, turns away and drops in
-   * at the back while the one behind it comes forward. Swapping the text in place
-   * would be far less code and would look like the card had simply been replaced,
-   * which is not what a deck does.
+   * Cycling the deck: the card you just answered slides off to the right and
+   * fades, then reappears at the back of the stack while the one behind it comes
+   * forward. Swapping the text in place would be far less code and would look
+   * like the card had been replaced, which is not what a deck does.
    */
   useLayoutEffect(() => {
     const total = DECK.length;
@@ -98,15 +99,18 @@ export function DemoCard() {
         gsap
           .timeline()
           .to(el, {
-            y: -46,
-            rotate: slot.rotate - 12,
-            scale: 0.9,
-            duration: 0.26,
+            x: 132,
+            y: 10,
+            rotate: slot.rotate + 9,
+            scale: 0.95,
+            opacity: 0,
+            duration: 0.36,
             ease: "power2.in",
           })
-          // Only once it is clear of the others does it drop behind them.
-          .set(el, { zIndex: total - depth })
-          .to(el, { ...resting, duration: 0.5, ease: "power3.out" });
+          // Out of sight is where it changes places; it then fades back in at
+          // the rear of the stack rather than flying there in view.
+          .set(el, { zIndex: total - depth, ...slot, opacity: 0 })
+          .to(el, { opacity: resting.opacity, duration: 0.4, ease: "power2.out" });
       } else {
         gsap.set(el, { zIndex: total - depth });
         gsap.to(el, { ...resting, duration: 0.5, ease: "power3.out" });
@@ -219,36 +223,30 @@ export function DemoCard() {
                     inert={!(isFront && flipped)}
                   >
                     <SketchFrame seed={`${card.id}-back`} invert={inverted} />
-                    <div className="relative flex h-full flex-col justify-between p-8">
+                    <div className="relative flex h-full flex-col p-8">
                       <span className={`font-hand text-lg ${faint}`}>the answer</span>
+
+                      {/* The judgement lands in the empty space under the label,
+                          where the eye already is. */}
+                      <div className="grid flex-1 place-items-center">
+                        {grade !== null && isFront && <DrawnMark type={grade} className="h-14 w-14" />}
+                      </div>
+
                       <p className={`font-reading text-[1.2rem] leading-relaxed ${ink}`}>
                         {card.back}
                       </p>
 
                       {grade === null ? (
-                        <div className="flex items-center gap-3">
-                          <GradeButton tone="missed" onClick={() => mark("missed")}>
+                        <div className="mt-6 flex items-center gap-3">
+                          <GradeButton tone="missed" inverted={inverted} onClick={() => mark("missed")}>
                             Missed it
                           </GradeButton>
-                          <GradeButton tone="knew" onClick={() => mark("knew")}>
+                          <GradeButton tone="knew" inverted={inverted} onClick={() => mark("knew")}>
                             Knew it
                           </GradeButton>
                         </div>
                       ) : (
-                        <div className="flex items-center justify-between gap-4">
-                          <span
-                            style={{
-                              color:
-                                grade === "knew" ? "var(--color-knew)" : "var(--color-missed)",
-                            }}
-                          >
-                            {grade === "knew" ? (
-                              <CheckMark className="h-8 w-8" />
-                            ) : (
-                              <CrossMark className="h-8 w-8" />
-                            )}
-                          </span>
-
+                        <div className="mt-6 flex items-center justify-end">
                           <button
                             type="button"
                             onClick={advance}
@@ -285,22 +283,31 @@ export function DemoCard() {
   );
 }
 
+/**
+ * Ink until you reach for it. Colour arrives on hover and stays for the press,
+ * so the card is still monochrome at rest and the two choices only separate
+ * themselves at the moment you are actually choosing between them.
+ */
 function GradeButton({
   tone,
+  inverted,
   onClick,
   children,
 }: {
   tone: Grade;
+  inverted: boolean;
   onClick: () => void;
   children: React.ReactNode;
 }) {
   const colour = tone === "knew" ? "var(--color-knew)" : "var(--color-missed)";
+  const rest = inverted ? "border-paper text-paper" : "border-ink text-ink";
+
   return (
     <button
       type="button"
       onClick={onClick}
-      className="rounded-full border-[1.5px] bg-transparent px-4 py-2 text-[0.9rem] font-medium transition-colors"
-      style={{ borderColor: colour, color: colour }}
+      style={{ ["--tone" as string]: colour } as React.CSSProperties}
+      className={`rounded-full border-[1.5px] bg-transparent px-4 py-2 text-[0.9rem] font-medium transition-colors duration-200 hover:border-[var(--tone)] hover:text-[var(--tone)] focus-visible:border-[var(--tone)] focus-visible:text-[var(--tone)] active:border-[var(--tone)] active:text-[var(--tone)] ${rest}`}
     >
       {children}
     </button>
