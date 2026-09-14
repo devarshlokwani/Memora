@@ -14,12 +14,15 @@ export function PushButton({
   children,
   variant = "solid",
   size = "md",
+  external = false,
   className = "",
 }: {
   href: string;
   children: React.ReactNode;
   variant?: "solid" | "outline";
   size?: "sm" | "md";
+  /** Opens in its own tab, for anywhere that is not this site. */
+  external?: boolean;
   className?: string;
 }) {
   const pad = size === "sm" ? "px-5 py-2 text-[0.9rem]" : "px-8 py-3.5 text-[1rem]";
@@ -30,7 +33,12 @@ export function PushButton({
       : "bg-paper text-ink border border-ink";
 
   return (
-    <Link href={href} className={`group relative inline-block select-none ${className}`}>
+    <Link
+      href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noreferrer" : undefined}
+      className={`group relative inline-block select-none ${className}`}
+    >
       {/* The layer underneath. It never moves up, only further down and back. */}
       <span
         aria-hidden="true"

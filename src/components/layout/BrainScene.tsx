@@ -174,19 +174,22 @@ export function BrainScene({ className = "" }: { className?: string }) {
       const pointer = { x: 0, y: 0 };
       const tilt = { x: 0, y: 0 };
 
+      /* Tracked from the window rather than from the canvas, because the canvas
+         takes no pointer events at all: it is a square box laid over other
+         things — in the footer, over the links beside the wordmark — and a
+         decoration that swallows a click on a real link is not worth a tilt.
+         The pull falls off with distance instead, so it answers a cursor near
+         it and ignores one on the other side of the page. */
       const follow = (event: PointerEvent) => {
         const box = host.getBoundingClientRect();
-        pointer.x = ((event.clientX - box.left) / box.width - 0.5) * 2;
-        pointer.y = ((event.clientY - box.top) / box.height - 0.5) * 2;
+        if (!box.width) return;
+        const dx = (event.clientX - (box.left + box.width / 2)) / (box.width / 2);
+        const dy = (event.clientY - (box.top + box.height / 2)) / (box.height / 2);
+        const near = Math.max(0, 1 - Math.hypot(dx, dy) / 2.4);
+        pointer.x = Math.max(-1, Math.min(1, dx)) * near;
+        pointer.y = Math.max(-1, Math.min(1, dy)) * near;
       };
-      const release = () => {
-        pointer.x = 0;
-        pointer.y = 0;
-      };
-      if (!still) {
-        host.addEventListener("pointermove", follow);
-        host.addEventListener("pointerleave", release);
-      }
+      if (!still) window.addEventListener("pointermove", follow, { passive: true });
 
       // Only turning while it is on screen: an animation frame loop behind the
       // fold is work nobody asked for and battery nobody gets back.
@@ -218,8 +221,7 @@ export function BrainScene({ className = "" }: { className?: string }) {
       return () => {
         cancelAnimationFrame(frame);
         watcher.disconnect();
-        host.removeEventListener("pointermove", follow);
-        host.removeEventListener("pointerleave", release);
+        window.removeEventListener("pointermove", follow);
         for (const item of spent) item.dispose();
         renderer.domElement.remove();
       };
@@ -255,7 +257,7 @@ export function BrainScene({ className = "" }: { className?: string }) {
       ref={hostRef}
       role="img"
       aria-label="A brain, turning slowly"
-      className={`relative aspect-square w-full max-w-[26rem] ${className}`}
+      className={`pointer-events-none relative aspect-square w-full ${className}`}
     >
       {/* Holds the space and says the same thing, while three.js is on its way
           or if this browser will not give us a canvas at all. */}

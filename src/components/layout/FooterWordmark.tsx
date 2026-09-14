@@ -30,11 +30,6 @@ export function FooterWordmark() {
       return;
     }
 
-    // Triggered off the whole footer, not this clip. The clip sits at the very
-    // bottom of the document, and a range measured from there can never finish —
-    // the page runs out of scroll before the end point arrives.
-    const trigger = clip.closest("footer") ?? clip;
-
     const context = gsap.context(() => {
       gsap.fromTo(
         text,
@@ -42,10 +37,27 @@ export function FooterWordmark() {
         {
           yPercent: 0,
           duration: 1.1,
-          ease: "power3.out",
+          /* power3 spends four fifths of the travel in the first fifth of the
+             time: by the time the eye has found the word it has all but
+             arrived. A gentler curve keeps it climbing long enough to watch. */
+          ease: "power2.out",
           scrollTrigger: {
-            trigger,
-            start: "top 80%",
+            trigger: clip,
+            /* Off the clip itself, and measured from the foot of the screen in
+               plain pixels rather than as a fraction of it.
+
+               It used to hang off the whole footer at "top 80%", which was fine
+               until the creator's note went in above this — that pushed the
+               footer's top 800px clear of the wordmark, so the name had finished
+               rising 600px of scroll before any of it was on screen. Nobody ever
+               saw it move.
+
+               A percentage start on an element this close to the end of the
+               document is its own trap: the taller the window, the further up
+               the page the trigger point sits, and past a certain height the
+               page runs out of scroll before it is ever reached. An absolute
+               offset does not move with the window at all. */
+            start: "top bottom-=60",
             // play on the way in, put it away again on the way out.
             toggleActions: "play none none reset",
           },

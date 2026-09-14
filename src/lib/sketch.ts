@@ -186,3 +186,36 @@ function bandStrokes(width: number, top: number, seed: string): PaperStroke[] {
 
   return strokes;
 }
+
+/**
+ * A circle with a shaky edge, for framing something round.
+ *
+ * Points at jittered radii joined through a Catmull-Rom spline rather than a
+ * polygon, so the line stays smooth between the wobbles instead of showing its
+ * corners — a drawn circle is uneven, not faceted.
+ */
+export function drawnCirclePath(size: number, seed: string, wobble = 3.4) {
+  const rand = seeded(seed);
+  const radius = size / 2 - wobble;
+  const centre = size / 2;
+  const steps = 11;
+
+  const points: [number, number][] = [];
+  for (let i = 0; i < steps; i++) {
+    const angle = (i / steps) * Math.PI * 2;
+    const r = radius + (rand() - 0.5) * 2 * wobble;
+    points.push([centre + Math.cos(angle) * r, centre + Math.sin(angle) * r]);
+  }
+
+  const at = (i: number) => points[(i + steps) % steps];
+  const parts = [`M ${at(0)[0].toFixed(2)} ${at(0)[1].toFixed(2)}`];
+  for (let i = 0; i < steps; i++) {
+    const [p0, p1, p2, p3] = [at(i - 1), at(i), at(i + 1), at(i + 2)];
+    const c1 = [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6];
+    const c2 = [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6];
+    parts.push(
+      `C ${c1[0].toFixed(2)} ${c1[1].toFixed(2)} ${c2[0].toFixed(2)} ${c2[1].toFixed(2)} ${p2[0].toFixed(2)} ${p2[1].toFixed(2)}`,
+    );
+  }
+  return parts.join(" ") + " Z";
+}

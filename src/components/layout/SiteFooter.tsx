@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { BrainScene } from "@/components/layout/BrainScene";
 import { FooterLink } from "@/components/layout/FooterLink";
 import { FooterWordmark } from "@/components/layout/FooterWordmark";
 import { MeetTheCreator } from "@/components/layout/MeetTheCreator";
@@ -79,8 +80,18 @@ export function SiteFooter() {
             </nav>
           </div>
 
-          <div className="mt-14">
+          {/* The brain stands in front and the name rises from behind it. The
+              wordmark is inside its own clip, so the brain has to be a sibling
+              of that clip rather than a child — anything in there is cut off at
+              the line box along with the letters. Resting on the panel's bottom
+              edge rather than centred on the word, because the panel clips there
+              too and a 3D object sliced off mid-turn reads as broken, where
+              letters sliced off read as typography. */}
+          <div className="relative mt-14">
             <FooterWordmark />
+            <div className="pointer-events-none absolute -bottom-10 left-1/2 z-10 w-[clamp(10rem,23vw,18rem)] -translate-x-1/2">
+              <BrainScene />
+            </div>
           </div>
         </div>
 
