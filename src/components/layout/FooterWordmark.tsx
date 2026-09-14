@@ -53,11 +53,28 @@ export function FooterWordmark() {
       );
     }, clip);
 
+    /* The footer is the last thing on the page, so its trigger position is the
+       sum of everything above it — and the landing page changes that height every
+       time you pick a different section. Once the page gets shorter than it was
+       when this was measured, the start point sits below where the page now ends
+       and the word never comes up at all. Re-measure whenever the page resizes,
+       once it has settled: a refresh mid-tween would run dozens of times. */
+    let pending = 0;
+    const observer = new ResizeObserver(() => {
+      window.clearTimeout(pending);
+      pending = window.setTimeout(() => ScrollTrigger.refresh(), 140);
+    });
+    observer.observe(document.body);
+
     // The wordmark is enormous; when its face loads the page gets taller and
     // every measured trigger position moves with it.
     document.fonts?.ready.then(() => ScrollTrigger.refresh()).catch(() => {});
 
-    return () => context.revert();
+    return () => {
+      window.clearTimeout(pending);
+      observer.disconnect();
+      context.revert();
+    };
   }, []);
 
   return (
@@ -65,8 +82,17 @@ export function FooterWordmark() {
       <p
         ref={textRef}
         data-wordmark=""
-        className="-mb-[0.17em] select-none text-center font-reading leading-[0.78] tracking-[-0.03em] text-ink"
-        style={{ fontSize: "clamp(3.5rem, 18vw, 13rem)" }}
+        className="-mb-[0.17em] select-none text-center font-reading leading-[0.78] tracking-[-0.03em]"
+        style={{
+          fontSize: "clamp(3.5rem, 18vw, 13rem)",
+          // A shallow diagonal fade rather than flat ink, so the letterforms
+          // catch the light the way something set into the page would.
+          backgroundImage:
+            "linear-gradient(104deg, var(--color-ink) 0%, var(--color-ink-soft) 38%, #4c4647 72%, #6b6465 100%)",
+          backgroundClip: "text",
+          WebkitBackgroundClip: "text",
+          color: "transparent",
+        }}
       >
         Memora
       </p>

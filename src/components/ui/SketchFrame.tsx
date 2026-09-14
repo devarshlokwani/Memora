@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { sketchTilt } from "@/lib/sketch";
+import { drawnRectPath, sketchTilt } from "@/lib/sketch";
 
 /**
  * A card outline drawn as a path, because a CSS corner is always perfectly
@@ -15,51 +15,13 @@ import { sketchTilt } from "@/lib/sketch";
  */
 
 const INSET = 2;
-const WOBBLE = 3.2;
-
-function seeded(seed: string) {
-  let h = 2166136261;
-  for (let i = 0; i < seed.length; i++) {
-    h ^= seed.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return () => {
-    h += 0x6d2b79f5;
-    let t = h;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-/** A rectangle with rounded corners and edges that drift off true, like a drawn one. */
-function drawnRect(width: number, height: number, seed: string) {
-  const rand = seeded(seed);
-  const jitter = () => (rand() - 0.5) * 2 * WOBBLE;
-
-  const w = Math.max(width - INSET * 2, 20);
-  const h = Math.max(height - INSET * 2, 20);
-  // Corners stay a fixed size so a tall card does not get long oval ends.
-  const r = Math.min(46, w * 0.17, h * 0.17);
-
-  return [
-    `M ${r} ${jitter()}`,
-    `C ${w * 0.3} ${jitter()} ${w * 0.7} ${jitter()} ${w - r} ${jitter()}`,
-    `Q ${w + jitter() * 0.4} ${jitter() * 0.4} ${w + jitter() * 0.3} ${r}`,
-    `C ${w + jitter()} ${h * 0.35} ${w + jitter()} ${h * 0.65} ${w} ${h - r}`,
-    `Q ${w} ${h} ${w - r} ${h + jitter() * 0.4}`,
-    `C ${w * 0.7} ${h + jitter()} ${w * 0.3} ${h + jitter()} ${r} ${h}`,
-    `Q ${jitter() * 0.4} ${h} ${jitter() * 0.3} ${h - r}`,
-    `C ${jitter()} ${h * 0.65} ${jitter()} ${h * 0.35} 0 ${r}`,
-    `Q 0 ${jitter() * 0.4} ${r} ${jitter()}`,
-    "Z",
-  ].join(" ");
-}
 
 export function SketchFrame({
   seed,
   filled = true,
   invert = false,
+  dashed = false,
+  stroke,
   strokeWidth = 1.5,
 }: {
   seed: string;
@@ -67,6 +29,9 @@ export function SketchFrame({
   filled?: boolean;
   /** Ink card, paper line — the other half of an alternating stack. */
   invert?: boolean;
+  /** A pencilled-in edge, for something provisional or not yet chosen. */
+  dashed?: boolean;
+  stroke?: string;
   strokeWidth?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -101,10 +66,11 @@ export function SketchFrame({
       >
         <g transform={`translate(${INSET} ${INSET})`}>
           <path
-            d={drawnRect(size.width, size.height, seed)}
+            d={drawnRectPath(size.width - INSET * 2, size.height - INSET * 2, seed)}
             fill={filled ? (invert ? "var(--color-ink)" : "var(--color-card)") : "none"}
-            stroke={invert ? "var(--color-paper)" : "var(--color-ink)"}
+            stroke={stroke ?? (invert ? "var(--color-paper)" : "var(--color-ink)")}
             strokeWidth={strokeWidth}
+            strokeDasharray={dashed ? "7 7" : undefined}
             strokeLinejoin="round"
             strokeLinecap="round"
           />
@@ -121,19 +87,26 @@ export function SketchCard({
   className = "",
   filled = true,
   invert = false,
+  dashed = false,
+  stroke,
+  tilt = true,
 }: {
   seed: string;
   children: React.ReactNode;
   className?: string;
   filled?: boolean;
   invert?: boolean;
+  dashed?: boolean;
+  stroke?: string;
+  /** Off for anything in a row that has to line up with its neighbours. */
+  tilt?: boolean;
 }) {
   return (
     <div
       className={`relative ${className}`}
-      style={{ transform: `rotate(${sketchTilt(seed)})` }}
+      style={tilt ? { transform: `rotate(${sketchTilt(seed)})` } : undefined}
     >
-      <SketchFrame seed={seed} filled={filled} invert={invert} />
+      <SketchFrame seed={seed} filled={filled} invert={invert} dashed={dashed} stroke={stroke} />
       <div className="relative">{children}</div>
     </div>
   );

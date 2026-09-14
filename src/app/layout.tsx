@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Caveat, Instrument_Sans, Instrument_Serif } from "next/font/google";
 
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { PaperMarks } from "@/components/ui/PaperMarks";
 
 import "./globals.css";
 
@@ -36,7 +37,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${display.variable} ${body.variable} ${hand.variable}`}>
       {/* The footer is part of the page shell, so every route gets the same one
           and no page has to remember to include it. */}
-      <body className="flex min-h-dvh flex-col">
+      {/* isolate, or the marks behind the page paint under the body's own
+          background instead of on top of it and never show at all. */}
+      <body className="relative isolate flex min-h-dvh flex-col">
+        {/* Behind everything, and the height of the whole document rather than
+            the viewport, so the marks scroll with the page they are drawn on. */}
+        <PaperMarks />
         <div className="flex flex-1 flex-col">{children}</div>
         <SiteFooter />
       </body>

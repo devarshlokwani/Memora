@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { FooterLink } from "@/components/layout/FooterLink";
 import { FooterWordmark } from "@/components/layout/FooterWordmark";
+import { MeetTheCreator } from "@/components/layout/MeetTheCreator";
 import { BrainMark } from "@/components/layout/Logo";
 
 type Column = { heading: string; links: { label: string; href: string }[] };
@@ -41,6 +42,8 @@ export function SiteFooter() {
   return (
     <footer className="mt-20">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <MeetTheCreator />
+
         {/* overflow-hidden is what makes the wordmark surface from inside the
             block rather than slide past behind it. */}
         <div className="overflow-hidden rounded-[2rem] bg-footer px-7 pt-12 sm:px-12 sm:pt-14">

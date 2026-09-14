@@ -65,7 +65,7 @@ export function Marked({ children }: { children: React.ReactNode }) {
           d="M3 8.2C41 3.4 74 10.6 106 6 138 1.6 168 8.6 197 4"
           pathLength={100}
           fill="none"
-          stroke="var(--color-ink)"
+          stroke="var(--color-accent)"
           strokeWidth="3.4"
           strokeLinecap="round"
           vectorEffect="non-scaling-stroke"

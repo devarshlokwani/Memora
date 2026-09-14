@@ -5,6 +5,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 
 import { ScoreTable, type Result } from "@/components/landing/ScoreTable";
 import { DrawnMark } from "@/components/ui/DrawnMark";
+import { DrawnUnderline } from "@/components/ui/DrawnUnderline";
 import { PushButton } from "@/components/ui/PushButton";
 import { SketchFrame } from "@/components/ui/SketchFrame";
 import { prefersReducedMotion } from "@/lib/motion";
@@ -53,15 +54,23 @@ type Grade = "knew" | "missed";
 
 /**
  * One pile, cycling. Depth 0 is the card you are on and every other card sits
- * further down the stack, showing only its bottom edge. Answering sends a card
- * round to the deepest place rather than off the page — a deck of five always
- * has five cards in it, and the pile never thins out as you work through it.
+ * further down the stack. Answering sends a card round to the deepest place
+ * rather than off the page — a deck of five always has five cards in it, and the
+ * pile never thins out as you work through it.
+ *
+ * Each depth sits at its own angle and offset, so the stack reads as cards
+ * dropped on a desk rather than a printed block. Fixed per depth rather than
+ * random, so a card always lands where the one before it was.
  */
+const ANGLES = [-1.6, 3.4, -4.6, 5.2, -6.4];
+const NUDGE = [0, 9, -11, 15, -16];
+const at = <T,>(list: T[], depth: number) => list[Math.min(depth, list.length - 1)];
+
 function slotFor(depth: number) {
   return {
-    x: 0,
+    x: at(NUDGE, depth),
     y: depth * 9,
-    rotate: 0,
+    rotate: at(ANGLES, depth),
     scale: 1 - depth * 0.022,
     opacity: 1,
     zIndex: 60 - depth,
@@ -211,7 +220,17 @@ export function DemoCard() {
                           where the eye already is. */}
                       <div className="grid flex-1 place-items-center">
                         {grade !== null && isFront && (
-                          <DrawnMark type={grade} className="h-14 w-14" />
+                          <DrawnMark
+                            type={grade}
+                            className="h-14 w-14"
+                            colour={
+                              inverted
+                                ? grade === "knew"
+                                  ? "var(--color-knew-dark)"
+                                  : "var(--color-missed-dark)"
+                                : undefined
+                            }
+                          />
                         )}
                       </div>
 
@@ -294,9 +313,10 @@ export function DemoCard() {
 }
 
 /**
- * Ink until you reach for it. Colour arrives on hover and stays for the press,
- * so the card is still monochrome at rest and the two choices only separate
- * themselves at the moment you are actually choosing between them.
+ * Both buttons stay in the card's own ink and gain a drawn line on hover instead
+ * of changing colour. Colour did not work here: "knew" mapped to carbon-black,
+ * which is all but identical to the ink it sits on, so the hover had nothing to
+ * show. The line is the same mark used under a headline and a footer link.
  */
 function GradeButton({
   tone,
@@ -309,17 +329,21 @@ function GradeButton({
   onClick: () => void;
   children: React.ReactNode;
 }) {
-  const colour = tone === "knew" ? "var(--color-knew)" : "var(--color-missed)";
+  // Mahogany is 3:1 on an ink card — the brighter red is the one that reads there.
+  const line = inverted ? "var(--color-missed-dark)" : "var(--color-accent)";
   const rest = inverted ? "border-paper text-paper" : "border-ink text-ink";
 
   return (
     <button
       type="button"
       onClick={onClick}
-      style={{ ["--tone" as string]: colour } as React.CSSProperties}
-      className={`rounded-full border-[1.5px] bg-transparent px-4 py-2 text-[0.9rem] font-medium transition-colors duration-200 hover:border-[var(--tone)] hover:text-[var(--tone)] focus-visible:border-[var(--tone)] focus-visible:text-[var(--tone)] active:border-[var(--tone)] active:text-[var(--tone)] ${rest}`}
+      aria-label={tone === "knew" ? "I knew it" : "I missed it"}
+      className={`group rounded-full border-[1.5px] bg-transparent px-4 py-2 text-[0.9rem] font-medium ${rest}`}
     >
-      {children}
+      <span className="relative inline-block">
+        {children}
+        <DrawnUnderline colour={line} />
+      </span>
     </button>
   );
 }

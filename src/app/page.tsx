@@ -1,30 +1,19 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
+import { BuildProgress } from "@/components/landing/BuildProgress";
+import { CoursePipeline } from "@/components/landing/CoursePipeline";
 import { DemoCard } from "@/components/landing/DemoCard";
 import { Faq } from "@/components/landing/Faq";
 import { LandingShell } from "@/components/landing/LandingShell";
 import { SectionIntro } from "@/components/landing/SectionIntro";
+import { SourceTrace } from "@/components/landing/SourceTrace";
+import { DashedRule } from "@/components/ui/DashedRule";
 import { Marked } from "@/components/ui/Marked";
 import { PushButton } from "@/components/ui/PushButton";
 import { SketchCard } from "@/components/ui/SketchFrame";
 import { CARD_TYPES, MODE_BLURBS, MODE_LABELS } from "@/lib/types";
 import { getUser } from "@/server/db/client";
-
-const STEPS = [
-  {
-    title: "Drop in your material",
-    body: "Lecture slides, a textbook chapter, your own notes. Up to twelve files at once — Memora reads them together as one body of material rather than one file at a time.",
-  },
-  {
-    title: "Get a course, not a pile",
-    body: "It works out the themes, orders them the way you should learn them, and splits each into topics worth a single sitting.",
-  },
-  {
-    title: "Drill it your way",
-    body: "Every topic becomes cards in five formats. Answer them and Memora schedules each card for the day you were about to forget it.",
-  },
-];
 
 /** What each format is actually good for — the part a student has to decide. */
 const FORMAT_USES: Record<string, string> = {
@@ -61,7 +50,10 @@ function TrySection() {
         <DemoCard />
       </div>
 
-      <dl className="mx-auto mt-16 grid max-w-3xl gap-10 border-t border-rule pt-10 text-left sm:grid-cols-3">
+      <div className="mx-auto mt-16 max-w-3xl">
+        <DashedRule />
+      </div>
+      <dl className="mx-auto mt-10 grid max-w-3xl gap-10 text-left sm:grid-cols-3">
         <Fact figure="5" label="card formats per topic, so a topic you keep missing can be attacked from another side." />
         <Fact figure="12" label="documents to a course. Slides and the chapter they came from end up in the same topics." />
         <Fact figure="20" label="cards a sitting, drawn due-first — short enough to actually finish on a bad day." />
@@ -79,37 +71,42 @@ function HowSection() {
         blurb="Two passes over your material: one to work out the shape of it, then one per topic to write the cards."
       />
 
-      <ol className="mx-auto mt-14 grid max-w-4xl gap-10 sm:grid-cols-3">
-        {STEPS.map((step, i) => (
-          <li key={step.title}>
-            <span className="font-hand text-3xl text-ink-faint">{i + 1}</span>
-            <h3 className="mt-1 text-[1.05rem] font-semibold text-ink">{step.title}</h3>
-            <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-soft">{step.body}</p>
-          </li>
-        ))}
-      </ol>
+      <CoursePipeline />
 
-      <div className="mx-auto mt-16 grid max-w-4xl gap-8 border-t border-rule pt-12 sm:grid-cols-2">
-        <div>
-          <h3 className="font-reading text-xl text-ink">Cards come from your source, not the web</h3>
-          <p className="mt-2.5 text-[0.95rem] leading-relaxed text-ink-soft">
+      <div className="mx-auto mt-20 max-w-5xl">
+        <DashedRule />
+
+        <div className="mt-12">
+          <h3 className="font-reading text-xl text-ink">
+            Cards come from your source, not the web
+          </h3>
+          <p className="mt-2.5 max-w-[68ch] text-[0.95rem] leading-relaxed text-ink-soft">
             Your documents are split into numbered passages, and the structuring pass records which
             passages each topic came from. Writing the cards for a topic then means reading those
-            passages back — so an answer traces to something in your material rather than to
-            general knowledge about the subject.
+            passages back — so an answer traces to something in your material rather than to general
+            knowledge about the subject.
           </p>
+          <SourceTrace />
         </div>
-        <div>
-          <h3 className="font-reading text-xl text-ink">You can start before it has finished</h3>
-          <p className="mt-2.5 text-[0.95rem] leading-relaxed text-ink-soft">
-            Cards are written one topic at a time with a progress bar, so the first module is ready
-            to study while the last is still being written. A topic that comes out weak can be
-            rewritten on its own, and any card can be edited or thrown away.
-          </p>
+
+        <div className="mt-16">
+          <DashedRule />
+        </div>
+
+        <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:items-center">
+          <div>
+            <h3 className="font-reading text-xl text-ink">You can start before it has finished</h3>
+            <p className="mt-2.5 max-w-[46ch] text-[0.95rem] leading-relaxed text-ink-soft">
+              Cards are written one topic at a time, so the first module is ready to study while the
+              last is still being written. A topic that comes out weak can be rewritten on its own,
+              and any card can be edited or thrown away.
+            </p>
+          </div>
+          <BuildProgress />
         </div>
       </div>
 
-      <div className="mt-14 text-center">
+      <div className="mt-16 text-center">
         <PushButton href="/signup">Build my first course</PushButton>
       </div>
     </div>
@@ -133,9 +130,7 @@ function FormatsSection() {
             <li key={type}>
               <SketchCard seed={`mode-${type}`} invert={inverted}>
                 <div className="p-6">
-                  <h3
-                    className={`font-reading text-xl ${inverted ? "text-paper" : "text-ink"}`}
-                  >
+                  <h3 className={`font-reading text-xl ${inverted ? "text-paper" : "text-ink"}`}>
                     {MODE_LABELS[type]}
                   </h3>
                   <p
@@ -159,12 +154,15 @@ function FormatsSection() {
         })}
       </ul>
 
-      <p className="mx-auto mt-12 max-w-[58ch] text-center text-[0.95rem] leading-relaxed text-ink-soft">
+      <p className="mx-auto mt-10 max-w-[58ch] text-center text-[0.95rem] leading-relaxed text-ink-soft">
         Or mix all five in one sitting. However you answer, the card is rescheduled the same way —
         the format changes what is being asked of you, not how Memora tracks whether it stuck.
       </p>
 
-      <div className="mt-20 border-t border-rule pt-16">
+      <div className="mx-auto mt-16 max-w-4xl">
+        <DashedRule />
+      </div>
+      <div className="mt-14">
         <Faq />
       </div>
     </div>

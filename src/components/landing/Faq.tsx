@@ -77,11 +77,11 @@ export function Faq() {
         blurb="The things people want to know before they hand over a term's worth of notes."
       />
 
-      <ul className="mt-12 border-t border-rule">
+      <ul className="mt-12 border-t border-dashed border-rule">
         {ENTRIES.map((entry, index) => {
           const isOpen = open === index;
           return (
-            <li key={entry.question} className="border-b border-rule">
+            <li key={entry.question} className="border-b border-dashed border-rule">
               <h3>
                 <button
                   type="button"

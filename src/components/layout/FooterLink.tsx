@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { DrawnUnderline } from "@/components/ui/DrawnUnderline";
+
 /**
  * Three states, in order: at rest it is just words; hovering draws a line under
  * it from the left and brings an arrow in behind the text; pressing sends the
@@ -13,14 +15,11 @@ export function FooterLink({ href, children }: { href: string; children: React.R
     >
       <span className="relative">
         {children}
-        <span
-          aria-hidden="true"
-          className="absolute -bottom-0.5 left-0 block h-px w-full origin-left scale-x-0 bg-current transition-transform duration-300 ease-out group-hover:scale-x-100"
-        />
+        <DrawnUnderline />
       </span>
       <span
         aria-hidden="true"
-        className="ml-1 -translate-x-1.5 opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:opacity-100 group-active:translate-x-1.5"
+        className="ml-1.5 -translate-x-1.5 opacity-0 transition-all duration-300 ease-out group-hover:translate-x-0 group-hover:opacity-100 group-active:translate-x-1.5"
       >
         &rarr;
       </span>

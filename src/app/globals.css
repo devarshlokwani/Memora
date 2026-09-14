@@ -5,43 +5,61 @@
    carried by line weight, texture and drawn marks instead. */
 
 @theme {
-  /* The page is the warm one; white is reserved for the nav strip, so the gap
-     cut into the panel has something to reveal. */
-  --color-paper: #fbfaf8;
-  --color-paper-deep: #d7d6d0;
-  --color-footer: #c6c5be;
+  /* The first of these palettes with a full light range, so nothing is derived.
+     White-smoke for the nav and dust-grey for the page, which is a wide enough
+     step that the gap cut into the panel reads clearly; cards are plain white. */
+  --color-paper: #f5f3f4;
+  --color-paper-deep: #d3d3d3;
+  --color-footer: #b1a7a6;
   --color-card: #ffffff;
 
-  --color-ink: #14130f;
-  --color-ink-soft: #54514a;
-  --color-ink-faint: #5f5c53;
+  --color-ink: #0b090a;
+  --color-ink-soft: #161a1d;
+  --color-ink-faint: #a4161a;
 
-  --color-rule: #b8b6ae;
-  --color-rule-soft: #c7c5be;
+  --color-rule: #b1a7a6;
+  --color-rule-soft: #c9c7c6;
 
-  /* Kept as token names so the whole app re-themes at once. In a monochrome
-     scheme these are values, not hues: correct is full ink, wrong is washed out
-     and always carries a drawn mark beside it. */
-  --color-highlight: #e2e1db;
-  --color-highlight-deep: #14130f;
-  --color-correct: #14130f;
-  --color-correct-soft: #e6e5df;
-  --color-wrong: #5f5c53;
-  --color-wrong-soft: #ebeae4;
+  /* Guide lines: the dotted grid behind the page and any edge drawn as dashes.
+     Deliberately near the paper — it should register as texture you notice on
+     second glance, never as a grid you are being asked to read. */
+  --color-guide: #0b090a1c;
+  --color-guide-strong: #0b090a3d;
 
-  /* The two exceptions to the monochrome rule. Used as a stroke on the two
-     grading buttons and nowhere else, because right and wrong is the one
-     judgement a student makes often enough to want to recognise without reading. */
-  --color-knew: #2e6f52;
-  --color-missed: #a8443c;
+  /* Kept as token names so the whole app re-themes at once. Inside a study
+     session these stay values rather than hues — correct is full ink, wrong is
+     washed out — and always carry a drawn mark beside them. */
+  --color-highlight: #e5383b;
+  --color-highlight-deep: #0b090a;
+  --color-correct: #0b090a;
+  --color-correct-soft: #e4e2e3;
+  --color-wrong: #a4161a;
+  --color-wrong-soft: #e9e6e6;
+
+  /* Mahogany, for marks that want to be noticed: the line drawn under a phrase in
+     a headline. Strawberry is too pale to carry text on this ground (2.8:1) but
+     works as a fill behind it, which is what --color-highlight uses it for. */
+  --color-accent: #ba181b;
+
+  /* No green here either, but there is a proper red, so wrong gets marked in red
+     the way a teacher would and right stays in plain ink. Used on the two grading
+     buttons and nowhere else. */
+  --color-knew: #161a1d;
+  --color-missed: #a4161a;
+
+  /* The same two judgements on a dark card. Carbon-black on onyx is 1.1:1 and
+     mahogany is 2.6:1 — both effectively invisible — so the ink card gets the
+     light end of the palette and the brighter red instead. */
+  --color-knew-dark: #f5f3f4;
+  --color-missed-dark: #e5383b;
 
   --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
   --font-reading: var(--font-display), Georgia, serif;
   --font-hand: var(--font-hand), ui-rounded, cursive;
 
   --radius-card: 18px;
-  --shadow-card: 2px 3px 0 rgba(20, 19, 15, 0.09);
-  --shadow-lift: 3px 5px 0 rgba(20, 19, 15, 0.16);
+  --shadow-card: 2px 3px 0 rgba(11, 9, 10, 0.16);
+  --shadow-lift: 3px 5px 0 rgba(11, 9, 10, 0.24);
 }
 
 html {
@@ -61,10 +79,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Paper fibre. Replaces the old grid — it should read as texture, never pattern. */
+/* Paper fibre. It should read as texture, never as pattern — the loose strokes
+   over it are drawn by PaperMarks, across the whole document rather than tiled,
+   because anything that repeats stops being a hand and becomes a grid. */
+:root {
+  --fibre: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+}
+
 .paper-texture,
 body {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+  background-image: var(--fibre);
 }
 
 /* ---------------------------------------------------------------- drawn edges

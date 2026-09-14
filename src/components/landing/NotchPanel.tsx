@@ -6,41 +6,37 @@ import { useEffect, useLayoutEffect, useRef } from "react";
 import { EASE, prefersReducedMotion } from "@/lib/motion";
 
 const NOTCH_DEPTH = 38;
-const CORNER = 40;
+/** How close to the panel's ends the gap is allowed to get. */
+const MARGIN = 48;
 
 /**
  * The panel the whole landing page sits in. Its top edge dips into a gap, and
  * that gap slides along to sit under whichever nav item is selected — so the
  * panel and the nav read as one object rather than two.
  *
- * The edge is a path rather than a border because a gap that changes position
- * and width is not something a border can describe. The path is rewritten on
- * each animation frame; nothing re-renders, so the tween stays cheap.
+ * Only the gap is ever painted. The panel and the page behind it are the same
+ * tone, so a fill across the whole panel would be invisible ink — and worse, it
+ * would cover the dotted grid on the page and leave the panel as a blank
+ * rectangle in the middle of it. What is drawn here is the dip itself, in the
+ * nav's colour, as though the nav had leaked down into the page.
+ *
+ * It is a path rather than a border because a gap that changes position and
+ * width is not something a border can describe. The path is rewritten on each
+ * animation frame; nothing re-renders, so the tween stays cheap.
  */
-function panelPath(w: number, h: number, centre: number, notch: number) {
+function notchPath(w: number, centre: number, notch: number) {
   const half = Math.max(notch, 0) / 2;
-  const r = Math.min(CORNER, w / 2, h / 2);
-  const depth = half > 0 ? NOTCH_DEPTH : 0;
+  if (half <= 0) return "";
 
-  // Keep the gap clear of the rounded corners at either end.
-  const cx = Math.min(Math.max(centre, r + half + 8), w - r - half - 8);
+  const cx = Math.min(Math.max(centre, MARGIN + half), w - MARGIN - half);
   const left = cx - half;
   const right = cx + half;
 
   return [
-    `M ${r} 0`,
-    `H ${left}`,
+    `M ${left} 0`,
     // Down into the valley and back up: a slack curve, like a book lying open.
-    `C ${left + half * 0.62} 0 ${cx - half * 0.16} ${depth} ${cx} ${depth}`,
-    `C ${cx + half * 0.16} ${depth} ${right - half * 0.62} 0 ${right} 0`,
-    `H ${w - r}`,
-    `A ${r} ${r} 0 0 1 ${w} ${r}`,
-    `V ${h - r}`,
-    `A ${r} ${r} 0 0 1 ${w - r} ${h}`,
-    `H ${r}`,
-    `A ${r} ${r} 0 0 1 0 ${h - r}`,
-    `V ${r}`,
-    `A ${r} ${r} 0 0 1 ${r} 0`,
+    `C ${left + half * 0.62} 0 ${cx - half * 0.16} ${NOTCH_DEPTH} ${cx} ${NOTCH_DEPTH}`,
+    `C ${cx + half * 0.16} ${NOTCH_DEPTH} ${right - half * 0.62} 0 ${right} 0`,
     "Z",
   ].join(" ");
 }
@@ -59,7 +55,7 @@ export function NotchPanel({
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
-  const size = useRef({ w: 1200, h: 600 });
+  const width = useRef(1200);
   // The values actually being drawn, which the tween moves toward.
   const drawn = useRef({ centre: 0, width: 0 });
   const started = useRef(false);
@@ -67,10 +63,7 @@ export function NotchPanel({
   const redraw = () => {
     const path = pathRef.current;
     if (!path) return;
-    path.setAttribute(
-      "d",
-      panelPath(size.current.w, size.current.h, drawn.current.centre, drawn.current.width),
-    );
+    path.setAttribute("d", notchPath(width.current, drawn.current.centre, drawn.current.width));
   };
 
   useLayoutEffect(() => {
@@ -78,8 +71,7 @@ export function NotchPanel({
     if (!host) return;
 
     const measure = () => {
-      const box = host.getBoundingClientRect();
-      size.current = { w: Math.round(box.width), h: Math.round(box.height) };
+      width.current = Math.round(host.getBoundingClientRect().width);
       redraw();
     };
 
@@ -91,7 +83,7 @@ export function NotchPanel({
 
   useEffect(() => {
     const to = {
-      centre: notchCentre ?? size.current.w / 2,
+      centre: notchCentre ?? width.current / 2,
       width: notchCentre === null ? 0 : notchWidth,
     };
 
@@ -116,22 +108,10 @@ export function NotchPanel({
   return (
     <div ref={hostRef} className={`relative ${className}`}>
       <svg
-        className="pointer-events-none absolute inset-0 h-full w-full"
+        className="pointer-events-none absolute inset-x-0 top-0 h-[44px] w-full overflow-visible"
         aria-hidden="true"
-        preserveAspectRatio="none"
       >
-        {/* The page and the panel are the same tone now, so the gap needs
-            something behind it. This strip is the nav colour, and the panel is
-            painted over it — only the notch lets it through. Inset past the
-            corners so the rounded top does not leak white at the ends. */}
-        <rect
-          x={CORNER}
-          y={0}
-          width={`calc(100% - ${CORNER * 2}px)`}
-          height={NOTCH_DEPTH + 2}
-          fill="var(--color-paper)"
-        />
-        <path ref={pathRef} fill="var(--color-paper-deep)" />
+        <path ref={pathRef} fill="var(--color-paper)" />
       </svg>
       <div className="relative">{children}</div>
     </div>
