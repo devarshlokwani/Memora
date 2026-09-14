@@ -97,14 +97,14 @@ export default async function DashboardPage() {
             {totalDue > 0 && (
               <Link
                 href="/review"
-                className="rounded-md bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90"
+                className="rounded-full bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90"
               >
                 Review {totalDue} due
               </Link>
             )}
             <Link
               href="/courses/new"
-              className={`rounded-md px-5 py-2.5 text-[0.95rem] font-medium ${
+              className={`rounded-full px-5 py-2.5 text-[0.95rem] font-medium ${
                 totalDue > 0
                   ? "border border-ink text-ink hover:bg-card"
                   : "bg-ink text-paper hover:opacity-90"
@@ -124,7 +124,7 @@ export default async function DashboardPage() {
         )}
 
         {list.length === 0 ? (
-          <div className="paper-grid mt-10 rounded-card border border-dashed border-rule px-8 py-16 text-center">
+          <div className="paper-texture mt-10 sketch sketch-a border-dashed px-8 py-16 text-center">
             <h2 className="font-reading text-2xl text-ink">Start with one document</h2>
             <p className="mx-auto mt-3 max-w-[46ch] text-[0.95rem] leading-relaxed text-ink-soft">
               A chapter, a slide deck, a set of notes. Memora reads it, splits it into topics, and
@@ -132,7 +132,7 @@ export default async function DashboardPage() {
             </p>
             <Link
               href="/courses/new"
-              className="mt-6 inline-block rounded-md bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90"
+              className="mt-6 inline-block rounded-full bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90"
             >
               Upload your material
             </Link>
@@ -150,12 +150,12 @@ export default async function DashboardPage() {
                 <li key={course.id}>
                   <Link
                     href={`/courses/${course.id}`}
-                    className="block rounded-card border border-rule bg-card p-5 shadow-[var(--shadow-card)] transition-colors hover:border-ink"
+                    className="block sketch sketch-b p-5 shadow-[var(--shadow-card)] transition-colors hover:border-ink"
                   >
                     <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
                       <h2 className="font-reading text-xl text-ink">{course.title}</h2>
                       {due > 0 ? (
-                        <span className="rounded bg-highlight px-2 py-0.5 text-sm font-medium text-[#16233a]">
+                        <span className="rounded border border-ink px-2.5 py-0.5 text-sm font-medium text-ink">
                           {due} due
                         </span>
                       ) : note ? (

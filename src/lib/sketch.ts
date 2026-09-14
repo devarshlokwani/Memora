@@ -22,6 +22,11 @@ export function sketchVariant(seed: string) {
   return VARIANTS[hash(seed) % VARIANTS.length];
 }
 
+/** Index into any four-variant set, for the drawn outlines. */
+export function sketchVariantIndex(seed: string) {
+  return hash(seed) % 4;
+}
+
 export function sketchTilt(seed: string) {
   return TILTS[hash(`${seed}tilt`) % TILTS.length];
 }

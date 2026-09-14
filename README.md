@@ -8,6 +8,36 @@ every topic in five formats: flashcards, multiple choice, fill-in-the-blanks, ma
 and a jargon drill for technical vocabulary. Answers feed a spaced-repetition schedule, so each
 card comes back around the day you were about to forget it.
 
+## Look
+
+Ink on paper. The whole interface is black and white on a warm off-white ground — no colour
+anywhere, including for right and wrong answers, which are told apart by line weight, hatching
+and a drawn tick or cross instead. That keeps it readable when printed, dimmed, or by someone
+colourblind.
+
+Cards are drawn rather than constructed: every card outline is an SVG path generated at the
+card's real pixel size, with corners and edges that drift off true, and each card rests at a
+slight angle. The shape and angle come from a hash of the card id, so they are stable across
+renders and between server and browser — a card always sits the same way on the desk.
+
+At night the same drawing is done in chalk on a board.
+
+## Motion
+
+GSAP, used in two places and no more.
+
+The nav underline **travels**: it slides and stretches between items instead of blinking from one
+to the next, follows your pointer while you are choosing, and settles back on whichever section
+is actually on screen when you leave. Coming from nothing it fades in under the item rather than
+sliding in from the edge of the nav, which would read as a stray line.
+
+The hero plays **one** entrance on arrival — the page writes itself on in reading order and the
+card lands on the desk last, slightly off-square. There is deliberately no scroll-triggered
+animation anywhere else; a page where every section slides up as you reach it reads as templated.
+
+Both respect `prefers-reduced-motion`: the nav mark still moves to the right place, it just does
+not tween, and the hero is simply present.
+
 ## Stack
 
 - **Next.js (App Router)** + TypeScript + Tailwind CSS v4

@@ -133,7 +133,7 @@ export function StudySession({
               <button
                 type="button"
                 onClick={() => start(type)}
-                className="flex w-full items-baseline justify-between gap-6 rounded-card border border-rule bg-card px-5 py-4 text-left transition-colors hover:border-ink"
+                className="flex w-full items-baseline justify-between gap-6 sketch sketch-a px-5 py-4 text-left transition-colors hover:border-ink"
               >
                 <span className="min-w-0">
                   <span className="block text-[1.05rem] font-medium text-ink">
@@ -155,14 +155,14 @@ export function StudySession({
           <button
             type="button"
             onClick={() => start("mixed")}
-            className="mt-5 w-full rounded-md bg-ink px-4 py-3 text-[0.95rem] font-medium text-paper hover:opacity-90"
+            className="mt-5 w-full rounded-full bg-ink px-4 py-3 text-[0.95rem] font-medium text-paper hover:opacity-90"
           >
             Mix all formats
           </button>
         )}
 
         {available.length === 0 && (
-          <p className="mt-6 rounded-card border border-rule bg-card p-5 text-[0.95rem] text-ink-soft">
+          <p className="mt-6 sketch sketch-b p-5 text-[0.95rem] text-ink-soft">
             This topic has no cards yet. Go back to the course and write them.
           </p>
         )}
@@ -176,7 +176,7 @@ export function StudySession({
     const score = queue.length > 0 ? Math.round((correctCount / queue.length) * 100) : 0;
 
     return (
-      <div className="mt-10 rounded-card border border-rule bg-card p-8 text-center shadow-[var(--shadow-card)]">
+      <div className="mt-10 sketch sketch-c p-8 text-center shadow-[var(--shadow-card)]">
         <p className="text-sm text-ink-faint">{MODE_LABELS[mode as CardType] ?? "Mixed"}</p>
         <h2 className="mt-1 font-reading text-[2rem] leading-tight text-ink">
           {correctCount} of {queue.length}
@@ -196,13 +196,13 @@ export function StudySession({
               router.refresh();
               setMode(null);
             }}
-            className="rounded-md bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90"
+            className="rounded-full bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90"
           >
             Study again
           </button>
           <Link
             href={courseId ? `/courses/${courseId}` : "/dashboard"}
-            className="rounded-md border border-ink px-5 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-paper"
+            className="rounded-full border border-ink px-5 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-paper"
           >
             {courseId ? "Back to the course" : "Back to your courses"}
           </Link>

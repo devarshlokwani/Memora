@@ -9,7 +9,7 @@ export function BrainMark({ className = "" }: { className?: string }) {
       viewBox="0 0 48 42"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.7"
+      strokeWidth="1.9"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -18,9 +18,8 @@ export function BrainMark({ className = "" }: { className?: string }) {
       {/* Outline: bumpy skull-side, cerebellum tucked under at the back. */}
       <path d="M23.5 7.2c-2.6-3.4-8.4-3-10 .9-4.6-.6-7.8 3.6-6.2 7.3-3.6 2.1-3.3 7.4.4 9-1.4 3.8 1.6 7.6 5.6 7.2.6 3.4 4.8 5.2 7.7 3.2" />
       <path d="M23.5 7.2c2.6-3.4 8.4-3 10 .9 4.6-.6 7.8 3.6 6.2 7.3 3.6 2.1 3.3 7.4-.4 9 1.4 3.8-1.6 7.6-5.6 7.2-.6 3.4-4.8 5.2-7.7 3.2" />
-      {/* The fissure down the middle, and the stem. */}
+      {/* The fissure down the middle. */}
       <path d="M23.5 7.2v27.6" />
-      <path d="M23.5 34.8c-.4 2.4.6 4.2 2.6 5.2" />
       {/* Folds. Deliberately uneven on each side. */}
       <path d="M13.8 12.1c3.4 1.1 3.9 3.6 1.6 5.2 2.8 1 3 3.6.4 4.9" />
       <path d="M11.6 26.4c3-1.3 5.6-.2 6.2 2.3" />
@@ -35,7 +34,7 @@ export function BrainMark({ className = "" }: { className?: string }) {
 export function Logo({ className = "" }: { className?: string }) {
   return (
     <span className={`inline-flex items-center gap-2.5 text-ink ${className}`}>
-      <BrainMark className="h-7 w-8 shrink-0" />
+      <BrainMark className="h-9 w-10 shrink-0" />
       <span className="font-reading text-[1.6rem] leading-none tracking-[-0.01em]">Memora</span>
     </span>
   );

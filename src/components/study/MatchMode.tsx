@@ -54,7 +54,7 @@ export function MatchMode({ card, onAnswer }: ModeProps) {
   }
 
   return (
-    <CardShell>
+    <CardShell seed={card.id}>
       <p className="text-[0.95rem] text-ink-soft">{card.prompt}</p>
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -68,13 +68,13 @@ export function MatchMode({ card, onAnswer }: ModeProps) {
                   type="button"
                   disabled={isMatched}
                   onClick={() => setSelectedLeft(index)}
-                  className={`w-full rounded-md border px-3.5 py-2.5 text-left text-[0.9rem] leading-snug transition-colors ${
+                  className={`w-full rounded-2xl border px-3.5 py-2.5 text-left text-[0.9rem] leading-snug transition-colors ${
                     isMatched
-                      ? "border-correct bg-correct-soft text-correct"
+                      ? "border-ink bg-correct-soft text-ink"
                       : isSelected
-                        ? "border-ink bg-highlight text-[#16233a]"
+                        ? "border-ink bg-ink text-paper"
                         : "border-rule text-ink hover:border-ink"
-                  } ${wrongPick?.startsWith(`${index}-`) ? "border-wrong bg-wrong-soft" : ""}`}
+                  } ${wrongPick?.startsWith(`${index}-`) ? "border-dashed border-ink hatch" : ""}`}
                 >
                   {pair.left}
                 </button>
@@ -92,11 +92,11 @@ export function MatchMode({ card, onAnswer }: ModeProps) {
                   type="button"
                   disabled={isMatched || selectedLeft === null}
                   onClick={() => pickRight(pair.index)}
-                  className={`w-full rounded-md border px-3.5 py-2.5 text-left text-[0.9rem] leading-snug transition-colors ${
+                  className={`w-full rounded-2xl border px-3.5 py-2.5 text-left text-[0.9rem] leading-snug transition-colors ${
                     isMatched
-                      ? "border-correct bg-correct-soft text-correct"
+                      ? "border-ink bg-correct-soft text-ink"
                       : "border-rule text-ink enabled:hover:border-ink disabled:opacity-60"
-                  } ${wrongPick?.endsWith(`-${pair.index}`) ? "border-wrong bg-wrong-soft" : ""}`}
+                  } ${wrongPick?.endsWith(`-${pair.index}`) ? "border-dashed border-ink hatch" : ""}`}
                 >
                   {pair.right}
                 </button>

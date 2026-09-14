@@ -73,7 +73,7 @@ body {
 }
 
 /* Paper fibre. Replaces the old grid — it should read as texture, never pattern. */
-.paper-grid,
+.paper-texture,
 body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
 }
@@ -87,20 +87,20 @@ body {
 
 .sketch {
   border: 1.5px solid var(--color-ink);
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border-radius: 26px 38px 30px 34px / 34px 28px 38px 26px;
   background-color: var(--color-card);
 }
 .sketch-a {
-  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  border-radius: 26px 38px 30px 34px / 34px 28px 38px 26px;
 }
 .sketch-b {
-  border-radius: 15px 225px 15px 255px / 225px 15px 255px 15px;
+  border-radius: 40px 24px 36px 28px / 26px 40px 24px 36px;
 }
 .sketch-c {
-  border-radius: 200px 24px 180px 30px / 30px 180px 24px 200px;
+  border-radius: 22px 36px 24px 42px / 40px 24px 36px 22px;
 }
 .sketch-d {
-  border-radius: 28px 190px 34px 210px / 210px 30px 190px 28px;
+  border-radius: 36px 28px 42px 24px / 24px 38px 26px 40px;
 }
 
 /* Gentler wobble, for things the size of a button or a field. */

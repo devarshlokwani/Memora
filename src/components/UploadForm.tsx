@@ -85,9 +85,9 @@ export function UploadForm() {
   if (stage !== "idle") {
     const copy = STAGE_COPY[stage];
     return (
-      <div className="mt-10 rounded-card border border-rule bg-card p-8 shadow-[var(--shadow-card)]">
+      <div className="mt-10 sketch sketch-a p-8 shadow-[var(--shadow-card)]">
         <div className="flex items-center gap-3">
-          <span className="h-2 w-2 animate-pulse rounded-full bg-highlight-deep" />
+          <span className="h-2 w-2 animate-pulse rounded-full bg-ink" />
           <h2 className="font-reading text-xl text-ink">{copy.title}</h2>
         </div>
         <p className="mt-2 max-w-[54ch] text-[0.95rem] leading-relaxed text-ink-soft">
@@ -111,8 +111,8 @@ export function UploadForm() {
           setDragging(false);
           addFiles(e.dataTransfer.files);
         }}
-        className={`paper-grid rounded-card border-2 border-dashed px-6 py-12 text-center transition-colors ${
-          dragging ? "border-ink bg-card" : "border-rule"
+        className={`sketch sketch-c border-dashed px-6 py-12 text-center transition-colors ${
+          dragging ? "border-ink bg-paper-deep" : "border-rule"
         }`}
       >
         <p className="font-reading text-xl text-ink">Drop your files here</p>
@@ -120,7 +120,7 @@ export function UploadForm() {
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="mt-5 rounded-md border border-ink px-4 py-2 text-[0.95rem] font-medium text-ink hover:bg-card"
+          className="mt-5 rounded-full border border-ink px-4 py-2 text-[0.95rem] font-medium text-ink hover:bg-card"
         >
           Choose files
         </button>
@@ -143,7 +143,7 @@ export function UploadForm() {
               <button
                 type="button"
                 onClick={() => removeFile(index)}
-                className="shrink-0 text-sm text-ink-soft hover:text-wrong"
+                className="shrink-0 text-sm text-ink-soft hover:text-ink"
               >
                 Remove
               </button>
@@ -159,18 +159,18 @@ export function UploadForm() {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Leave blank and Memora will name it"
-          className="mt-1.5 w-full rounded-md border border-rule bg-card px-3 py-2.5 text-[0.95rem] text-ink outline-none placeholder:text-ink-faint focus:border-ink"
+          className="mt-1.5 w-full rounded-2xl border border-rule bg-card px-3 py-2.5 text-[0.95rem] text-ink outline-none placeholder:text-ink-faint focus:border-ink"
         />
       </label>
 
       {error && (
-        <p className="mt-5 rounded-md bg-wrong-soft px-3 py-2 text-sm text-wrong">{error}</p>
+        <p className="mt-5 rounded-full bg-ink-soft px-3 py-2 text-sm text-ink-soft">{error}</p>
       )}
 
       <button
         type="submit"
         disabled={files.length === 0}
-        className="mt-6 w-full rounded-md bg-ink px-4 py-3 text-[0.95rem] font-medium text-paper hover:opacity-90 disabled:opacity-40"
+        className="mt-6 w-full rounded-full bg-ink px-4 py-3 text-[0.95rem] font-medium text-paper hover:opacity-90 disabled:opacity-40"
       >
         Build my course
       </button>

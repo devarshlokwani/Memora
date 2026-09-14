@@ -50,7 +50,7 @@ export function GenerateCards({
 
   if (running) {
     return (
-      <div className={`rounded-card border border-rule bg-card p-5 ${className}`}>
+      <div className={`sketch sketch-a p-5 ${className}`}>
         <div className="flex items-baseline justify-between gap-4">
           <p className="text-[0.95rem] font-medium text-ink">Writing cards</p>
           <p className="text-sm text-ink-faint">
@@ -68,12 +68,12 @@ export function GenerateCards({
       <button
         type="button"
         onClick={run}
-        className="rounded-md bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90"
+        className="rounded-full bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90"
       >
         {label}
       </button>
       {failed.length > 0 && (
-        <p className="mt-3 rounded-md bg-wrong-soft px-3 py-2 text-sm text-wrong">
+        <p className="mt-3 rounded-full bg-ink-soft px-3 py-2 text-sm text-ink-soft">
           Could not write cards for {failed.length} {failed.length === 1 ? "topic" : "topics"}:{" "}
           {failed.join(", ")}. Try those again.
         </p>

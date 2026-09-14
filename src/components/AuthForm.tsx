@@ -114,13 +114,13 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         />
 
         {error && (
-          <p className="rounded-md bg-wrong-soft px-3 py-2 text-sm text-wrong">{error}</p>
+          <p className="rounded-full bg-ink-soft px-3 py-2 text-sm text-ink-soft">{error}</p>
         )}
 
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded-md bg-ink px-4 py-3 text-[0.95rem] font-medium text-paper transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="w-full rounded-full bg-ink px-4 py-3 text-[0.95rem] font-medium text-paper transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {busy ? "One moment" : isSignup ? "Create account" : "Sign in"}
         </button>
@@ -130,7 +130,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         {isSignup ? "Already have an account? " : "New here? "}
         <Link
           href={isSignup ? "/login" : "/signup"}
-          className="font-medium text-ink underline decoration-highlight decoration-2 underline-offset-4"
+          className="font-medium text-ink underline decoration-ink decoration-1 underline-offset-4"
         >
           {isSignup ? "Sign in" : "Create one"}
         </Link>
@@ -165,7 +165,7 @@ function Field({
         required={required}
         autoComplete={autoComplete}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1.5 w-full rounded-md border border-rule bg-card px-3 py-2.5 text-[0.95rem] text-ink outline-none transition-colors focus:border-ink"
+        className="mt-1.5 w-full rounded-2xl border border-rule bg-card px-3 py-2.5 text-[0.95rem] text-ink outline-none transition-colors focus:border-ink"
       />
       {hint && <span className="mt-1 block text-xs text-ink-faint">{hint}</span>}
     </label>

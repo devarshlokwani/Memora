@@ -59,7 +59,7 @@ export default async function TopicCardsPage({
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <Link
             href={`/study/${topicId}`}
-            className="rounded-md bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90"
+            className="rounded-full bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90"
           >
             Study this topic
           </Link>

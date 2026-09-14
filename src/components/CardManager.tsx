@@ -34,7 +34,7 @@ export function CardManager({ cards: initial }: { cards: Card[] }) {
 
   if (cards.length === 0) {
     return (
-      <p className="mt-8 rounded-card border border-rule bg-card p-6 text-[0.95rem] text-ink-soft">
+      <p className="mt-8 sketch sketch-a p-6 text-[0.95rem] text-ink-soft">
         No cards left for this topic. Write them again from the course page.
       </p>
     );
@@ -97,7 +97,7 @@ function CardRow({
               <li
                 key={index}
                 className={`text-[0.9rem] ${
-                  index === card.correct_index ? "text-correct" : "text-ink-soft"
+                  index === card.correct_index ? "text-ink" : "text-ink-soft"
                 }`}
               >
                 {option}
@@ -133,7 +133,7 @@ function CardRow({
         )}
         {confirming ? (
           <>
-            <button type="button" onClick={onDelete} className="font-medium text-wrong">
+            <button type="button" onClick={onDelete} className="font-medium text-ink">
               Delete
             </button>
             <button
@@ -148,7 +148,7 @@ function CardRow({
           <button
             type="button"
             onClick={() => setConfirming(true)}
-            className="text-ink-soft hover:text-wrong"
+            className="text-ink-soft hover:text-ink"
           >
             Remove
           </button>
@@ -209,14 +209,14 @@ function CardEditor({
   }
 
   return (
-    <div className="rounded-md border border-ink bg-paper p-4">
+    <div className="rounded-full border border-ink bg-paper p-4">
       <label className="block">
         <span className="text-sm font-medium text-ink">{PROMPT_LABEL[card.type]}</span>
         <textarea
           value={prompt}
           rows={2}
           onChange={(e) => setPrompt(e.target.value)}
-          className="mt-1.5 w-full resize-none rounded-md border border-rule bg-card px-3 py-2 text-[0.95rem] text-ink outline-none focus:border-ink"
+          className="mt-1.5 w-full resize-none rounded-2xl border border-rule bg-card px-3 py-2 text-[0.95rem] text-ink outline-none focus:border-ink"
         />
       </label>
 
@@ -240,7 +240,7 @@ function CardEditor({
                   onChange={(e) =>
                     setOptions(options.map((o, i) => (i === index ? e.target.value : o)))
                   }
-                  className="w-full rounded-md border border-rule bg-card px-3 py-2 text-[0.9rem] text-ink outline-none focus:border-ink"
+                  className="w-full rounded-2xl border border-rule bg-card px-3 py-2 text-[0.9rem] text-ink outline-none focus:border-ink"
                 />
               </div>
             ))}
@@ -255,7 +255,7 @@ function CardEditor({
             value={answer}
             rows={2}
             onChange={(e) => setAnswer(e.target.value)}
-            className="mt-1.5 w-full resize-none rounded-md border border-rule bg-card px-3 py-2 text-[0.95rem] text-ink outline-none focus:border-ink"
+            className="mt-1.5 w-full resize-none rounded-2xl border border-rule bg-card px-3 py-2 text-[0.95rem] text-ink outline-none focus:border-ink"
           />
         </label>
       )}
@@ -274,7 +274,7 @@ function CardEditor({
                   .filter(Boolean),
               )
             }
-            className="mt-1.5 w-full rounded-md border border-rule bg-card px-3 py-2 text-[0.9rem] text-ink outline-none focus:border-ink"
+            className="mt-1.5 w-full rounded-2xl border border-rule bg-card px-3 py-2 text-[0.9rem] text-ink outline-none focus:border-ink"
           />
         </label>
       )}
@@ -286,26 +286,26 @@ function CardEditor({
             value={explanation}
             rows={2}
             onChange={(e) => setExplanation(e.target.value)}
-            className="mt-1.5 w-full resize-none rounded-md border border-rule bg-card px-3 py-2 text-[0.9rem] text-ink outline-none focus:border-ink"
+            className="mt-1.5 w-full resize-none rounded-2xl border border-rule bg-card px-3 py-2 text-[0.9rem] text-ink outline-none focus:border-ink"
           />
         </label>
       )}
 
-      {error && <p className="mt-3 text-sm text-wrong">{error}</p>}
+      {error && <p className="mt-3 text-sm text-ink-soft">{error}</p>}
 
       <div className="mt-4 flex gap-2.5">
         <button
           type="button"
           onClick={save}
           disabled={busy}
-          className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-50"
+          className="rounded-full bg-ink px-4 py-2 text-sm font-medium text-paper hover:opacity-90 disabled:opacity-50"
         >
           {busy ? "Saving" : "Save card"}
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-md border border-rule px-4 py-2 text-sm text-ink hover:border-ink"
+          className="rounded-full border border-rule px-4 py-2 text-sm text-ink hover:border-ink"
         >
           Cancel
         </button>

@@ -71,8 +71,8 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
         )}
 
         {course.status === "failed" && (
-          <div className="mt-6 rounded-card border border-rule bg-wrong-soft p-5">
-            <h2 className="font-medium text-wrong">Memora could not structure this material</h2>
+          <div className="mt-6 sketch sketch-b hatch p-5">
+            <h2 className="font-medium text-ink">Memora could not structure this material</h2>
             <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
               {course.error ?? "The structuring pass failed."}
             </p>
@@ -86,7 +86,7 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
           <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-4">
             <Link
               href={`/courses/${id}/study`}
-              className="rounded-md bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90"
+              className="rounded-full bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90"
             >
               {dueTotal > 0 ? `Study ${dueTotal} due cards` : "Study anyway"}
             </Link>
@@ -100,7 +100,7 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
         )}
 
         {pendingTopics.length > 0 && allTopics.length > 0 && (
-          <div className="mt-7 rounded-card border border-rule bg-card p-5 shadow-[var(--shadow-card)]">
+          <div className="mt-7 sketch sketch-a p-5 shadow-[var(--shadow-card)]">
             <h2 className="font-reading text-xl text-ink">
               {totalCards === 0 ? "No cards yet" : `${pendingTopics.length} topics have no cards`}
             </h2>
@@ -153,7 +153,7 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
                                 {stats.due > 0 && (
                                   <>
                                     {" · "}
-                                    <span className="text-highlight-deep">{stats.due} due</span>
+                                    <span className="text-ink">{stats.due} due</span>
                                   </>
                                 )}
                                 {" · "}
@@ -170,12 +170,12 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
                           {stats ? (
                             <Link
                               href={`/study/${topic.id}`}
-                              className="shrink-0 rounded-md border border-ink px-4 py-1.5 text-sm font-medium text-ink hover:bg-card"
+                              className="shrink-0 rounded-full border border-ink px-4 py-1.5 text-sm font-medium text-ink hover:bg-card"
                             >
                               Study
                             </Link>
                           ) : topic.status === "failed" ? (
-                            <span className="shrink-0 text-sm text-wrong">Card writing failed</span>
+                            <span className="shrink-0 text-sm text-ink-soft">Card writing failed</span>
                           ) : (
                             <span className="shrink-0 text-sm text-ink-faint">No cards yet</span>
                           )}
@@ -204,7 +204,7 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
                   {doc.filename}
                 </span>
                 {doc.status === "failed" ? (
-                  <span className="shrink-0 text-sm text-wrong">Could not be read</span>
+                  <span className="shrink-0 text-sm text-ink-soft">Could not be read</span>
                 ) : (
                   <span className="shrink-0 text-sm text-ink-faint">
                     {doc.page_count ? `${doc.page_count} pages · ` : ""}

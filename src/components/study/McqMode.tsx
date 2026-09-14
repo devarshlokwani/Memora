@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { CheckMark, CrossMark } from "@/components/Marks";
+
 import { CardShell, ContinueButton, Verdict, type ModeProps } from "./shared";
 import { useKeys } from "./useKeys";
 
@@ -24,7 +26,7 @@ export function McqMode({ card, onAnswer }: ModeProps) {
   useKeys(keys, !answered);
 
   return (
-    <CardShell>
+    <CardShell seed={card.id}>
       <p className="font-reading text-[1.35rem] leading-snug text-ink">{card.prompt}</p>
 
       <ul className="mt-6 space-y-2">
@@ -32,10 +34,11 @@ export function McqMode({ card, onAnswer }: ModeProps) {
           const isAnswer = index === card.correct_index;
           const isPick = index === picked;
 
+          // Monochrome, so right and wrong are told apart by weight and texture.
           let tone = "border-rule hover:border-ink";
-          if (answered && isAnswer) tone = "border-correct bg-correct-soft";
-          else if (answered && isPick) tone = "border-wrong bg-wrong-soft";
-          else if (answered) tone = "border-rule opacity-60";
+          if (answered && isAnswer) tone = "border-ink bg-correct-soft";
+          else if (answered && isPick) tone = "border-dashed border-rule hatch";
+          else if (answered) tone = "border-rule opacity-45";
 
           return (
             <li key={index}>
@@ -43,10 +46,16 @@ export function McqMode({ card, onAnswer }: ModeProps) {
                 type="button"
                 disabled={answered}
                 onClick={() => setPicked(index)}
-                className={`flex w-full items-baseline gap-3 rounded-md border px-4 py-3 text-left text-[0.95rem] leading-relaxed text-ink transition-colors ${tone}`}
+                className={`flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left text-[0.95rem] leading-relaxed text-ink transition-colors ${tone}`}
               >
                 <span className="text-ink-faint tabular-nums">{index + 1}</span>
-                <span>{option}</span>
+                <span className={answered && isPick && !isAnswer ? "line-through" : ""}>
+                  {option}
+                </span>
+                {answered && isAnswer && <CheckMark className="ml-auto h-5 w-5 shrink-0" />}
+                {answered && isPick && !isAnswer && (
+                  <CrossMark className="ml-auto h-5 w-5 shrink-0 text-ink-soft" />
+                )}
               </button>
             </li>
           );

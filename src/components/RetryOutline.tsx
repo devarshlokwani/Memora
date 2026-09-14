@@ -28,11 +28,11 @@ export function RetryOutline({ courseId }: { courseId: string }) {
         type="button"
         onClick={retry}
         disabled={busy}
-        className="rounded-md bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90 disabled:opacity-50"
+        className="rounded-full bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90 disabled:opacity-50"
       >
         {busy ? "Building the structure" : "Build the structure again"}
       </button>
-      {error && <p className="mt-3 text-sm text-wrong">{error}</p>}
+      {error && <p className="mt-3 text-sm text-ink-soft">{error}</p>}
     </div>
   );
 }

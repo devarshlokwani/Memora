@@ -3,15 +3,18 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { Grade } from "@/lib/types";
+import { SketchFrame } from "@/components/SketchFrame";
+import { sketchTilt } from "@/lib/sketch";
+
 import type { ModeProps } from "./shared";
 import { Shortcut } from "./Shortcut";
 import { useKeys } from "./useKeys";
 
 const GRADES: { grade: Grade; label: string; tone: string }[] = [
-  { grade: 0, label: "Missed it", tone: "bg-wrong-soft text-wrong hover:brightness-95" },
-  { grade: 1, label: "Shaky", tone: "bg-rule-soft text-ink hover:brightness-95" },
-  { grade: 2, label: "Knew it", tone: "bg-correct-soft text-correct hover:brightness-95" },
-  { grade: 3, label: "Instant", tone: "bg-highlight text-[#16233a] hover:brightness-95" },
+  { grade: 0, label: "Missed it", tone: "border-dashed border-rule text-ink-soft hover:border-ink" },
+  { grade: 1, label: "Shaky", tone: "border-rule text-ink hover:border-ink" },
+  { grade: 2, label: "Knew it", tone: "border-ink bg-paper-deep text-ink" },
+  { grade: 3, label: "Instant", tone: "border-ink bg-ink text-paper" },
 ];
 
 export function FlashcardMode({ card, onAnswer }: ModeProps) {
@@ -36,13 +39,19 @@ export function FlashcardMode({ card, onAnswer }: ModeProps) {
 
   return (
     <div>
-      <div className="flip-scene">
+      <div className="flip-scene" style={{ transform: `rotate(${sketchTilt(card.id)})` }}>
         <div className="flip-inner relative h-[20rem] w-full" data-flipped={flipped}>
-          <div className="flip-face card-index absolute inset-0 flex flex-col justify-center rounded-card border border-rule bg-card p-8 shadow-[var(--shadow-card)]">
-            <p className="font-reading text-[1.5rem] leading-snug text-ink">{card.prompt}</p>
+          <div className="flip-face absolute inset-0">
+            <SketchFrame seed={card.id} />
+            <div className="relative flex h-full flex-col justify-center p-9">
+              <p className="font-reading text-[1.55rem] leading-snug text-ink">{card.prompt}</p>
+            </div>
           </div>
-          <div className="flip-face flip-face-back card-index absolute inset-0 flex flex-col justify-center overflow-y-auto rounded-card border border-ink bg-card p-8 shadow-[var(--shadow-lift)]">
-            <p className="font-reading text-[1.25rem] leading-relaxed text-ink">{card.answer}</p>
+          <div className="flip-face flip-face-back absolute inset-0">
+            <SketchFrame seed={card.id + "b"} />
+            <div className="relative flex h-full flex-col justify-center overflow-y-auto p-9">
+              <p className="font-reading text-[1.3rem] leading-relaxed text-ink">{card.answer}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -52,7 +61,7 @@ export function FlashcardMode({ card, onAnswer }: ModeProps) {
           type="button"
           onClick={() => setFlipped(true)}
           autoFocus
-          className="mt-6 w-full rounded-md bg-ink px-4 py-3 text-[0.95rem] font-medium text-paper hover:opacity-90"
+          className="mt-6 w-full rounded-full bg-ink px-4 py-3 text-[0.95rem] font-medium text-paper hover:opacity-90"
         >
           Show the answer
           <Shortcut>space</Shortcut>
@@ -66,7 +75,7 @@ export function FlashcardMode({ card, onAnswer }: ModeProps) {
                 key={g}
                 type="button"
                 onClick={() => grade(g)}
-                className={`rounded-md px-3 py-3 text-[0.95rem] font-medium transition-[filter] ${tone}`}
+                className={`rounded-2xl border px-3 py-3 text-[0.95rem] font-medium transition-colors ${tone}`}
               >
                 {label}
                 <Shortcut>{index + 1}</Shortcut>

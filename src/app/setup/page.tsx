@@ -14,7 +14,7 @@ export default function SetupPage() {
   if (supabaseReady && anthropicReady) redirect("/dashboard");
 
   return (
-    <div className="paper-grid min-h-dvh">
+    <div className="paper-texture min-h-dvh">
       <header className="mx-auto max-w-3xl px-6 py-6">
         <Link href="/">
           <Logo />
@@ -74,7 +74,7 @@ export default function SetupPage() {
               Copy <Code>.env.example</Code> to <Code>.env.local</Code> in the project root and
               fill in the three values:
             </p>
-            <pre className="mt-3 overflow-x-auto rounded-md border border-rule bg-card p-4 text-[0.85rem] leading-relaxed text-ink">
+            <pre className="mt-3 overflow-x-auto rounded-2xl border border-rule bg-card p-4 text-[0.85rem] leading-relaxed text-ink">
               {`NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ANTHROPIC_API_KEY=sk-ant-...`}
@@ -86,7 +86,7 @@ ANTHROPIC_API_KEY=sk-ant-...`}
           </Step>
         </ol>
 
-        <div className="mt-12 rounded-card border border-rule bg-card p-5">
+        <div className="mt-12 sketch sketch-a p-5">
           <h2 className="font-reading text-lg text-ink">One more thing, for local testing</h2>
           <p className="mt-1.5 max-w-[62ch] text-[0.95rem] leading-relaxed text-ink-soft">
             New Supabase projects ask every account to confirm its email address. Either click the
@@ -97,7 +97,7 @@ ANTHROPIC_API_KEY=sk-ant-...`}
 
         <Link
           href="/"
-          className="mt-10 inline-block rounded-md border border-ink px-5 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-card"
+          className="mt-10 inline-block rounded-full border border-ink px-5 py-2.5 text-[0.95rem] font-medium text-ink hover:bg-card"
         >
           Look at the landing page
         </Link>
@@ -129,7 +129,7 @@ function Step({
           {title}
         </h2>
         {!hideStatus && (
-          <span className={`text-sm ${done ? "text-correct" : "text-ink-faint"}`}>
+          <span className={`text-sm ${done ? "text-ink" : "text-ink-faint"}`}>
             {done ? (doneNote ?? "Done") : "Not set yet"}
           </span>
         )}
@@ -153,7 +153,7 @@ function Extern({ href, children }: { href: string; children: React.ReactNode })
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="font-medium text-ink underline decoration-highlight decoration-2 underline-offset-4"
+      className="font-medium text-ink underline decoration-ink decoration-1 underline-offset-4"
     >
       {children}
     </a>

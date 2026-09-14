@@ -29,7 +29,7 @@ export default async function ReviewPage() {
         </Link>
 
         {cards.length === 0 ? (
-          <div className="mt-10 rounded-card border border-rule bg-card p-8 text-center shadow-[var(--shadow-card)]">
+          <div className="mt-10 sketch sketch-a p-8 text-center shadow-[var(--shadow-card)]">
             <h1 className="font-reading text-[1.8rem] leading-tight text-ink">
               Nothing is due
             </h1>
@@ -39,7 +39,7 @@ export default async function ReviewPage() {
             </p>
             <Link
               href="/dashboard"
-              className="mt-6 inline-block rounded-md bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90"
+              className="mt-6 inline-block rounded-full bg-ink px-5 py-2.5 text-[0.95rem] font-medium text-paper hover:opacity-90"
             >
               Back to your courses
             </Link>

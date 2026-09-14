@@ -2,7 +2,9 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { DemoCard } from "@/components/DemoCard";
-import { Logo } from "@/components/Logo";
+import { HeroReveal } from "@/components/HeroReveal";
+import { SiteNav } from "@/components/SiteNav";
+import { SketchCard } from "@/components/SketchFrame";
 import { getUser } from "@/lib/supabase/server";
 import { CARD_TYPES, MODE_BLURBS, MODE_LABELS } from "@/lib/types";
 
@@ -26,52 +28,53 @@ export default async function LandingPage() {
 
   return (
     <div className="min-h-dvh">
-      <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
-        <Logo />
-        <nav className="flex items-center gap-5 text-[0.95rem]">
-          <Link href="/login" className="text-ink-soft hover:text-ink">
-            Sign in
-          </Link>
-          <Link
-            href="/signup"
-            className="rounded-full bg-ink px-5 py-2 font-medium text-paper hover:opacity-90"
-          >
-            Get started
-          </Link>
-        </nav>
-      </header>
+      <SiteNav />
 
       <main>
-        <section className="mx-auto max-w-3xl px-6 pb-8 pt-14 text-center sm:pt-20">
-          <p className="font-hand text-2xl text-ink-soft">Dear crammers,</p>
-          <h1 className="mt-3 font-reading text-[3rem] leading-[1.04] tracking-[-0.015em] text-ink sm:text-[4.2rem]">
-            Hand over the PDF.
-            <br />
-            Get back a way to <span className="marked">study it</span>.
-          </h1>
-          <p className="mx-auto mt-6 max-w-[46ch] text-[1.05rem] leading-relaxed text-ink-soft">
-            Memora reads your course material, builds the structure your lecturer never gave you,
-            and turns every topic into cards you can actually drill.
-          </p>
-          <Link
-            href="/signup"
-            className="mt-8 inline-block rounded-full bg-ink px-8 py-3.5 text-[1rem] font-medium text-paper hover:opacity-90"
-          >
-            Build my first course
-          </Link>
-          <p className="mt-4 font-hand text-lg text-ink-faint">
-            PDF, DOCX, TXT and Markdown
-          </p>
-        </section>
+        <HeroReveal>
+          <section className="mx-auto max-w-3xl px-6 pb-8 pt-14 text-center sm:pt-20">
+            <p data-reveal className="font-hand text-2xl text-ink-soft">
+              Dear crammers,
+            </p>
+            <h1
+              data-reveal
+              className="mt-3 font-reading text-[3rem] leading-[1.04] tracking-[-0.015em] text-ink sm:text-[4.2rem]"
+            >
+              Hand over the PDF.
+              <br />
+              Get back a way to <span className="marked">study it</span>.
+            </h1>
+            <p
+              data-reveal
+              className="mx-auto mt-6 max-w-[46ch] text-[1.05rem] leading-relaxed text-ink-soft"
+            >
+              Memora reads your course material, builds the structure your lecturer never gave
+              you, and turns every topic into cards you can actually drill.
+            </p>
+            <div data-reveal className="mt-8">
+              <Link
+                href="/signup"
+                className="inline-block rounded-full bg-ink px-8 py-3.5 text-[1rem] font-medium text-paper transition-opacity hover:opacity-90"
+              >
+                Build my first course
+              </Link>
+            </div>
+            <p data-reveal className="mt-4 font-hand text-lg text-ink-faint">
+              PDF, DOCX, TXT and Markdown
+            </p>
+          </section>
 
-        {/* The product moment: a real card, sitting on the desk at an angle. */}
-        <section className="px-6 pb-20 pt-6">
-          <div className="mx-auto flex max-w-5xl justify-center rounded-[2.5rem] bg-paper-deep px-6 py-16 sm:py-20">
-            <DemoCard />
-          </div>
-        </section>
+          {/* The product moment: a real card, sitting on the desk at an angle. */}
+          <section id="try" className="scroll-mt-24 px-6 pb-20 pt-6">
+            <div className="mx-auto flex max-w-5xl justify-center rounded-[2.5rem] bg-paper-deep px-6 py-16 sm:py-20">
+              <div data-reveal-card>
+                <DemoCard />
+              </div>
+            </div>
+          </section>
+        </HeroReveal>
 
-        <section className="mx-auto max-w-4xl px-6 py-16">
+        <section id="how" className="mx-auto max-w-4xl scroll-mt-24 px-6 py-16">
           <h2 className="text-center font-reading text-[2.2rem] leading-tight text-ink">
             How a course gets made
           </h2>
@@ -86,7 +89,7 @@ export default async function LandingPage() {
           </ol>
         </section>
 
-        <section className="mx-auto max-w-4xl px-6 py-16">
+        <section id="formats" className="mx-auto max-w-4xl scroll-mt-24 px-6 py-16">
           <h2 className="text-center font-reading text-[2.2rem] leading-tight text-ink">
             Five ways through the same topic
           </h2>
@@ -95,15 +98,16 @@ export default async function LandingPage() {
             a topic stops sinking in.
           </p>
           <ul className="mt-10 grid gap-4 sm:grid-cols-2">
-            {CARD_TYPES.map((type, i) => (
-              <li
-                key={type}
-                className={`sketch ${["sketch-a", "sketch-b", "sketch-c", "sketch-d", "sketch-b"][i]} p-5`}
-              >
-                <h3 className="font-reading text-xl text-ink">{MODE_LABELS[type]}</h3>
-                <p className="mt-1.5 text-[0.9rem] leading-relaxed text-ink-soft">
-                  {MODE_BLURBS[type]}
-                </p>
+            {CARD_TYPES.map((type) => (
+              <li key={type}>
+                <SketchCard seed={`mode-${type}`}>
+                  <div className="p-5">
+                    <h3 className="font-reading text-xl text-ink">{MODE_LABELS[type]}</h3>
+                    <p className="mt-1.5 text-[0.9rem] leading-relaxed text-ink-soft">
+                      {MODE_BLURBS[type]}
+                    </p>
+                  </div>
+                </SketchCard>
               </li>
             ))}
           </ul>
@@ -115,7 +119,7 @@ export default async function LandingPage() {
           </h2>
           <Link
             href="/signup"
-            className="mt-8 inline-block rounded-full bg-ink px-8 py-3.5 text-[1rem] font-medium text-paper hover:opacity-90"
+            className="mt-8 inline-block rounded-full bg-ink px-8 py-3.5 text-[1rem] font-medium text-paper transition-opacity hover:opacity-90"
           >
             Create an account
           </Link>

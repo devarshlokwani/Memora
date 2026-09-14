@@ -8,10 +8,10 @@ import { Shortcut } from "./Shortcut";
 import { useKeys, useSubmitKey } from "./useKeys";
 
 const GRADES: { grade: Grade; label: string; tone: string }[] = [
-  { grade: 0, label: "Nothing like it", tone: "bg-wrong-soft text-wrong" },
-  { grade: 1, label: "Roughly there", tone: "bg-rule-soft text-ink" },
-  { grade: 2, label: "Close enough", tone: "bg-correct-soft text-correct" },
-  { grade: 3, label: "Word for word", tone: "bg-highlight text-[#16233a]" },
+  { grade: 0, label: "Nothing like it", tone: "border-dashed border-rule text-ink-soft hover:border-ink" },
+  { grade: 1, label: "Roughly there", tone: "border-rule text-ink hover:border-ink" },
+  { grade: 2, label: "Close enough", tone: "border-ink bg-paper-deep text-ink" },
+  { grade: 3, label: "Word for word", tone: "border-ink bg-ink text-paper" },
 ];
 
 /** Produce the definition from memory, then compare it against the source. */
@@ -40,7 +40,7 @@ export function JargonMode({ card, onAnswer }: ModeProps) {
   useKeys(keys, revealed);
 
   return (
-    <CardShell>
+    <CardShell seed={card.id}>
       <p className="text-sm text-ink-faint">Define this term</p>
       <p className="mt-1.5 font-reading text-[1.9rem] leading-tight text-ink">{card.prompt}</p>
 
@@ -51,21 +51,21 @@ export function JargonMode({ card, onAnswer }: ModeProps) {
         rows={4}
         onChange={(e) => setValue(e.target.value)}
         placeholder="Write it in your own words"
-        className="mt-5 w-full resize-none rounded-md border border-rule bg-paper px-4 py-3 text-[0.95rem] leading-relaxed text-ink outline-none placeholder:text-ink-faint focus:border-ink disabled:opacity-70"
+        className="mt-5 w-full resize-none rounded-2xl border border-rule bg-paper px-4 py-3 text-[0.95rem] leading-relaxed text-ink outline-none placeholder:text-ink-faint focus:border-ink disabled:opacity-70"
       />
 
       {!revealed ? (
         <button
           type="button"
           onClick={() => setRevealed(true)}
-          className="mt-3 w-full rounded-md bg-ink px-4 py-3 text-[0.95rem] font-medium text-paper hover:opacity-90"
+          className="mt-3 w-full rounded-full bg-ink px-4 py-3 text-[0.95rem] font-medium text-paper hover:opacity-90"
         >
           Compare with the source
           <Shortcut>ctrl + enter</Shortcut>
         </button>
       ) : (
         <>
-          <div className="mt-5 rounded-md border-l-2 border-highlight-deep bg-paper px-4 py-3">
+          <div className="mt-5 rounded-2xl border-l-2 border-ink bg-paper-deep px-4 py-3">
             <p className="text-sm text-ink-faint">From your material</p>
             <p className="mt-1 font-reading text-[1.05rem] leading-relaxed text-ink">
               {card.answer}
@@ -79,7 +79,7 @@ export function JargonMode({ card, onAnswer }: ModeProps) {
                 key={g}
                 type="button"
                 onClick={() => grade(g)}
-                className={`rounded-md px-3 py-3 text-[0.9rem] font-medium hover:brightness-95 ${tone}`}
+                className={`rounded-2xl border px-3 py-3 text-[0.9rem] font-medium transition-colors ${tone}`}
               >
                 {label}
                 <Shortcut>{index + 1}</Shortcut>

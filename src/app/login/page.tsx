@@ -9,7 +9,7 @@ export default function LoginPage() {
   if (!isSupabaseConfigured()) redirect("/setup");
 
   return (
-    <main className="paper-grid flex min-h-dvh items-center justify-center px-6 py-16">
+    <main className="paper-texture flex min-h-dvh items-center justify-center px-6 py-16">
       <Suspense>
         <AuthForm mode="login" />
       </Suspense>

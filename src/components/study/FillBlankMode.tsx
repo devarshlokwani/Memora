@@ -20,12 +20,12 @@ export function FillBlankMode({ card, onAnswer }: ModeProps) {
   const after = rest.join("___");
 
   return (
-    <CardShell>
+    <CardShell seed={card.id}>
       <p className="font-reading text-[1.3rem] leading-relaxed text-ink">
         {before}
-        <span className="inline-block min-w-24 border-b-2 border-highlight-deep px-1.5 text-center align-baseline">
+        <span className="inline-block min-w-24 border-b-2 border-ink px-1.5 text-center align-baseline">
           {checked ? (
-            <span className={correct ? "text-correct" : "text-wrong line-through"}>
+            <span className={correct ? "text-ink" : "text-ink-soft line-through"}>
               {value || "\u00a0"}
             </span>
           ) : (
@@ -50,13 +50,13 @@ export function FillBlankMode({ card, onAnswer }: ModeProps) {
           onChange={(e) => setValue(e.target.value)}
           placeholder="The missing word"
           autoComplete="off"
-          className="w-full rounded-md border border-rule bg-paper px-4 py-3 text-[1rem] text-ink outline-none placeholder:text-ink-faint focus:border-ink disabled:opacity-70"
+          className="w-full rounded-2xl border border-rule bg-paper px-4 py-3 text-[1rem] text-ink outline-none placeholder:text-ink-faint focus:border-ink disabled:opacity-70"
         />
         {!checked && (
           <button
             type="submit"
             disabled={!value.trim()}
-            className="mt-3 w-full rounded-md bg-ink px-4 py-3 text-[0.95rem] font-medium text-paper hover:opacity-90 disabled:opacity-40"
+            className="mt-3 w-full rounded-full bg-ink px-4 py-3 text-[0.95rem] font-medium text-paper hover:opacity-90 disabled:opacity-40"
           >
             Check
           </button>
