@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-import { supabaseEnv } from "./env";
+import { isSupabaseConfigured, supabaseEnv } from "./env";
 
 export async function createClient() {
   const env = supabaseEnv();
@@ -29,8 +29,9 @@ export async function createClient() {
   );
 }
 
-/** Returns the signed-in user, or null. */
+/** Returns the signed-in user, or null -- including when Supabase is not set up. */
 export async function getUser() {
+  if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
   const {
     data: { user },

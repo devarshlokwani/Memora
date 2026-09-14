@@ -25,8 +25,8 @@ export default async function LandingPage() {
   if (await getUser()) redirect("/dashboard");
 
   return (
-    <div className="paper-grid min-h-dvh">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+    <div className="min-h-dvh">
+      <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
         <Logo />
         <nav className="flex items-center gap-5 text-[0.95rem]">
           <Link href="/login" className="text-ink-soft hover:text-ink">
@@ -34,77 +34,88 @@ export default async function LandingPage() {
           </Link>
           <Link
             href="/signup"
-            className="rounded-md bg-ink px-4 py-2 font-medium text-paper hover:opacity-90"
+            className="rounded-full bg-ink px-5 py-2 font-medium text-paper hover:opacity-90"
           >
             Get started
           </Link>
         </nav>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6">
-        <section className="grid items-center gap-14 py-14 md:grid-cols-[1.05fr_1fr] md:py-20">
-          <div>
-            <h1 className="max-w-[15ch] text-[2.75rem] font-semibold leading-[1.05] tracking-[-0.035em] text-ink sm:text-[3.4rem]">
-              Hand over the PDF. Get back a way to <span className="marked">study it</span>.
-            </h1>
-            <p className="mt-6 max-w-[52ch] text-[1.05rem] leading-relaxed text-ink-soft">
-              Memora reads your course material, builds the structure your lecturer never gave
-              you, and turns every topic into cards you can actually drill — flashcards, multiple
-              choice, fill-in-the-blanks, matching pairs, and the technical vocabulary you have to
-              know cold.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link
-                href="/signup"
-                className="rounded-md bg-ink px-6 py-3 text-[0.95rem] font-medium text-paper hover:opacity-90"
-              >
-                Build my first course
-              </Link>
-              <span className="text-sm text-ink-faint">PDF, DOCX, TXT and Markdown</span>
-            </div>
-          </div>
+      <main>
+        <section className="mx-auto max-w-3xl px-6 pb-8 pt-14 text-center sm:pt-20">
+          <p className="font-hand text-2xl text-ink-soft">Dear crammers,</p>
+          <h1 className="mt-3 font-reading text-[3rem] leading-[1.04] tracking-[-0.015em] text-ink sm:text-[4.2rem]">
+            Hand over the PDF.
+            <br />
+            Get back a way to <span className="marked">study it</span>.
+          </h1>
+          <p className="mx-auto mt-6 max-w-[46ch] text-[1.05rem] leading-relaxed text-ink-soft">
+            Memora reads your course material, builds the structure your lecturer never gave you,
+            and turns every topic into cards you can actually drill.
+          </p>
+          <Link
+            href="/signup"
+            className="mt-8 inline-block rounded-full bg-ink px-8 py-3.5 text-[1rem] font-medium text-paper hover:opacity-90"
+          >
+            Build my first course
+          </Link>
+          <p className="mt-4 font-hand text-lg text-ink-faint">
+            PDF, DOCX, TXT and Markdown
+          </p>
+        </section>
 
-          <div className="flex justify-center md:justify-end">
+        {/* The product moment: a real card, sitting on the desk at an angle. */}
+        <section className="px-6 pb-20 pt-6">
+          <div className="mx-auto flex max-w-5xl justify-center rounded-[2.5rem] bg-paper-deep px-6 py-16 sm:py-20">
             <DemoCard />
           </div>
         </section>
 
-        <section className="border-t border-rule py-16">
-          <h2 className="font-reading text-[1.75rem] text-ink">How a course gets made</h2>
-          <ol className="mt-8 grid gap-8 sm:grid-cols-3">
+        <section className="mx-auto max-w-4xl px-6 py-16">
+          <h2 className="text-center font-reading text-[2.2rem] leading-tight text-ink">
+            How a course gets made
+          </h2>
+          <ol className="mt-10 grid gap-10 sm:grid-cols-3">
             {STEPS.map((step, i) => (
-              <li key={step.title} className="border-t-2 border-ink pt-4">
-                <span className="font-reading text-2xl text-ink-faint">{i + 1}</span>
-                <h3 className="mt-2 text-[1.05rem] font-semibold text-ink">{step.title}</h3>
+              <li key={step.title}>
+                <span className="font-hand text-3xl text-ink-faint">{i + 1}</span>
+                <h3 className="mt-1 text-[1.05rem] font-semibold text-ink">{step.title}</h3>
                 <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-soft">{step.body}</p>
               </li>
             ))}
           </ol>
         </section>
 
-        <section className="border-t border-rule py-16">
-          <h2 className="font-reading text-[1.75rem] text-ink">Five ways through the same topic</h2>
-          <p className="mt-2 max-w-[60ch] text-[0.95rem] leading-relaxed text-ink-soft">
-            Recognition and recall are different skills, and exams test both. Switch formats when a
-            topic stops sinking in.
+        <section className="mx-auto max-w-4xl px-6 py-16">
+          <h2 className="text-center font-reading text-[2.2rem] leading-tight text-ink">
+            Five ways through the same topic
+          </h2>
+          <p className="mx-auto mt-3 max-w-[54ch] text-center text-[0.95rem] leading-relaxed text-ink-soft">
+            Recognition and recall are different skills, and exams test both. Switch formats when
+            a topic stops sinking in.
           </p>
-          <ul className="mt-8 divide-y divide-rule border-y border-rule">
-            {CARD_TYPES.map((type) => (
-              <li key={type} className="flex flex-col gap-1 py-4 sm:flex-row sm:items-baseline sm:gap-8">
-                <span className="w-48 shrink-0 font-medium text-ink">{MODE_LABELS[type]}</span>
-                <span className="text-[0.95rem] text-ink-soft">{MODE_BLURBS[type]}</span>
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2">
+            {CARD_TYPES.map((type, i) => (
+              <li
+                key={type}
+                className={`sketch ${["sketch-a", "sketch-b", "sketch-c", "sketch-d", "sketch-b"][i]} p-5`}
+              >
+                <h3 className="font-reading text-xl text-ink">{MODE_LABELS[type]}</h3>
+                <p className="mt-1.5 text-[0.9rem] leading-relaxed text-ink-soft">
+                  {MODE_BLURBS[type]}
+                </p>
               </li>
             ))}
           </ul>
         </section>
 
-        <section className="border-t border-rule py-20 text-center">
-          <h2 className="mx-auto max-w-[20ch] text-[2rem] font-semibold leading-tight tracking-[-0.03em] text-ink">
+        <section className="mx-auto max-w-3xl px-6 py-20 text-center">
+          <h2 className="mx-auto max-w-[18ch] font-reading text-[2.6rem] leading-[1.08] text-ink">
             Your notes are already written. Start studying them.
           </h2>
           <Link
             href="/signup"
-            className="mt-7 inline-block rounded-md bg-ink px-6 py-3 text-[0.95rem] font-medium text-paper hover:opacity-90"
+            className="mt-8 inline-block rounded-full bg-ink px-8 py-3.5 text-[1rem] font-medium text-paper hover:opacity-90"
           >
             Create an account
           </Link>
@@ -112,7 +123,7 @@ export default async function LandingPage() {
       </main>
 
       <footer className="border-t border-rule py-8">
-        <p className="mx-auto max-w-6xl px-6 text-sm text-ink-faint">Memora</p>
+        <p className="mx-auto max-w-5xl px-6 font-hand text-lg text-ink-faint">Memora</p>
       </footer>
     </div>
   );
