@@ -34,7 +34,7 @@ export default async function CourseStudyPage({
   const dueByCard = new Map((progress ?? []).map((p) => [p.card_id, p.due_at as string]));
 
   return (
-    <div className="min-h-dvh">
+    <div className="flex flex-1 flex-col">
       <AppHeader email={user.email} />
       <main className="mx-auto max-w-3xl px-6 py-8">
         <Link href={`/courses/${id}`} className="text-sm text-ink-soft hover:text-ink">

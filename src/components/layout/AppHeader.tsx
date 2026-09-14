@@ -25,7 +25,7 @@ export function AppHeader({ email }: { email?: string | null }) {
   const pathname = usePathname() ?? "";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-rule bg-paper/85 backdrop-blur-sm">
+    <header className="sticky top-0 z-40 border-b border-rule bg-paper">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-6 px-6 py-3.5">
         <Link href="/dashboard" aria-label="Memora home">
           <Logo />

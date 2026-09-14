@@ -14,7 +14,7 @@ export default function SetupPage() {
   if (supabaseReady && anthropicReady) redirect("/dashboard");
 
   return (
-    <div className="paper-texture min-h-dvh">
+    <div className="paper-texture flex flex-1 flex-col">
       <header className="mx-auto max-w-3xl px-6 py-6">
         <Link href="/">
           <Logo />

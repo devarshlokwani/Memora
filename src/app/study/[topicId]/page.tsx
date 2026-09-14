@@ -30,7 +30,7 @@ export default async function StudyPage({ params }: { params: Promise<{ topicId:
   const dueByCard = new Map((progress ?? []).map((p) => [p.card_id, p.due_at as string]));
 
   return (
-    <div className="min-h-dvh">
+    <div className="flex flex-1 flex-col">
       <AppHeader email={user.email} />
       <main className="mx-auto max-w-3xl px-6 py-8">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-sm">

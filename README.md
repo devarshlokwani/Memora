@@ -20,23 +20,38 @@ card's real pixel size, with corners and edges that drift off true, and each car
 slight angle. The shape and angle come from a hash of the card id, so they are stable across
 renders and between server and browser — a card always sits the same way on the desk.
 
-At night the same drawing is done in chalk on a board.
+There is deliberately no dark mode. The page, the nav and the gap cut into the panel below it are
+all the same paper; a second palette would mean keeping two versions of that relationship true,
+and the thing being drawn here is paper.
+
+## Footer
+
+One footer, defined in the root layout, so every route gets the same one and no page has to
+remember to include it. Every link in it goes somewhere that exists — there is no Legal column
+because writing a privacy policy or terms of service is not something to invent; add the pages and
+the column follows.
 
 ## Motion
 
-GSAP, used in two places and no more.
+GSAP, used only where something needs to be understood as moving rather than replaced.
 
-The nav underline **travels**: it slides and stretches between items instead of blinking from one
-to the next, follows your pointer while you are choosing, and settles back on whichever section
-is actually on screen when you leave. Coming from nothing it fades in under the item rather than
+The landing page is one panel showing one section at a time. Its top edge dips into a **gap**,
+and that gap slides along to sit under whichever nav item is selected, sized to match that item.
+The edge has to be a drawn path rather than a border, because a gap that changes position and
+width is not something a border can describe; the path is rewritten each animation frame, so
+nothing re-renders while it moves.
+
+Three things travel together when you change section — the gap, the nav underline beneath the
+item, and the height of the panel as the new content turns out to be taller or shorter. Animating
+only the first two and letting the height jump would break the illusion that the nav and the panel
+are one object.
+
+The nav underline also follows your pointer while you are choosing and settles back on what is
+actually selected when you leave. Coming from nothing it fades in under the item rather than
 sliding in from the edge of the nav, which would read as a stray line.
 
-The hero plays **one** entrance on arrival — the page writes itself on in reading order and the
-card lands on the desk last, slightly off-square. There is deliberately no scroll-triggered
-animation anywhere else; a page where every section slides up as you reach it reads as templated.
-
-Both respect `prefers-reduced-motion`: the nav mark still moves to the right place, it just does
-not tween, and the hero is simply present.
+All of it respects `prefers-reduced-motion`: sections still change and the gap still ends up in
+the right place, it just gets there without tweening.
 
 ## Stack
 
@@ -142,33 +157,54 @@ accident.
 
 ## Layout
 
+Split down the middle: anything that touches a key or a database lives under `server/`,
+anything that renders lives under `components/`, and `lib/` is only for code that is genuinely
+safe on both sides. `app/` holds routes and nothing else.
+
 ```
 src/
-  app/
+  app/                        routes only — pages and API handlers
     api/
-      courses/                  create course, extract text
-      courses/[id]/outline/     pass 1 — structure
-      topics/[id]/cards/        pass 2 — cards for one topic
-      reviews/                  record an answer, reschedule the card
-    courses/[id]/               course structure
-    courses/[id]/study/         review across the whole course
-    courses/[id]/topics/[t]/    browse, edit and delete a topic's cards
-    review/                     everything due, across every course
-    study/[topicId]/            study one topic
-  components/study/             the five study modes
-  lib/
-    ai.ts                       Claude calls, with retry on rate limits
-    ai-schema.ts                the output schemas for both passes
-    answers.ts                  answer matching for typed responses
-    cards.ts                    turns a model response into valid card rows
-    chunk.ts                    deterministic chunking and source lookup
-    extract.ts                  PDF / DOCX / text extraction
-    ingest.ts                   upload validation and text extraction
-    prompts.ts                  system prompts for both passes
-    rebuild.ts                  what survives a structure rebuild
-    srs.ts                      spaced repetition scheduling
-supabase/migrations/            schema, RLS, storage bucket, views
+      courses/                create a course, extract its text
+      courses/[id]/outline/   pass 1 — structure
+      topics/[id]/cards/      pass 2 — cards for one topic
+      reviews/                record an answer, reschedule the card
+      cards/[id]/             edit or delete a card
+      sessions/               record a finished study session
+    courses/[id]/             course structure
+    courses/[id]/topics/[t]/  browse, edit and delete a topic's cards
+    review/                   everything due, across every course
+    study/[topicId]/          study one topic
+
+  server/                     never reaches the browser
+    ai/                       Claude calls, prompts, output schemas
+    db/                       Supabase server client, session proxy
+    documents/                extraction, upload handling, chunking
+    courses/                  card validation, structure-rebuild rules
+    study/                    spaced repetition scheduling
+
+  lib/                        safe on both sides
+    supabase/browser.ts       the browser Supabase client
+    supabase/env.ts           which keys are configured
+    types.ts                  shared shapes
+    answers.ts                answer matching for typed responses
+    sketch.ts                 drawn-edge variants, seeded per card
+    motion.ts                 shared easing, reduced-motion check
+
+  components/
+    layout/                   nav, header, wordmark
+    landing/                  the marketing page and its panel
+    ui/                       drawn frames, marks, progress
+    auth/                     sign in and sign up
+    course/                   upload, card manager, course settings
+    study/                    the five study modes
+
+  proxy.ts                    Next 16 proxy (formerly middleware)
+
+supabase/migrations/          schema, RLS, storage bucket, views
 ```
+
+Tests sit next to the code they cover, so `server/study/srs.test.ts` is beside `srs.ts`.
 
 ## Tests
 

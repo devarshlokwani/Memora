@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Caveat, Instrument_Sans, Instrument_Serif } from "next/font/google";
 
+import { SiteFooter } from "@/components/layout/SiteFooter";
+
 import "./globals.css";
 
 const display = Instrument_Serif({
@@ -32,7 +34,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${hand.variable}`}>
-      <body className="min-h-dvh">{children}</body>
+      {/* The footer is part of the page shell, so every route gets the same one
+          and no page has to remember to include it. */}
+      <body className="flex min-h-dvh flex-col">
+        <div className="flex flex-1 flex-col">{children}</div>
+        <SiteFooter />
+      </body>
     </html>
   );
 }

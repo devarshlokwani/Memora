@@ -55,7 +55,7 @@ export default async function CoursePage({ params }: { params: Promise<{ id: str
   const docs = (documents ?? []) as DocumentRow[];
 
   return (
-    <div className="min-h-dvh">
+    <div className="flex flex-1 flex-col">
       <AppHeader email={user.email} />
 
       <main className="mx-auto max-w-4xl px-6 py-10">

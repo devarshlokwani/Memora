@@ -9,7 +9,7 @@ export default function SignupPage() {
   if (!isSupabaseConfigured()) redirect("/setup");
 
   return (
-    <main className="paper-texture flex min-h-dvh items-center justify-center px-6 py-16">
+    <main className="paper-texture flex flex-1 items-center justify-center px-6 py-20">
       <Suspense>
         <AuthForm mode="signup" />
       </Suspense>

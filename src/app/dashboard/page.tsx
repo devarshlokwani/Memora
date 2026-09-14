@@ -76,7 +76,7 @@ export default async function DashboardPage() {
   const streak = currentStreak(recent);
 
   return (
-    <div className="min-h-dvh">
+    <div className="flex flex-1 flex-col">
       <AppHeader email={user.email} />
 
       <main className="mx-auto max-w-5xl px-6 py-10">

@@ -2,7 +2,8 @@
 
 import gsap from "gsap";
 import Link from "next/link";
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { Logo } from "@/components/layout/Logo";
 import { SlidingNav, type NavItem } from "@/components/layout/SlidingNav";
@@ -15,9 +16,9 @@ const NOTCH_PADDING = 22;
 export type SectionId = "try" | "how" | "formats";
 
 const ITEMS: NavItem[] = [
-  { id: "try", label: "Try a card", href: "#try" },
-  { id: "how", label: "How it works", href: "#how" },
-  { id: "formats", label: "Formats", href: "#formats" },
+  { id: "try", label: "Try a card", href: "/?s=try" },
+  { id: "how", label: "How it works", href: "/?s=how" },
+  { id: "formats", label: "Formats", href: "/?s=formats" },
   { id: "signin", label: "Sign in", href: "/login" },
 ];
 
@@ -36,6 +37,22 @@ export function LandingShell({
   const contentRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const firstPaint = useRef(true);
+
+  // The section lives in ?s= so a link from anywhere else on the site opens on
+  // the right one. A hash cannot do this job: Next navigates with pushState,
+  // which never fires hashchange, so a footer link would quietly do nothing.
+  const params = useSearchParams();
+  useEffect(() => {
+    const id = params.get("s");
+    if (id === "try" || id === "how" || id === "formats") setActive(id);
+  }, [params]);
+
+  // Clicking the nav is local state plus a URL rewrite, not a navigation: the
+  // section should change instantly rather than waiting on the router.
+  const choose = useCallback((id: SectionId) => {
+    setActive(id);
+    window.history.replaceState(null, "", `?s=${id}`);
+  }, []);
 
   // Nav rects arrive in viewport coordinates; the gap needs them relative to
   // the panel, which is a different box and can be scrolled.
@@ -83,8 +100,11 @@ export function LandingShell({
   }, [active]);
 
   return (
-    <div className="min-h-dvh">
-      <header className="sticky top-0 z-50 bg-paper/85 backdrop-blur-sm">
+    <div className="flex flex-1 flex-col">
+      {/* Solid, never translucent: the gap in the panel below reveals this exact
+          colour, and anything see-through would make the cut look like a mistake
+          rather than one surface with a bite out of it. */}
+      <header className="sticky top-0 z-50 bg-paper">
         <div className="relative mx-auto max-w-6xl px-6 py-4">
           <div className="flex items-center justify-between md:hidden">
             <Link href="/" aria-label="Memora home">
@@ -105,7 +125,7 @@ export function LandingShell({
               splitAt={2}
               onSelectedRect={placeNotch}
               onSelect={(id) => {
-                if (id !== "signin") setActive(id as SectionId);
+                if (id !== "signin") choose(id as SectionId);
               }}
               center={
                 <Link href="/" aria-label="Memora home" className="px-2">
@@ -132,7 +152,7 @@ export function LandingShell({
           <button
             key={item.id}
             type="button"
-            onClick={() => setActive(item.id as SectionId)}
+            onClick={() => choose(item.id as SectionId)}
             className={active === item.id ? "font-medium text-ink" : "text-ink-soft"}
           >
             {item.label}
@@ -154,9 +174,6 @@ export function LandingShell({
         </div>
       </main>
 
-      <footer className="border-t border-rule py-8">
-        <p className="mx-auto max-w-6xl px-6 font-hand text-lg text-ink-faint">Memora</p>
-      </footer>
     </div>
   );
 }

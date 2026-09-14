@@ -5,16 +5,16 @@
    carried by line weight, texture and drawn marks instead. */
 
 @theme {
-  --color-paper: #f2ede4;
-  --color-paper-deep: #e7e0d3;
-  --color-card: #fbf8f2;
+  --color-paper: #faf7f1;
+  --color-paper-deep: #e9e1d3;
+  --color-card: #fffdf8;
 
   --color-ink: #17150f;
   --color-ink-soft: #514c40;
   --color-ink-faint: #8e8779;
 
-  --color-rule: #c4bcaa;
-  --color-rule-soft: #ded7c8;
+  --color-rule: #cfc6b3;
+  --color-rule-soft: #e4dccc;
 
   /* Kept as token names so the whole app re-themes at once. In a monochrome
      scheme these are values, not hues: correct is full ink, wrong is washed out
@@ -35,34 +35,9 @@
   --shadow-lift: 3px 5px 0 rgba(23, 21, 15, 0.14);
 }
 
-@media (prefers-color-scheme: dark) {
-  /* Night shift: the same drawing, done in chalk on a board. */
-  :root {
-    --color-paper: #14140f;
-    --color-paper-deep: #1b1a14;
-    --color-card: #1f1e17;
-
-    --color-ink: #f2ede1;
-    --color-ink-soft: #b3ac9b;
-    --color-ink-faint: #7b7567;
-
-    --color-rule: #4a4639;
-    --color-rule-soft: #332f26;
-
-    --color-highlight: #332f26;
-    --color-highlight-deep: #f2ede1;
-    --color-correct: #f2ede1;
-    --color-correct-soft: #2b291f;
-    --color-wrong: #918a7a;
-    --color-wrong-soft: #262319;
-
-    --shadow-card: 2px 3px 0 rgba(0, 0, 0, 0.5);
-    --shadow-lift: 3px 5px 0 rgba(0, 0, 0, 0.65);
-  }
-}
-
 html {
-  color-scheme: light dark;
+  /* One deliberate scheme. Paper does not have a night mode. */
+  color-scheme: light;
 }
 
 body {
@@ -160,12 +135,6 @@ body {
   background-size: 100% 100%;
   pointer-events: none;
 }
-@media (prefers-color-scheme: dark) {
-  .marked::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 16' preserveAspectRatio='none'%3E%3Cpath d='M2 11 C40 4 68 13 104 7 C140 2 168 10 198 5' fill='none' stroke='%23f2ede1' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E");
-  }
-}
-
 /* The single rule near the top of an index card. */
 .card-index {
   background-image: linear-gradient(

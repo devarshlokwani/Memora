@@ -35,7 +35,7 @@ export default async function TopicCardsPage({
   const keyTerms = (Array.isArray(topic.key_terms) ? topic.key_terms : []) as string[];
 
   return (
-    <div className="min-h-dvh">
+    <div className="flex flex-1 flex-col">
       <AppHeader email={user.email} />
 
       <main className="mx-auto max-w-3xl px-6 py-10">

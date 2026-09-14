@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import { DemoCard } from "@/components/landing/DemoCard";
 import { LandingShell } from "@/components/landing/LandingShell";
@@ -113,12 +114,15 @@ export default async function LandingPage() {
   if (await getUser()) redirect("/dashboard");
 
   return (
-    <LandingShell
+    // LandingShell reads the section from the query string.
+    <Suspense>
+      <LandingShell
       sections={{
         try: <TrySection />,
         how: <HowSection />,
         formats: <FormatsSection />,
-      }}
-    />
+        }}
+      />
+    </Suspense>
   );
 }

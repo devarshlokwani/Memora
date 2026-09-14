@@ -9,7 +9,7 @@ export default async function NewCoursePage() {
   if (!user) redirect("/login");
 
   return (
-    <div className="min-h-dvh">
+    <div className="flex flex-1 flex-col">
       <AppHeader email={user.email} />
       <main className="mx-auto max-w-2xl px-6 py-12">
         <h1 className="text-[1.9rem] font-semibold tracking-[-0.03em] text-ink">

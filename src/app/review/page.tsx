@@ -21,7 +21,7 @@ export default async function ReviewPage() {
   const cards = (due ?? []) as (Card & { due_at: string | null })[];
 
   return (
-    <div className="min-h-dvh">
+    <div className="flex flex-1 flex-col">
       <AppHeader email={user.email} />
       <main className="mx-auto max-w-3xl px-6 py-8">
         <Link href="/dashboard" className="text-sm text-ink-soft hover:text-ink">
