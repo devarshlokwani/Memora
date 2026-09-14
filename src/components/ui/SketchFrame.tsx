@@ -59,11 +59,14 @@ function drawnRect(width: number, height: number, seed: string) {
 export function SketchFrame({
   seed,
   filled = true,
+  invert = false,
   strokeWidth = 1.5,
 }: {
   seed: string;
   /** Cards are filled; frames used purely as an outline are not. */
   filled?: boolean;
+  /** Ink card, paper line — the other half of an alternating stack. */
+  invert?: boolean;
   strokeWidth?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -99,8 +102,8 @@ export function SketchFrame({
         <g transform={`translate(${INSET} ${INSET})`}>
           <path
             d={drawnRect(size.width, size.height, seed)}
-            fill={filled ? "var(--color-card)" : "none"}
-            stroke="var(--color-ink)"
+            fill={filled ? (invert ? "var(--color-ink)" : "var(--color-card)") : "none"}
+            stroke={invert ? "var(--color-paper)" : "var(--color-ink)"}
             strokeWidth={strokeWidth}
             strokeLinejoin="round"
             strokeLinecap="round"
@@ -117,18 +120,20 @@ export function SketchCard({
   children,
   className = "",
   filled = true,
+  invert = false,
 }: {
   seed: string;
   children: React.ReactNode;
   className?: string;
   filled?: boolean;
+  invert?: boolean;
 }) {
   return (
     <div
       className={`relative ${className}`}
       style={{ transform: `rotate(${sketchTilt(seed)})` }}
     >
-      <SketchFrame seed={seed} filled={filled} />
+      <SketchFrame seed={seed} filled={filled} invert={invert} />
       <div className="relative">{children}</div>
     </div>
   );

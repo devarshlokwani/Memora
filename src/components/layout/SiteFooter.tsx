@@ -15,6 +15,7 @@ const COLUMNS: Column[] = [
       { label: "Try a card", href: "/?s=try" },
       { label: "How it works", href: "/?s=how" },
       { label: "Formats", href: "/?s=formats" },
+      { label: "Questions", href: "/?s=faq" },
     ],
   },
   {
@@ -75,17 +76,19 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* The wordmark at full size, the way a name is signed at the bottom of
-            a page. Decorative, so it is hidden from assistive tech. */}
-        <p
-          aria-hidden="true"
-          className="mt-10 select-none text-center font-reading leading-none text-rule"
-          style={{ fontSize: "clamp(3.5rem, 15vw, 11rem)" }}
-        >
-          Memora
-        </p>
+        {/* The name signed across the foot of the page, running off the bottom
+            edge so it reads as part of the paper rather than another element.
+            Decorative, so it is hidden from assistive tech. */}
+        <div aria-hidden="true" className="mt-14 overflow-hidden">
+          <p
+            className="-mb-[0.19em] select-none text-center font-reading leading-[0.8] tracking-[-0.03em] text-rule"
+            style={{ fontSize: "clamp(4rem, 21vw, 16rem)" }}
+          >
+            Memora
+          </p>
+        </div>
 
-        <div className="mt-8 flex flex-col gap-3 border-t border-rule py-6 text-sm text-ink-faint sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-6 flex flex-col gap-3 border-t border-rule py-6 text-sm text-ink-faint sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {new Date().getFullYear()} Memora</p>
           <p className="font-hand text-lg">Made for people who have exams on Monday.</p>
         </div>

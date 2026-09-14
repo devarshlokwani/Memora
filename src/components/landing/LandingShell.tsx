@@ -13,13 +13,15 @@ import { EASE, prefersReducedMotion } from "@/lib/motion";
 /** How much wider the gap is than the nav item it sits under. */
 const NOTCH_PADDING = 22;
 
-export type SectionId = "try" | "how" | "formats";
+export type SectionId = "try" | "how" | "formats" | "faq";
 
+// Two either side of the wordmark, the way the reference balances it. Sign in
+// sits out by the call to action instead, because it leaves the page.
 const ITEMS: NavItem[] = [
   { id: "try", label: "Try a card", href: "/?s=try" },
   { id: "how", label: "How it works", href: "/?s=how" },
   { id: "formats", label: "Formats", href: "/?s=formats" },
-  { id: "signin", label: "Sign in", href: "/login" },
+  { id: "faq", label: "FAQ", href: "/?s=faq" },
 ];
 
 export function LandingShell({
@@ -44,7 +46,7 @@ export function LandingShell({
   const params = useSearchParams();
   useEffect(() => {
     const id = params.get("s");
-    if (id === "try" || id === "how" || id === "formats") setActive(id);
+    if (id === "try" || id === "how" || id === "formats" || id === "faq") setActive(id);
   }, [params]);
 
   // Clicking the nav is local state plus a URL rewrite, not a navigation: the
@@ -124,9 +126,7 @@ export function LandingShell({
               activeId={active}
               splitAt={2}
               onSelectedRect={placeNotch}
-              onSelect={(id) => {
-                if (id !== "signin") choose(id as SectionId);
-              }}
+              onSelect={(id) => choose(id as SectionId)}
               center={
                 <Link href="/" aria-label="Memora home" className="px-2">
                   <Logo />
@@ -135,7 +135,10 @@ export function LandingShell({
             />
           </div>
 
-          <div className="absolute right-6 top-1/2 hidden -translate-y-1/2 md:block">
+          <div className="absolute right-6 top-1/2 hidden -translate-y-1/2 items-center gap-4 md:flex">
+            <Link href="/login" className="text-[0.95rem] text-ink-soft hover:text-ink">
+              Sign in
+            </Link>
             <Link
               href="/signup"
               className="rounded-full bg-ink px-5 py-2 text-[0.9rem] font-medium text-paper transition-opacity hover:opacity-90"
@@ -148,7 +151,7 @@ export function LandingShell({
 
       {/* Phone: tabs sit under the wordmark, where the nav links cannot fit. */}
       <div className="flex gap-5 px-6 pb-3 text-sm md:hidden">
-        {ITEMS.filter((i) => i.id !== "signin").map((item) => (
+        {ITEMS.map((item) => (
           <button
             key={item.id}
             type="button"

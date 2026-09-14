@@ -20,6 +20,10 @@ card's real pixel size, with corners and edges that drift off true, and each car
 slight angle. The shape and angle come from a hash of the card id, so they are stable across
 renders and between server and browser — a card always sits the same way on the desk.
 
+Cards come in a stack, and the stack alternates: ink on paper, then paper on ink, then back. A
+pile of identical cards reads as one card redrawn; alternating them is what makes it read as a
+pile. The same alternation runs down the formats grid.
+
 There is deliberately no dark mode. The page, the nav and the gap cut into the panel below it are
 all the same paper; a second palette would mean keeping two versions of that relationship true,
 and the thing being drawn here is paper.
@@ -46,9 +50,10 @@ item, and the height of the panel as the new content turns out to be taller or s
 only the first two and letting the height jump would break the illusion that the nav and the panel
 are one object.
 
-The nav underline also follows your pointer while you are choosing and settles back on what is
-actually selected when you leave. Coming from nothing it fades in under the item rather than
-sliding in from the edge of the nav, which would read as a stray line.
+The nav underline marks what is selected and nothing else. It tracked the pointer at first, which
+made it twitch at every passing cursor — a mark that moves when you have not chosen anything is
+noise rather than information. Coming from nothing it fades in under the item rather than sliding
+in from the edge of the nav, which would read as a stray line.
 
 All of it respects `prefers-reduced-motion`: sections still change and the gap still ends up in
 the right place, it just gets there without tweening.

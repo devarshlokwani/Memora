@@ -2,7 +2,7 @@
 
 import gsap from "gsap";
 import Link from "next/link";
-import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
 import { DURATION, EASE, prefersReducedMotion } from "@/lib/motion";
 
@@ -12,9 +12,9 @@ export type NavItem = { id: string; label: string; href: string };
  * Nav whose underline slides and stretches between items rather than blinking
  * from one to the next — the mark travels, so you can see where you came from.
  *
- * It follows the pointer while you are choosing and settles back on wherever you
- * actually are when you leave, which is the bit that makes it feel considered
- * rather than just animated.
+ * It marks what is selected and nothing else. Following the pointer as well made
+ * it twitch at every passing cursor, and a mark that moves when you have not
+ * chosen anything is noise rather than information.
  */
 export function SlidingNav({
   items,
@@ -26,7 +26,7 @@ export function SlidingNav({
   onSelectedRect,
 }: {
   items: NavItem[];
-  /** Where the mark rests when nothing is hovered. */
+  /** The item the mark sits under. */
   activeId?: string | null;
   className?: string;
   onSelect?: (id: string) => void;
@@ -45,8 +45,7 @@ export function SlidingNav({
   // Whether the mark is currently on screen; decides fade-in versus travel.
   const visible = useRef(false);
 
-  const [hovered, setHovered] = useState<string | null>(null);
-  const target = hovered ?? activeId ?? null;
+  const target = activeId ?? null;
 
   const moveMark = useCallback(
     (animate: boolean) => {
@@ -106,8 +105,8 @@ export function SlidingNav({
     return () => window.removeEventListener("resize", reposition);
   }, []);
 
-  // Reported separately from the travelling mark: the mark follows the pointer,
-  // the panel gap below follows only what is actually selected.
+  // Reported separately from the mark so a consumer can line something else up
+  // with the selected item — the landing page hangs the panel gap off this.
   const reportSelected = useRef(() => {});
   reportSelected.current = () => {
     if (!onSelectedRect) return;
@@ -120,11 +119,7 @@ export function SlidingNav({
   }, [activeId, items]);
 
   return (
-    <ul
-      ref={listRef}
-      className={`relative flex items-center gap-7 ${className}`}
-      onMouseLeave={() => setHovered(null)}
-    >
+    <ul ref={listRef} className={`relative flex items-center gap-7 ${className}`}>
       {items.map((item, index) => (
         <Fragment key={item.id}>
           {center && index === (splitAt ?? Math.ceil(items.length / 2)) && (
@@ -136,9 +131,6 @@ export function SlidingNav({
             ref={(el) => {
               itemRefs.current[item.id] = el;
             }}
-            onMouseEnter={() => setHovered(item.id)}
-            onFocus={() => setHovered(item.id)}
-            onBlur={() => setHovered(null)}
             onClick={() => onSelect?.(item.id)}
             aria-current={activeId === item.id ? "page" : undefined}
             className={`block py-1 text-[0.95rem] transition-colors ${
