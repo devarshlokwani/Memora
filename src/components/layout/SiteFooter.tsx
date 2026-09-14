@@ -39,11 +39,11 @@ const COLUMNS: Column[] = [
 
 export function SiteFooter() {
   return (
-    <footer className="mt-20 px-4 sm:px-6">
-      <div className="mx-auto max-w-6xl">
+    <footer className="mt-20">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* overflow-hidden is what makes the wordmark surface from inside the
             block rather than slide past behind it. */}
-        <div className="overflow-hidden rounded-[2rem] bg-paper-deep px-7 pt-12 sm:px-12 sm:pt-14">
+        <div className="overflow-hidden rounded-[2rem] bg-footer px-7 pt-12 sm:px-12 sm:pt-14">
           <div className="grid gap-12 md:grid-cols-[1.2fr_2fr]">
             <div>
               <Link href="/" className="inline-flex items-center gap-3 text-ink">
@@ -60,7 +60,10 @@ export function SiteFooter() {
             <nav className="grid gap-10 sm:grid-cols-3">
               {COLUMNS.map((column) => (
                 <div key={column.heading}>
-                  <h2 className="font-hand text-lg text-ink-faint">{column.heading}</h2>
+                  {/* ink-soft rather than ink-faint: on the footer's deeper tone the faint
+                      grey drops to 3.9:1. The handwritten face is what separates a
+                      heading from its links here, not the weight of the ink. */}
+                  <h2 className="font-hand text-lg text-ink-soft">{column.heading}</h2>
                   <ul className="mt-3 space-y-2.5">
                     {column.links.map((link) => (
                       <li key={link.href}>
@@ -78,7 +81,13 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-6 flex flex-col gap-3 border-t border-rule py-6 text-sm text-ink-faint sm:flex-row sm:items-center sm:justify-between">
+      </div>
+
+      {/* Full width and the nav's colour, so the page closes on what it opened
+          with — and so over-scrolling past the bottom meets white rather than a
+          seam between the strip and the canvas behind it. */}
+      <div className="mt-12 bg-paper">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-7 text-sm text-ink-faint sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {new Date().getFullYear()} Memora</p>
           <p className="font-hand text-lg">Made for people who have exams on Monday.</p>
         </div>

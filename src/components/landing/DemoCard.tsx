@@ -3,8 +3,8 @@
 import gsap from "gsap";
 import { useLayoutEffect, useRef, useState } from "react";
 
+import { ScoreTable, type Result } from "@/components/landing/ScoreTable";
 import { DrawnMark } from "@/components/ui/DrawnMark";
-import { CheckMark, CrossMark } from "@/components/ui/Marks";
 import { PushButton } from "@/components/ui/PushButton";
 import { SketchFrame } from "@/components/ui/SketchFrame";
 import { prefersReducedMotion } from "@/lib/motion";
@@ -51,69 +51,82 @@ const DECK: Sample[] = [
 
 type Grade = "knew" | "missed";
 
-/** Where a card sits by how far back it is. The angles are what make the collage. */
-const SLOTS = [
-  { x: 0, y: 0, rotate: -1.5, scale: 1 },
-  { x: 26, y: 14, rotate: 7.5, scale: 0.95 },
-  { x: -28, y: 22, rotate: -9, scale: 0.9 },
-];
-const VISIBLE = SLOTS.length;
+/**
+ * One pile, cycling. Depth 0 is the card you are on and every other card sits
+ * further down the stack, showing only its bottom edge. Answering sends a card
+ * round to the deepest place rather than off the page — a deck of five always
+ * has five cards in it, and the pile never thins out as you work through it.
+ */
+function slotFor(depth: number) {
+  return {
+    x: 0,
+    y: depth * 9,
+    rotate: 0,
+    scale: 1 - depth * 0.022,
+    opacity: 1,
+    zIndex: 60 - depth,
+  };
+}
 
 export function DemoCard() {
   const [index, setIndex] = useState(0);
-  const [flipped, setFlipped] = useState(false);
-  const [grade, setGrade] = useState<Grade | null>(null);
-  const [score, setScore] = useState({ knew: 0, missed: 0 });
-  const [done, setDone] = useState(false);
+  // Flip state per card, not one shared flag. A single flag turns the card you
+  // just answered face-up again while it is still travelling, and you watch it
+  // flip over mid-flight.
+  const [flipped, setFlipped] = useState<boolean[]>(() => DECK.map(() => false));
+  const [results, setResults] = useState<Result[]>(() => DECK.map(() => null));
 
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const previous = useRef<number | null>(null);
 
-  /**
-   * Cycling the deck: the card you just answered slides off to the right and
-   * fades, then reappears at the back of the stack while the one behind it comes
-   * forward. Swapping the text in place would be far less code and would look
-   * like the card had been replaced, which is not what a deck does.
-   */
+  const grade = results[index];
+  const knew = results.filter((r) => r === "knew").length;
+  const answered = results.filter(Boolean).length;
+
   useLayoutEffect(() => {
-    const total = DECK.length;
     const reduce = prefersReducedMotion();
+
+    const total = DECK.length;
 
     DECK.forEach((_, i) => {
       const el = cardRefs.current[i];
       if (!el) return;
 
       const depth = (i - index + total) % total;
-      const slot = SLOTS[Math.min(depth, VISIBLE - 1)];
-      const resting = { ...slot, opacity: depth < VISIBLE ? 1 : 0 };
-
+      const slot = slotFor(depth);
       const firstPaint = previous.current === null;
-      const justLeftTheFront = previous.current === i && depth !== 0;
+      const justAnswered = previous.current === i && depth !== 0;
 
       if (firstPaint || reduce) {
-        gsap.set(el, { ...resting, zIndex: total - depth });
+        gsap.set(el, slot);
         return;
       }
 
-      if (justLeftTheFront) {
+      if (justAnswered) {
+        // Steps out on the diagonal, dims as it passes behind the pile, then
+        // slides into the deepest place. The dimming is the card going behind,
+        // not the card leaving: it is fully there again by the time it lands.
         gsap
-          .timeline()
+          .timeline({
+            // Turned face-up again only at the very end, buried in the pile,
+            // where nobody can see it happen.
+            onComplete: () =>
+              setFlipped((f) => f.map((v, n) => (n === i ? false : v))),
+          })
           .to(el, {
             x: 132,
-            y: 10,
-            rotate: slot.rotate + 9,
-            scale: 0.95,
-            opacity: 0,
-            duration: 0.36,
-            ease: "power2.in",
+            y: -52,
+            rotate: 9,
+            scale: 0.97,
+            duration: 0.28,
+            ease: "power2.out",
           })
-          // Out of sight is where it changes places; it then fades back in at
-          // the rear of the stack rather than flying there in view.
-          .set(el, { zIndex: total - depth, ...slot, opacity: 0 })
-          .to(el, { opacity: resting.opacity, duration: 0.4, ease: "power2.out" });
+          .to(el, { opacity: 0.2, duration: 0.12, ease: "power1.in" })
+          .set(el, { zIndex: slot.zIndex })
+          .to(el, { ...slot, duration: 0.34, ease: "power2.inOut" });
       } else {
-        gsap.set(el, { zIndex: total - depth });
-        gsap.to(el, { ...resting, duration: 0.5, ease: "power3.out" });
+        gsap.set(el, { zIndex: slot.zIndex });
+        gsap.to(el, { ...slot, duration: 0.55, ease: "power3.out" });
       }
     });
 
@@ -122,59 +135,17 @@ export function DemoCard() {
 
   function mark(value: Grade) {
     if (grade) return;
-    setGrade(value);
-    setScore((s) => ({ ...s, [value]: s[value] + 1 }));
+    setResults((r) => r.map((existing, i) => (i === index ? value : existing)));
   }
 
+  // Round and round. The deck does not end, it comes back to the first card —
+  // which is what a deck of cards does.
   function advance() {
-    if (index === DECK.length - 1) {
-      setDone(true);
-      return;
-    }
-    setFlipped(false);
-    setGrade(null);
-    setIndex((i) => i + 1);
+    setIndex((i) => (i + 1) % DECK.length);
   }
 
   function restart() {
-    previous.current = null;
-    setIndex(0);
-    setFlipped(false);
-    setGrade(null);
-    setScore({ knew: 0, missed: 0 });
-    setDone(false);
-  }
-
-  if (done) {
-    return (
-      <div className="w-full max-w-md text-left">
-        <div className="relative aspect-square w-full">
-          <SketchFrame seed="deck-done" />
-          <div className="relative flex h-full flex-col items-center justify-center p-9 text-center">
-            <p className="font-hand text-xl text-ink-faint">that is the deck</p>
-            <p className="mt-2 font-reading text-[2.6rem] leading-none text-ink">
-              {score.knew} of {DECK.length}
-            </p>
-            <p className="mt-4 max-w-[30ch] text-[0.95rem] leading-relaxed text-ink-soft">
-              With your own material, the ones you missed come back first and the rest wait until
-              you are about to forget them.
-            </p>
-            <div className="mt-7">
-              <PushButton href="/signup" size="sm">
-                Build my first course
-              </PushButton>
-            </div>
-            <button
-              type="button"
-              onClick={restart}
-              className="mt-4 font-hand text-lg text-ink-faint underline-offset-4 hover:text-ink hover:underline"
-            >
-              run it again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+    setResults(DECK.map(() => null));
   }
 
   return (
@@ -193,24 +164,29 @@ export function DemoCard() {
                 cardRefs.current[i] = el;
               }}
               className="absolute inset-0"
-              // Cards behind the front one are decoration: not clickable, not in
-              // the tab order, not read out.
+              // Everything but the front card is decoration: not clickable, not
+              // in the tab order, not read out.
               inert={!isFront}
               aria-hidden={!isFront}
             >
               <div className="flip-scene h-full w-full">
                 <div
                   className="flip-inner relative h-full w-full"
-                  data-flipped={isFront && flipped}
+                  data-flipped={flipped[i]}
                 >
-                  <div className="flip-face absolute inset-0" inert={isFront && flipped}>
+                  <div className="flip-face absolute inset-0" inert={flipped[i]}>
                     <SketchFrame seed={card.id} invert={inverted} />
                     <button
                       type="button"
-                      onClick={() => setFlipped(true)}
+                      onClick={() => setFlipped((f) => f.map((v, n) => (n === i ? true : v)))}
                       className="relative flex h-full w-full flex-col justify-between p-8 text-left"
                     >
-                      <span className={`font-hand text-lg ${faint}`}>{card.topic}</span>
+                      <span className="flex items-baseline justify-between gap-4">
+                        <span className={`font-hand text-lg ${faint}`}>{card.topic}</span>
+                        <span className={`font-hand text-lg ${faint}`}>
+                          {i + 1} / {DECK.length}
+                        </span>
+                      </span>
                       <span className={`font-reading text-[1.6rem] leading-snug ${ink}`}>
                         {card.front}
                       </span>
@@ -220,16 +196,23 @@ export function DemoCard() {
 
                   <div
                     className="flip-face flip-face-back absolute inset-0"
-                    inert={!(isFront && flipped)}
+                    inert={!flipped[i]}
                   >
                     <SketchFrame seed={`${card.id}-back`} invert={inverted} />
                     <div className="relative flex h-full flex-col p-8">
-                      <span className={`font-hand text-lg ${faint}`}>the answer</span>
+                      <span className="flex items-baseline justify-between gap-4">
+                        <span className={`font-hand text-lg ${faint}`}>the answer</span>
+                        <span className={`font-hand text-lg ${faint}`}>
+                          {i + 1} / {DECK.length}
+                        </span>
+                      </span>
 
                       {/* The judgement lands in the empty space under the label,
                           where the eye already is. */}
                       <div className="grid flex-1 place-items-center">
-                        {grade !== null && isFront && <DrawnMark type={grade} className="h-14 w-14" />}
+                        {grade !== null && isFront && (
+                          <DrawnMark type={grade} className="h-14 w-14" />
+                        )}
                       </div>
 
                       <p className={`font-reading text-[1.2rem] leading-relaxed ${ink}`}>
@@ -238,10 +221,18 @@ export function DemoCard() {
 
                       {grade === null ? (
                         <div className="mt-6 flex items-center gap-3">
-                          <GradeButton tone="missed" inverted={inverted} onClick={() => mark("missed")}>
+                          <GradeButton
+                            tone="missed"
+                            inverted={inverted}
+                            onClick={() => mark("missed")}
+                          >
                             Missed it
                           </GradeButton>
-                          <GradeButton tone="knew" inverted={inverted} onClick={() => mark("knew")}>
+                          <GradeButton
+                            tone="knew"
+                            inverted={inverted}
+                            onClick={() => mark("knew")}
+                          >
                             Knew it
                           </GradeButton>
                         </div>
@@ -250,9 +241,8 @@ export function DemoCard() {
                           <button
                             type="button"
                             onClick={advance}
-                            aria-label={
-                              index === DECK.length - 1 ? "Finish the deck" : "Next card"
-                            }
+                            // Always "next": the deck loops, so nothing is ever finished.
+                            aria-label="Next card"
                             className={`grid h-11 w-11 shrink-0 place-items-center rounded-full border transition-transform hover:translate-x-0.5 ${
                               inverted
                                 ? "border-paper text-paper hover:bg-paper hover:text-ink"
@@ -272,13 +262,33 @@ export function DemoCard() {
         })}
       </div>
 
-      <div className="mt-10 flex items-center justify-center gap-6">
-        <Tally tone="knew" value={score.knew} label="knew it" />
-        <Tally tone="missed" value={score.missed} label="missed it" />
-        <span className="font-hand text-lg text-ink-faint">
-          {index + 1} / {DECK.length}
-        </span>
+      <div className="mt-12">
+        <ScoreTable results={results} />
       </div>
+
+      {answered === DECK.length && (
+        <div className="mt-8 text-center">
+          <p className="font-reading text-[1.4rem] leading-snug text-ink">
+            {knew} of {DECK.length}, first time through.
+          </p>
+          <p className="mx-auto mt-2 max-w-[42ch] text-[0.95rem] leading-relaxed text-ink-soft">
+            With your own material, the ones you missed come back first and the rest wait until
+            you are about to forget them.
+          </p>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-4">
+            <PushButton href="/signup" size="sm">
+              Build my first course
+            </PushButton>
+            <button
+              type="button"
+              onClick={restart}
+              className="font-hand text-lg text-ink-faint underline-offset-4 hover:text-ink hover:underline"
+            >
+              clear the sheet
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -311,17 +321,6 @@ function GradeButton({
     >
       {children}
     </button>
-  );
-}
-
-function Tally({ tone, value, label }: { tone: Grade; value: number; label: string }) {
-  const colour = tone === "knew" ? "var(--color-knew)" : "var(--color-missed)";
-  return (
-    <span className="flex items-center gap-1.5 text-[0.9rem]" style={{ color: colour }}>
-      {tone === "knew" ? <CheckMark className="h-4 w-4" /> : <CrossMark className="h-4 w-4" />}
-      <span className="font-medium tabular-nums">{value}</span>
-      <span className="sr-only">{label}</span>
-    </span>
   );
 }
 

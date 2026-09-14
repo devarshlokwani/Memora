@@ -120,6 +120,17 @@ export function NotchPanel({
         aria-hidden="true"
         preserveAspectRatio="none"
       >
+        {/* The page and the panel are the same tone now, so the gap needs
+            something behind it. This strip is the nav colour, and the panel is
+            painted over it — only the notch lets it through. Inset past the
+            corners so the rounded top does not leak white at the ends. */}
+        <rect
+          x={CORNER}
+          y={0}
+          width={`calc(100% - ${CORNER * 2}px)`}
+          height={NOTCH_DEPTH + 2}
+          fill="var(--color-paper)"
+        />
         <path ref={pathRef} fill="var(--color-paper-deep)" />
       </svg>
       <div className="relative">{children}</div>

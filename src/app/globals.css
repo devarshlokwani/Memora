@@ -5,49 +5,57 @@
    carried by line weight, texture and drawn marks instead. */
 
 @theme {
-  --color-paper: #faf7f1;
-  --color-paper-deep: #e9e1d3;
-  --color-card: #fffdf8;
+  /* The page is the warm one; white is reserved for the nav strip, so the gap
+     cut into the panel has something to reveal. */
+  --color-paper: #fbfaf8;
+  --color-paper-deep: #d7d6d0;
+  --color-footer: #c6c5be;
+  --color-card: #ffffff;
 
-  --color-ink: #17150f;
-  --color-ink-soft: #514c40;
-  --color-ink-faint: #8e8779;
+  --color-ink: #14130f;
+  --color-ink-soft: #54514a;
+  --color-ink-faint: #5f5c53;
 
-  --color-rule: #cfc6b3;
-  --color-rule-soft: #e4dccc;
+  --color-rule: #b8b6ae;
+  --color-rule-soft: #c7c5be;
 
   /* Kept as token names so the whole app re-themes at once. In a monochrome
      scheme these are values, not hues: correct is full ink, wrong is washed out
      and always carries a drawn mark beside it. */
-  --color-highlight: #e2dbcb;
-  --color-highlight-deep: #17150f;
-  --color-correct: #17150f;
-  --color-correct-soft: #e5dfd1;
-  --color-wrong: #8e8779;
-  --color-wrong-soft: #ebe5d9;
+  --color-highlight: #e2e1db;
+  --color-highlight-deep: #14130f;
+  --color-correct: #14130f;
+  --color-correct-soft: #e6e5df;
+  --color-wrong: #5f5c53;
+  --color-wrong-soft: #ebeae4;
 
   /* The two exceptions to the monochrome rule. Used as a stroke on the two
      grading buttons and nowhere else, because right and wrong is the one
      judgement a student makes often enough to want to recognise without reading. */
-  --color-knew: #2f7d5b;
-  --color-missed: #b3453c;
+  --color-knew: #2e6f52;
+  --color-missed: #a8443c;
 
   --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
   --font-reading: var(--font-display), Georgia, serif;
   --font-hand: var(--font-hand), ui-rounded, cursive;
 
   --radius-card: 18px;
-  --shadow-card: 2px 3px 0 rgba(23, 21, 15, 0.08);
-  --shadow-lift: 3px 5px 0 rgba(23, 21, 15, 0.14);
+  --shadow-card: 2px 3px 0 rgba(20, 19, 15, 0.09);
+  --shadow-lift: 3px 5px 0 rgba(20, 19, 15, 0.16);
 }
 
 html {
   /* One deliberate scheme. Paper does not have a night mode. */
   color-scheme: light;
+
+  /* Over-scrolling past either end of the page shows the canvas, and the canvas
+     takes its colour from html rather than body. White here means the rubber
+     band at the top continues the nav instead of exposing the page behind it. */
+  background-color: var(--color-paper);
 }
 
 body {
-  background-color: var(--color-paper);
+  background-color: var(--color-paper-deep);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;

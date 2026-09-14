@@ -14,9 +14,12 @@ import { prefersReducedMotion } from "@/lib/motion";
 export function DrawnMark({
   type,
   className = "h-12 w-12",
+  colour,
 }: {
   type: "knew" | "missed";
   className?: string;
+  /** Overrides the red/green pair — the score table draws these in ink. */
+  colour?: string;
 }) {
   const ref = useRef<SVGSVGElement>(null);
 
@@ -43,14 +46,14 @@ export function DrawnMark({
     return () => context.revert();
   }, [type]);
 
-  const colour = type === "knew" ? "var(--color-knew)" : "var(--color-missed)";
+  const stroke = colour ?? (type === "knew" ? "var(--color-knew)" : "var(--color-missed)");
 
   return (
     <svg
       ref={ref}
       viewBox="0 0 24 24"
       fill="none"
-      stroke={colour}
+      stroke={stroke}
       strokeWidth="2.4"
       strokeLinecap="round"
       strokeLinejoin="round"

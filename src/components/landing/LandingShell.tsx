@@ -50,11 +50,27 @@ export function LandingShell({
     if (id === "try" || id === "how" || id === "formats") setActive(id);
   }, [params]);
 
-  // Clicking the nav is local state plus a URL rewrite, not a navigation: the
-  // section should change instantly rather than waiting on the router.
+  /**
+   * Clicking the nav is local state plus a URL rewrite, not a navigation — the
+   * section should change instantly rather than waiting on the router.
+   *
+   * It goes back to the top first. The gap in the panel is cut directly beneath
+   * the nav, so changing section from halfway down the page moves a notch you
+   * cannot see and leaves the nav sitting on a plain edge.
+   */
   const choose = useCallback((id: SectionId) => {
-    setActive(id);
     window.history.replaceState(null, "", `?s=${id}`);
+
+    const scrolled = window.scrollY > 8;
+    if (!scrolled || prefersReducedMotion()) {
+      window.scrollTo({ top: 0, behavior: "auto" });
+      setActive(id);
+      return;
+    }
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Long enough to be back under the nav, short enough not to feel like a wait.
+    window.setTimeout(() => setActive(id), 260);
   }, []);
 
   // Nav rects arrive in viewport coordinates; the gap needs them relative to
@@ -104,10 +120,11 @@ export function LandingShell({
 
   return (
     <div className="flex flex-1 flex-col">
-      {/* Solid, never translucent: the gap in the panel below reveals this exact
-          colour, and anything see-through would make the cut look like a mistake
-          rather than one surface with a bite out of it. */}
-      <header className="sticky top-0 z-50 bg-paper">
+      {/* Fixed to the top of the page rather than the viewport. The gap is cut
+          directly beneath it, so the two have to scroll together — a nav that
+          follows you leaves its own notch behind. Solid, never translucent: the
+          gap reveals this exact colour. */}
+      <header className="relative z-50 bg-paper">
         <div className="relative mx-auto max-w-6xl px-6 py-4">
           <div className="flex items-center justify-between md:hidden">
             <Link href="/" aria-label="Memora home">
