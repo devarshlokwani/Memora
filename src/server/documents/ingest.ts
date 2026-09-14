@@ -1,8 +1,8 @@
 import "server-only";
 
-import type { createClient } from "@/lib/supabase/server";
+import type { createClient } from "@/server/db/client";
 
-import { UnsupportedFileError, extractDocument } from "./extract";
+import { UnsupportedFileError, extractDocument } from "@/server/documents/extract";
 
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 

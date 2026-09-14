@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { generateOutline } from "@/lib/ai";
-import { chunkDocuments } from "@/lib/chunk";
-import { createClient } from "@/lib/supabase/server";
-import { planCardRestore, planProgressRestore } from "@/lib/rebuild";
+import { generateOutline } from "@/server/ai/client";
+import { chunkDocuments } from "@/server/documents/chunk";
+import { createClient } from "@/server/db/client";
+import { planCardRestore, planProgressRestore } from "@/server/courses/rebuild";
 import type { Card, CardProgress } from "@/lib/types";
 
 export const maxDuration = 300;

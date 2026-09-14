@@ -1,5 +1,5 @@
-import type { GeneratedCards } from "./ai-schema";
-import type { CardType, MatchPair } from "./types";
+import type { GeneratedCards } from "@/server/ai/schemas";
+import type { CardType, MatchPair } from "@/lib/types";
 
 export type CardRow = {
   user_id: string;

@@ -23,6 +23,7 @@ export function SlidingNav({
   onSelect,
   center,
   splitAt,
+  onSelectedRect,
 }: {
   items: NavItem[];
   /** Where the mark rests when nothing is hovered. */
@@ -32,6 +33,11 @@ export function SlidingNav({
   /** Sits in the middle of the row; the mark travels straight past it. */
   center?: React.ReactNode;
   splitAt?: number;
+  /**
+   * Where the selected item is on screen. The landing page uses this to line the
+   * gap in the panel below up with the nav, so the two move together.
+   */
+  onSelectedRect?: (rect: DOMRect | null) => void;
 }) {
   const listRef = useRef<HTMLUListElement>(null);
   const markRef = useRef<HTMLSpanElement>(null);
@@ -88,7 +94,10 @@ export function SlidingNav({
   latestMove.current = moveMark;
 
   useEffect(() => {
-    const reposition = () => latestMove.current(false);
+    const reposition = () => {
+      latestMove.current(false);
+      reportSelected.current();
+    };
     window.addEventListener("resize", reposition);
 
     // Web fonts land after first paint and change how wide every item is.
@@ -96,6 +105,19 @@ export function SlidingNav({
 
     return () => window.removeEventListener("resize", reposition);
   }, []);
+
+  // Reported separately from the travelling mark: the mark follows the pointer,
+  // the panel gap below follows only what is actually selected.
+  const reportSelected = useRef(() => {});
+  reportSelected.current = () => {
+    if (!onSelectedRect) return;
+    const el = activeId ? itemRefs.current[activeId] : null;
+    onSelectedRect(el ? el.getBoundingClientRect() : null);
+  };
+
+  useLayoutEffect(() => {
+    reportSelected.current();
+  }, [activeId, items]);
 
   return (
     <ul

@@ -1,5 +1,5 @@
-import { CheckMark, CrossMark } from "@/components/Marks";
-import { SketchCard } from "@/components/SketchFrame";
+import { CheckMark, CrossMark } from "@/components/ui/Marks";
+import { SketchCard } from "@/components/ui/SketchFrame";
 import type { Card, Grade } from "@/lib/types";
 
 export { matchesAnswer, normalize, shuffle } from "@/lib/answers";

@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-import { isSupabaseConfigured, supabaseEnv } from "./env";
+import { isSupabaseConfigured, supabaseEnv } from "@/lib/supabase/env";
 
 export async function createClient() {
   const env = supabaseEnv();

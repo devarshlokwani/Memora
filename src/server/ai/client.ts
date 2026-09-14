@@ -3,9 +3,9 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 
-import { CardsSchema, OutlineSchema, type GeneratedCards, type Outline } from "./ai-schema";
-import { renderChunks, type Chunk } from "./chunk";
-import { CARDS_SYSTEM, OUTLINE_SYSTEM, cardsUserPrompt, outlineUserPrompt } from "./prompts";
+import { CardsSchema, OutlineSchema, type GeneratedCards, type Outline } from "@/server/ai/schemas";
+import { renderChunks, type Chunk } from "@/server/documents/chunk";
+import { CARDS_SYSTEM, OUTLINE_SYSTEM, cardsUserPrompt, outlineUserPrompt } from "@/server/ai/prompts";
 
 export const MODEL = process.env.ANTHROPIC_MODEL ?? "claude-opus-5";
 

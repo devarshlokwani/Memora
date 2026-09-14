@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-import { Logo } from "@/components/Logo";
-import { createClient } from "@/lib/supabase/client";
+import { Logo } from "@/components/layout/Logo";
+import { createClient } from "@/lib/supabase/browser";
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const router = useRouter();

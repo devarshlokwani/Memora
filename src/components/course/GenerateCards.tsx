@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { Swipe } from "@/components/Swipe";
+import { Swipe } from "@/components/ui/Swipe";
 
 type Pending = { id: string; title: string };
 

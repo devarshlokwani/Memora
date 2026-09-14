@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/server/db/client";
 
 /** Records a finished study session so the dashboard can show real activity. */
 export async function POST(request: Request) {

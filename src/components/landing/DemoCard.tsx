@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { SketchFrame } from "@/components/SketchFrame";
+import { SketchFrame } from "@/components/ui/SketchFrame";
 import { sketchTilt } from "@/lib/sketch";
 
 /** The hero: a real card the visitor can flip. Same behaviour as study mode. */

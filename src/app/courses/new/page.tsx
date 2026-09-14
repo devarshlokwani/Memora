@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 
-import { AppHeader } from "@/components/AppHeader";
-import { UploadForm } from "@/components/UploadForm";
-import { getUser } from "@/lib/supabase/server";
+import { AppHeader } from "@/components/layout/AppHeader";
+import { UploadForm } from "@/components/course/UploadForm";
+import { getUser } from "@/server/db/client";
 
 export default async function NewCoursePage() {
   const user = await getUser();

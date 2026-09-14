@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import { AppHeader } from "@/components/AppHeader";
-import { CardManager } from "@/components/CardManager";
-import { GenerateCards } from "@/components/GenerateCards";
-import { createClient } from "@/lib/supabase/server";
+import { AppHeader } from "@/components/layout/AppHeader";
+import { CardManager } from "@/components/course/CardManager";
+import { GenerateCards } from "@/components/course/GenerateCards";
+import { createClient } from "@/server/db/client";
 import type { Card } from "@/lib/types";
 
 export default async function TopicCardsPage({

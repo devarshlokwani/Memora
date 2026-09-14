@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { CheckMark, CrossMark } from "@/components/Marks";
+import { CheckMark, CrossMark } from "@/components/ui/Marks";
 
 import { CardShell, ContinueButton, Verdict, type ModeProps } from "./shared";
 import { useKeys } from "./useKeys";

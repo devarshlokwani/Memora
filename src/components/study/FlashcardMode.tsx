@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { Grade } from "@/lib/types";
-import { SketchFrame } from "@/components/SketchFrame";
+import { SketchFrame } from "@/components/ui/SketchFrame";
 import { sketchTilt } from "@/lib/sketch";
 
 import type { ModeProps } from "./shared";

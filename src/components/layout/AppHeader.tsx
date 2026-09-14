@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Logo } from "@/components/Logo";
-import { SlidingNav, type NavItem } from "@/components/SlidingNav";
+import { Logo } from "@/components/layout/Logo";
+import { SlidingNav, type NavItem } from "@/components/layout/SlidingNav";
 
 const ITEMS: NavItem[] = [
   { id: "courses", label: "Courses", href: "/dashboard" },

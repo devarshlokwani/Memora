@@ -1,4 +1,4 @@
-import type { CardProgress, Grade } from "./types";
+import type { CardProgress, Grade } from "@/lib/types";
 
 /**
  * SM-2 with the usual practical tweaks: sub-day relearning steps for lapses and

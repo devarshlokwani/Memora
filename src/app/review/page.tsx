@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { AppHeader } from "@/components/AppHeader";
+import { AppHeader } from "@/components/layout/AppHeader";
 import { StudySession } from "@/components/study/StudySession";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/server/db/client";
 import type { Card } from "@/lib/types";
 
 /** A session's worth of whatever is due, drawn from every course at once. */

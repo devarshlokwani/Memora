@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { Logo } from "@/components/Logo";
+import { Logo } from "@/components/layout/Logo";
 import { isAnthropicConfigured, isSupabaseConfigured } from "@/lib/supabase/env";
 
 export const metadata = { title: "Set up Memora" };

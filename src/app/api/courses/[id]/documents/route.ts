@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { ingestFiles, validateUpload } from "@/lib/ingest";
-import { createClient } from "@/lib/supabase/server";
+import { ingestFiles, validateUpload } from "@/server/documents/ingest";
+import { createClient } from "@/server/db/client";
 
 export const maxDuration = 300;
 

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 
-import { generateCards } from "@/lib/ai";
-import { chunkDocuments, gatherSource } from "@/lib/chunk";
-import { createClient } from "@/lib/supabase/server";
-import { buildCardRows } from "@/lib/cards";
+import { generateCards } from "@/server/ai/client";
+import { chunkDocuments, gatherSource } from "@/server/documents/chunk";
+import { createClient } from "@/server/db/client";
+import { buildCardRows } from "@/server/courses/cards";
 
 export const maxDuration = 300;
 

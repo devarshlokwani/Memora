@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import { AppHeader } from "@/components/AppHeader";
+import { AppHeader } from "@/components/layout/AppHeader";
 import { StudySession } from "@/components/study/StudySession";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/server/db/client";
 import type { Card } from "@/lib/types";
 
 /** A review session drawn from every topic in the course, not just one. */

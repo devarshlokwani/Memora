@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { GeneratedCards } from "./ai-schema";
+import type { GeneratedCards } from "@/server/ai/schemas";
 import { buildCardRows } from "./cards";
 
 const owner = { user_id: "u", course_id: "c", topic_id: "t" };

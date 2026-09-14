@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { AppHeader } from "@/components/AppHeader";
-import { Swipe } from "@/components/Swipe";
-import { createClient } from "@/lib/supabase/server";
+import { AppHeader } from "@/components/layout/AppHeader";
+import { Swipe } from "@/components/ui/Swipe";
+import { createClient } from "@/server/db/client";
 import type { Course } from "@/lib/types";
 
 type Stats = {

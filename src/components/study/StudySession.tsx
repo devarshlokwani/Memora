@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useRef, useState } from "react";
 
-import { Swipe } from "@/components/Swipe";
+import { Swipe } from "@/components/ui/Swipe";
 import { CARD_TYPES, MODE_BLURBS, MODE_LABELS, type CardType, type Grade } from "@/lib/types";
 
 import { FillBlankMode } from "./FillBlankMode";

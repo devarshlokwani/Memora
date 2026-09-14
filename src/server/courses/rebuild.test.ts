@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { cardKey, planCardRestore, planProgressRestore, titleKey } from "./rebuild";
-import type { Card, CardProgress } from "./types";
+import type { Card, CardProgress } from "@/lib/types";
 
 const card = (id: string, topicId: string, prompt: string): Card => ({
   id,

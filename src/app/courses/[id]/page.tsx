@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import { AppHeader } from "@/components/AppHeader";
-import { CourseSettings } from "@/components/CourseSettings";
-import { GenerateCards } from "@/components/GenerateCards";
-import { RetryOutline } from "@/components/RetryOutline";
-import { Swipe } from "@/components/Swipe";
-import { createClient } from "@/lib/supabase/server";
+import { AppHeader } from "@/components/layout/AppHeader";
+import { CourseSettings } from "@/components/course/CourseSettings";
+import { GenerateCards } from "@/components/course/GenerateCards";
+import { RetryOutline } from "@/components/course/RetryOutline";
+import { Swipe } from "@/components/ui/Swipe";
+import { createClient } from "@/server/db/client";
 import type { DocumentRow, Module, Topic } from "@/lib/types";
 
 function formatSize(bytes: number) {

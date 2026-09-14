@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { isSupabaseConfigured, supabaseEnv } from "./env";
+import { isSupabaseConfigured, supabaseEnv } from "@/lib/supabase/env";
 
 const PUBLIC_PATHS = ["/", "/login", "/signup", "/auth", "/setup"];
 

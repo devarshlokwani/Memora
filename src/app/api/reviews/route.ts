@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { createClient } from "@/lib/supabase/server";
-import { INITIAL_STATE, schedule } from "@/lib/srs";
+import { createClient } from "@/server/db/client";
+import { INITIAL_STATE, schedule } from "@/server/study/srs";
 import type { Grade } from "@/lib/types";
 
 /** Records one answer and reschedules the card. */
