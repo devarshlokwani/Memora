@@ -3,6 +3,7 @@
 import gsap from "gsap";
 import { useRef, useState } from "react";
 
+import { SectionIntro } from "@/components/landing/SectionIntro";
 import { EASE, prefersReducedMotion } from "@/lib/motion";
 
 type Entry = { question: string; answer: string };
@@ -69,11 +70,13 @@ export function Faq() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <h2 className="text-center font-reading text-[2.2rem] leading-tight text-ink">
-        Questions, answered
-      </h2>
+      <SectionIntro
+        eyebrow="Before you ask,"
+        title="Questions, answered"
+        blurb="The things people want to know before they hand over a term's worth of notes."
+      />
 
-      <ul className="mt-10 border-t border-rule">
+      <ul className="mt-12 border-t border-rule">
         {ENTRIES.map((entry, index) => {
           const isOpen = open === index;
           return (

@@ -10,10 +10,13 @@ card comes back around the day you were about to forget it.
 
 ## Look
 
-Ink on paper. The whole interface is black and white on a warm off-white ground — no colour
-anywhere, including for right and wrong answers, which are told apart by line weight, hatching
-and a drawn tick or cross instead. That keeps it readable when printed, dimmed, or by someone
-colourblind.
+Ink on paper. The interface is black and white on a warm off-white ground. Inside a study
+session, right and wrong are told apart by line weight, hatching and a drawn tick or cross rather
+than colour, so a card stays readable printed, dimmed, or by someone colourblind.
+
+The two exceptions are the grading buttons — missed it in red, knew it in green, as a stroke and
+nothing more. That is the one judgement a student makes often enough per sitting to want to
+recognise without reading it.
 
 Cards are drawn rather than constructed: every card outline is an SVG path generated at the
 card's real pixel size, with corners and edges that drift off true, and each card rests at a
@@ -55,8 +58,19 @@ made it twitch at every passing cursor — a mark that moves when you have not c
 noise rather than information. Coming from nothing it fades in under the item rather than sliding
 in from the edge of the nav, which would read as a stray line.
 
-All of it respects `prefers-reduced-motion`: sections still change and the gap still ends up in
-the right place, it just gets there without tweening.
+The wordmark rises up inside the footer panel, which clips it, so it reads as the name surfacing
+from within the block rather than something sliding past behind it. It resets on the way out and
+runs again every time you come back down. It is triggered off the footer rather than off its own
+clip: the clip sits at the very bottom of the document, and a range measured from there can never
+finish because the page runs out of scroll before the end point arrives.
+
+Hover and press states — the buttons that lift off the page and push back down, the footer links
+that draw a line under themselves and send an arrow out — are CSS rather than GSAP. They are
+per-element states on a dozen elements, and the browser runs them on the compositor with no
+JavaScript attached at all.
+
+All of it respects `prefers-reduced-motion`: sections still change, the gap still ends up in the
+right place and the wordmark is simply present, it all just gets there without tweening.
 
 ## Stack
 

@@ -8,20 +8,21 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { Logo } from "@/components/layout/Logo";
 import { SlidingNav, type NavItem } from "@/components/layout/SlidingNav";
 import { NotchPanel } from "@/components/landing/NotchPanel";
+import { PushButton } from "@/components/ui/PushButton";
 import { EASE, prefersReducedMotion } from "@/lib/motion";
 
 /** How much wider the gap is than the nav item it sits under. */
 const NOTCH_PADDING = 22;
 
-export type SectionId = "try" | "how" | "formats" | "faq";
+export type SectionId = "try" | "how" | "formats";
 
-// Two either side of the wordmark, the way the reference balances it. Sign in
-// sits out by the call to action instead, because it leaves the page.
+// Sign in rides in the centred cluster with the rest, so the nav stays balanced
+// around the wordmark. Only the call to action sits out on the right.
 const ITEMS: NavItem[] = [
   { id: "try", label: "Try a card", href: "/?s=try" },
   { id: "how", label: "How it works", href: "/?s=how" },
   { id: "formats", label: "Formats", href: "/?s=formats" },
-  { id: "faq", label: "FAQ", href: "/?s=faq" },
+  { id: "signin", label: "Sign in", href: "/login" },
 ];
 
 export function LandingShell({
@@ -46,7 +47,7 @@ export function LandingShell({
   const params = useSearchParams();
   useEffect(() => {
     const id = params.get("s");
-    if (id === "try" || id === "how" || id === "formats" || id === "faq") setActive(id);
+    if (id === "try" || id === "how" || id === "formats") setActive(id);
   }, [params]);
 
   // Clicking the nav is local state plus a URL rewrite, not a navigation: the
@@ -112,12 +113,9 @@ export function LandingShell({
             <Link href="/" aria-label="Memora home">
               <Logo />
             </Link>
-            <Link
-              href="/signup"
-              className="rounded-full bg-ink px-5 py-2 text-[0.9rem] font-medium text-paper"
-            >
+            <PushButton href="/signup" size="sm">
               Get started
-            </Link>
+            </PushButton>
           </div>
 
           <div className="hidden items-center justify-center md:flex">
@@ -126,7 +124,10 @@ export function LandingShell({
               activeId={active}
               splitAt={2}
               onSelectedRect={placeNotch}
-              onSelect={(id) => choose(id as SectionId)}
+              onSelect={(id) => {
+                // Sign in leaves the page; it should not also swap the panel.
+                if (id !== "signin") choose(id as SectionId);
+              }}
               center={
                 <Link href="/" aria-label="Memora home" className="px-2">
                   <Logo />
@@ -136,22 +137,16 @@ export function LandingShell({
           </div>
 
           <div className="absolute right-6 top-1/2 hidden -translate-y-1/2 items-center gap-4 md:flex">
-            <Link href="/login" className="text-[0.95rem] text-ink-soft hover:text-ink">
-              Sign in
-            </Link>
-            <Link
-              href="/signup"
-              className="rounded-full bg-ink px-5 py-2 text-[0.9rem] font-medium text-paper transition-opacity hover:opacity-90"
-            >
+            <PushButton href="/signup" size="sm">
               Get started
-            </Link>
+            </PushButton>
           </div>
         </div>
       </header>
 
       {/* Phone: tabs sit under the wordmark, where the nav links cannot fit. */}
       <div className="flex gap-5 px-6 pb-3 text-sm md:hidden">
-        {ITEMS.map((item) => (
+        {ITEMS.filter((i) => i.id !== "signin").map((item) => (
           <button
             key={item.id}
             type="button"

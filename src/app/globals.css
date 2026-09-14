@@ -26,6 +26,12 @@
   --color-wrong: #8e8779;
   --color-wrong-soft: #ebe5d9;
 
+  /* The two exceptions to the monochrome rule. Used as a stroke on the two
+     grading buttons and nowhere else, because right and wrong is the one
+     judgement a student makes often enough to want to recognise without reading. */
+  --color-knew: #2f7d5b;
+  --color-missed: #b3453c;
+
   --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
   --font-reading: var(--font-display), Georgia, serif;
   --font-hand: var(--font-hand), ui-rounded, cursive;

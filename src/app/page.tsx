@@ -1,10 +1,11 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 import { DemoCard } from "@/components/landing/DemoCard";
 import { Faq } from "@/components/landing/Faq";
 import { LandingShell } from "@/components/landing/LandingShell";
+import { SectionIntro } from "@/components/landing/SectionIntro";
+import { PushButton } from "@/components/ui/PushButton";
 import { SketchCard } from "@/components/ui/SketchFrame";
 import { CARD_TYPES, MODE_BLURBS, MODE_LABELS } from "@/lib/types";
 import { getUser } from "@/server/db/client";
@@ -45,20 +46,15 @@ function Fact({ figure, label }: { figure: string; label: string }) {
 function TrySection() {
   return (
     <div className="text-center">
-      <p className="font-hand text-2xl text-ink-soft">Dear crammers,</p>
-      <h1 className="mx-auto mt-3 max-w-[18ch] font-reading text-[2.6rem] leading-[1.05] tracking-[-0.015em] text-ink sm:text-[3.6rem]">
-        Hand over the PDF. Get back a way to <span className="marked">study it</span>.
-      </h1>
-      <p className="mx-auto mt-5 max-w-[46ch] text-[1.05rem] leading-relaxed text-ink-soft">
-        Memora reads your course material, builds the structure your lecturer never gave you, and
-        turns every topic into cards you can actually drill.
-      </p>
-      <Link
-        href="/signup"
-        className="mt-7 inline-block rounded-full bg-ink px-8 py-3.5 text-[1rem] font-medium text-paper transition-opacity hover:opacity-90"
-      >
+      <SectionIntro
+        heading="h1"
+        eyebrow="Dear crammers,"
+        title={<>Hand over the PDF. Get back a way to <span className="marked">study it</span>.</>}
+        blurb="Memora reads your course material, builds the structure your lecturer never gave you, and turns every topic into cards you can actually drill."
+      />
+      <PushButton href="/signup" className="mt-7">
         Build my first course
-      </Link>
+      </PushButton>
 
       <div className="mt-14 flex justify-center">
         <DemoCard />
@@ -76,13 +72,11 @@ function TrySection() {
 function HowSection() {
   return (
     <div>
-      <h2 className="text-center font-reading text-[2.2rem] leading-tight text-ink">
-        How a course gets made
-      </h2>
-      <p className="mx-auto mt-3 max-w-[54ch] text-center text-[0.95rem] leading-relaxed text-ink-soft">
-        Two passes over your material: one to work out the shape of it, then one per topic to
-        write the cards.
-      </p>
+      <SectionIntro
+        eyebrow="Behind the curtain,"
+        title="How a course gets made"
+        blurb="Two passes over your material: one to work out the shape of it, then one per topic to write the cards."
+      />
 
       <ol className="mx-auto mt-14 grid max-w-4xl gap-10 sm:grid-cols-3">
         {STEPS.map((step, i) => (
@@ -115,12 +109,7 @@ function HowSection() {
       </div>
 
       <div className="mt-14 text-center">
-        <Link
-          href="/signup"
-          className="inline-block rounded-full bg-ink px-8 py-3.5 text-[1rem] font-medium text-paper transition-opacity hover:opacity-90"
-        >
-          Build my first course
-        </Link>
+        <PushButton href="/signup">Build my first course</PushButton>
       </div>
     </div>
   );
@@ -129,13 +118,11 @@ function HowSection() {
 function FormatsSection() {
   return (
     <div>
-      <h2 className="text-center font-reading text-[2.2rem] leading-tight text-ink">
-        Five ways through the same topic
-      </h2>
-      <p className="mx-auto mt-3 max-w-[54ch] text-center text-[0.95rem] leading-relaxed text-ink-soft">
-        Recognition and recall are different skills, and exams test both. Switch formats when a
-        topic stops sinking in — the material is the same, the demand on you is not.
-      </p>
+      <SectionIntro
+        eyebrow="Five ways in,"
+        title="One topic, five ways to learn it"
+        blurb="Recognition and recall are different skills, and exams test both. Switch formats when a topic stops sinking in — the material is the same, the demand on you is not."
+      />
 
       <ul className="mx-auto mt-14 grid max-w-4xl gap-5 sm:grid-cols-2">
         {CARD_TYPES.map((type, i) => {
@@ -171,10 +158,14 @@ function FormatsSection() {
         })}
       </ul>
 
-      <p className="mx-auto mt-12 max-w-[58ch] border-t border-rule pt-10 text-center text-[0.95rem] leading-relaxed text-ink-soft">
+      <p className="mx-auto mt-12 max-w-[58ch] text-center text-[0.95rem] leading-relaxed text-ink-soft">
         Or mix all five in one sitting. However you answer, the card is rescheduled the same way —
         the format changes what is being asked of you, not how Memora tracks whether it stuck.
       </p>
+
+      <div className="mt-20 border-t border-rule pt-16">
+        <Faq />
+      </div>
     </div>
   );
 }
@@ -190,7 +181,6 @@ export default async function LandingPage() {
           try: <TrySection />,
           how: <HowSection />,
           formats: <FormatsSection />,
-          faq: <Faq />,
         }}
       />
     </Suspense>

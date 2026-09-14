@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { FooterLink } from "@/components/layout/FooterLink";
+import { FooterWordmark } from "@/components/layout/FooterWordmark";
 import { BrainMark } from "@/components/layout/Logo";
 
 type Column = { heading: string; links: { label: string; href: string }[] };
@@ -15,7 +17,6 @@ const COLUMNS: Column[] = [
       { label: "Try a card", href: "/?s=try" },
       { label: "How it works", href: "/?s=how" },
       { label: "Formats", href: "/?s=formats" },
-      { label: "Questions", href: "/?s=faq" },
     ],
   },
   {
@@ -40,7 +41,9 @@ export function SiteFooter() {
   return (
     <footer className="mt-20 px-4 sm:px-6">
       <div className="mx-auto max-w-6xl">
-        <div className="rounded-[2rem] bg-paper-deep px-7 py-12 sm:px-12 sm:py-14">
+        {/* overflow-hidden is what makes the wordmark surface from inside the
+            block rather than slide past behind it. */}
+        <div className="overflow-hidden rounded-[2rem] bg-paper-deep px-7 pt-12 sm:px-12 sm:pt-14">
           <div className="grid gap-12 md:grid-cols-[1.2fr_2fr]">
             <div>
               <Link href="/" className="inline-flex items-center gap-3 text-ink">
@@ -61,12 +64,7 @@ export function SiteFooter() {
                   <ul className="mt-3 space-y-2.5">
                     {column.links.map((link) => (
                       <li key={link.href}>
-                        <Link
-                          href={link.href}
-                          className="text-[0.95rem] text-ink-soft transition-colors hover:text-ink"
-                        >
-                          {link.label}
-                        </Link>
+                        <FooterLink href={link.href}>{link.label}</FooterLink>
                       </li>
                     ))}
                   </ul>
@@ -74,18 +72,10 @@ export function SiteFooter() {
               ))}
             </nav>
           </div>
-        </div>
 
-        {/* The name signed across the foot of the page, running off the bottom
-            edge so it reads as part of the paper rather than another element.
-            Decorative, so it is hidden from assistive tech. */}
-        <div aria-hidden="true" className="mt-14 overflow-hidden">
-          <p
-            className="-mb-[0.19em] select-none text-center font-reading leading-[0.8] tracking-[-0.03em] text-rule"
-            style={{ fontSize: "clamp(4rem, 21vw, 16rem)" }}
-          >
-            Memora
-          </p>
+          <div className="mt-14">
+            <FooterWordmark />
+          </div>
         </div>
 
         <div className="mt-6 flex flex-col gap-3 border-t border-rule py-6 text-sm text-ink-faint sm:flex-row sm:items-center sm:justify-between">
