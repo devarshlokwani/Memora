@@ -18,23 +18,32 @@ const HIDDEN = 190;
  * rather than dipping down — so it reads as the top bar turned over, which is
  * what tells you it is the same control and that there is somewhere to go.
  *
- * Picking something from it flies the bar up the screen to where the top bar
- * lives and hands over. The page underneath is already on the new section by
- * then, so what lands is the real nav and this one simply stops being drawn.
+ * It only shows and hides itself. Picking something from it starts a sweep up
+ * the page that the shell runs, because that sweep is as much about the two
+ * sections either side of this bar as it is about the bar.
  */
 export function BottomNav({
   items,
   activeId,
   shown,
+  sweeping,
+  barRef,
+  notchRef,
   onSelect,
+  onSelectedRect,
 }: {
   items: NavItem[];
   activeId?: string | null;
   /** The story is far enough through for the bar to be offered. */
   shown: boolean;
-  onSelect: (id: string) => void;
+  /** The shell is driving the bar up the page; hands off this component. */
+  sweeping: boolean;
+  barRef: React.RefObject<HTMLDivElement | null>;
+  /** The bump rising out of the bar, which the sweep flattens as it travels. */
+  notchRef?: React.Ref<SVGSVGElement>;
+  onSelect: (id: string) => boolean | void;
+  onSelectedRect?: (rect: DOMRect | null) => void;
 }) {
-  const barRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
   const [notch, setNotch] = useState<{ centre: number | null; width: number }>({
     centre: null,
@@ -42,17 +51,20 @@ export function BottomNav({
   });
   const drawn = useRef({ centre: 0, width: 0 });
   const started = useRef(false);
-  const leaving = useRef(false);
 
-  const placeNotch = useCallback((rect: DOMRect | null) => {
-    const bar = barRef.current;
-    if (!bar || !rect) {
-      setNotch({ centre: null, width: 0 });
-      return;
-    }
-    const box = bar.getBoundingClientRect();
-    setNotch({ centre: rect.left + rect.width / 2 - box.left, width: rect.width + 22 });
-  }, []);
+  const placeNotch = useCallback(
+    (rect: DOMRect | null) => {
+      onSelectedRect?.(rect);
+      const bar = barRef.current;
+      if (!bar || !rect) {
+        setNotch({ centre: null, width: 0 });
+        return;
+      }
+      const box = bar.getBoundingClientRect();
+      setNotch({ centre: rect.left + rect.width / 2 - box.left, width: rect.width + 22 });
+    },
+    [barRef, onSelectedRect],
+  );
 
   const redraw = useCallback(() => {
     const path = pathRef.current;
@@ -87,7 +99,7 @@ export function BottomNav({
   const placed = useRef(false);
   useLayoutEffect(() => {
     const bar = barRef.current;
-    if (!bar || leaving.current) return;
+    if (!bar || sweeping) return;
 
     if (!placed.current || prefersReducedMotion()) {
       placed.current = true;
@@ -95,38 +107,16 @@ export function BottomNav({
       return;
     }
     gsap.to(bar, { yPercent: shown ? 0 : HIDDEN, duration: 0.55, ease: EASE });
-  }, [shown]);
-
-  const pick = (id: string) => {
-    const bar = barRef.current;
-    if (!bar || prefersReducedMotion()) {
-      onSelect(id);
-      return;
-    }
-
-    /* The flight has to outlive the section change, which is why this bar is
-       rendered by the shell and not by the story: mounted inside the story it
-       was torn down the instant the new section arrived, half a second before
-       it had finished going anywhere. */
-    leaving.current = true;
-    const box = bar.getBoundingClientRect();
-    // Up to exactly where the top bar sits, so the handover has nothing to jump.
-    gsap.to(bar, {
-      y: -(window.innerHeight - box.height),
-      duration: 0.62,
-      ease: EASE,
-      onComplete: () => {
-        gsap.set(bar, { y: 0, yPercent: HIDDEN });
-        leaving.current = false;
-      },
-    });
-    onSelect(id);
-  };
+  }, [shown, sweeping, barRef]);
 
   return (
     <div
       ref={barRef}
-      className="pointer-events-auto fixed inset-x-0 bottom-0 z-50 bg-paper"
+      /* Centred rather than stacked: while this is being grown up the
+          window the row has to find the middle of it, and drift back to sitting
+          in a bar when it shrinks again. Laid out from the top it would stay
+          pinned to the ceiling the whole way. */
+      className="pointer-events-auto fixed inset-x-0 bottom-0 z-[70] flex flex-col justify-center bg-paper"
       // Hidden from the reading order while it is off the bottom of the window,
       // so a keyboard does not tab into a bar nobody can see.
       aria-hidden={!shown}
@@ -137,6 +127,7 @@ export function BottomNav({
           edge, leaving a hairline of the page showing between the two — which is
           the grey line that looked like a seam in the white. */}
       <svg
+        ref={notchRef}
         aria-hidden="true"
         style={{ height: NOTCH_DEPTH, bottom: "calc(100% - 1px)" }}
         className="pointer-events-none absolute inset-x-0 w-full overflow-visible"
@@ -144,7 +135,7 @@ export function BottomNav({
         <path ref={pathRef} fill="var(--color-paper)" />
       </svg>
 
-      <NavRow items={items} activeId={activeId} onSelect={pick} onSelectedRect={placeNotch} />
+      <NavRow items={items} activeId={activeId} onSelect={onSelect} onSelectedRect={placeNotch} />
     </div>
   );
 }

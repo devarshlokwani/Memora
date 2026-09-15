@@ -29,12 +29,19 @@ export function NotchPanel({
   notchWidth,
   children,
   className = "",
+  notchRef,
 }: {
   /** Pixels from the panel's left edge. */
   notchCentre: number | null;
   notchWidth: number;
   children: React.ReactNode;
   className?: string;
+  /**
+   * The gap's own element, for anything that wants to work it while it is being
+   * drawn — the sweep out of the story grows this one in as it flattens the one
+   * rising out of the bar.
+   */
+  notchRef?: React.Ref<SVGSVGElement>;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
@@ -91,6 +98,7 @@ export function NotchPanel({
   return (
     <div ref={hostRef} className={`relative ${className}`}>
       <svg
+        ref={notchRef}
         className="pointer-events-none absolute inset-x-0 top-0 h-[44px] w-full overflow-visible"
         aria-hidden="true"
       >

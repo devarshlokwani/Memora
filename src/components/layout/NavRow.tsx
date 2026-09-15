@@ -22,11 +22,16 @@ export function NavRow({
 }: {
   items: NavItem[];
   activeId?: string | null;
-  onSelect?: (id: string) => void;
+  onSelect?: (id: string) => boolean | void;
   onSelectedRect?: (rect: DOMRect | null) => void;
 }) {
   return (
-    <div className="relative mx-auto max-w-6xl px-6 py-4">
+    /* w-full rather than relying on the parent to stretch it. In the bar
+         at the foot of the story this is a flex item, and auto side margins on a
+         flex item soak up the free space instead of filling it — the row
+         collapsed to its own width and the call to action landed on top of the
+         last link. */
+      <div className="relative mx-auto w-full max-w-6xl px-6 py-4">
       <div className="flex items-center justify-between md:hidden">
         <Link href="/" aria-label="Memora home">
           <Logo />

@@ -8,6 +8,8 @@
  */
 
 export const NOTCH_DEPTH = 38;
+/** How much wider the gap is than the nav item it sits under. */
+export const NOTCH_PADDING = 22;
 /** How close to the panel's ends the gap is allowed to get. */
 const MARGIN = 48;
 

@@ -31,12 +31,24 @@ export function PaperMarks() {
     };
 
     measure();
-    const observer = new ResizeObserver(measure);
+
+    /* Re-rolled only once the page has stopped changing shape. Switching section
+       moves the document height by thousands of pixels, and redrawing a hundred
+       strokes in the middle of that costs the frame the new section is trying to
+       arrive in. Nothing is waiting on the marks; they can land late. */
+    let settling = 0;
+    const later = () => {
+      window.clearTimeout(settling);
+      settling = window.setTimeout(measure, 220);
+    };
+
+    const observer = new ResizeObserver(later);
     observer.observe(document.body);
-    window.addEventListener("resize", measure);
+    window.addEventListener("resize", later);
     return () => {
+      window.clearTimeout(settling);
       observer.disconnect();
-      window.removeEventListener("resize", measure);
+      window.removeEventListener("resize", later);
     };
   }, []);
 

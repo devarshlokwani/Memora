@@ -51,21 +51,56 @@ const ENTRIES: Entry[] = [
 export function Faq() {
   const [open, setOpen] = useState<number | null>(0);
   const panels = useRef<(HTMLDivElement | null)[]>([]);
+  const rows = useRef<(HTMLButtonElement | null)[]>([]);
 
   const toggle = (index: number) => {
+    /* A press the row gives under and comes back from. Done on the click rather
+       than with :active so it plays in full however briefly the button is held —
+       a quick tap on a CSS active state can be over before a single frame has
+       been drawn, and then nothing has told you the click landed. */
+    const row = rows.current[index];
+    if (row && !prefersReducedMotion()) {
+      gsap
+        .timeline()
+        .to(row, { scale: 0.985, duration: 0.09, ease: "power2.out" })
+        .to(row, { scale: 1, duration: 0.28, ease: "power2.out" });
+    }
+
     const next = open === index ? null : index;
     setOpen(next);
 
     for (let i = 0; i < ENTRIES.length; i++) {
       const panel = panels.current[i];
       if (!panel) continue;
-      const target = i === next ? panel.scrollHeight : 0;
+
+      const opening = i === next;
+      // Measured while it is still laid out, before anything is animated.
+      const target = opening ? panel.scrollHeight : 0;
 
       if (prefersReducedMotion()) {
-        gsap.set(panel, { height: target });
-      } else {
-        gsap.to(panel, { height: target, duration: 0.42, ease: EASE });
+        gsap.set(panel, { height: opening ? "auto" : 0, opacity: opening ? 1 : 0 });
+        continue;
       }
+
+      gsap.to(panel, {
+        height: target,
+        duration: 0.42,
+        ease: EASE,
+        /* Back to auto once it has arrived. Left at the pixel height it was
+           measured at, an answer that rewraps — a narrower window, a larger
+           font — would be cut off or leave a gap under itself. */
+        onComplete: opening ? () => gsap.set(panel, { height: "auto" }) : undefined,
+      });
+
+      // The words follow the opening rather than arriving with it, which is
+      // what makes the panel read as being pulled open.
+      gsap.to(panel.firstElementChild, {
+        opacity: opening ? 1 : 0,
+        y: opening ? 0 : -6,
+        duration: opening ? 0.34 : 0.2,
+        delay: opening ? 0.12 : 0,
+        ease: EASE,
+      });
     }
   };
 
@@ -83,11 +118,18 @@ export function Faq() {
           return (
             <li key={entry.question} className="border-b border-dashed border-rule">
               <h3>
+                {/* The whole row is the control, and it has to say so: the mark
+                    under the question is drawn on hover the way every other
+                    link on the site draws one, and the row gives a little under
+                    a press so the click has somewhere to land. */}
                 <button
                   type="button"
+                  ref={(el) => {
+                    rows.current[index] = el;
+                  }}
                   onClick={() => toggle(index)}
                   aria-expanded={isOpen}
-                  className="flex w-full items-center justify-between gap-6 py-5 text-left"
+                  className="group flex w-full items-center justify-between gap-6 py-5 text-left"
                 >
                   <span className="text-[1.05rem] leading-snug text-ink">{entry.question}</span>
                   <PlusMark open={isOpen} />
@@ -101,7 +143,10 @@ export function Faq() {
                 className="overflow-hidden"
                 style={{ height: index === 0 ? "auto" : 0 }}
               >
-                <p className="max-w-[62ch] pb-6 text-[0.95rem] leading-relaxed text-ink-soft">
+                <p
+                  style={{ opacity: index === 0 ? 1 : 0 }}
+                  className="max-w-[62ch] pb-6 text-[0.95rem] leading-relaxed text-ink-soft"
+                >
                   {entry.answer}
                 </p>
               </div>
@@ -118,7 +163,9 @@ function PlusMark({ open }: { open: boolean }) {
   return (
     <svg
       viewBox="0 0 24 24"
-      className="h-5 w-5 shrink-0 text-ink transition-transform duration-300"
+      className={`h-5 w-5 shrink-0 transition-[transform,color] duration-300 group-hover:text-accent ${
+        open ? "text-accent" : "text-ink"
+      }`}
       style={{ transform: open ? "rotate(135deg)" : "rotate(0deg)" }}
       fill="none"
       stroke="currentColor"

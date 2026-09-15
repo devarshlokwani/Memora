@@ -43,7 +43,13 @@ export function SlidingNav({
   /** The item whose underline is drawn. */
   activeId?: string | null;
   className?: string;
-  onSelect?: (id: string) => void;
+  /**
+   * Returns true when it has dealt with the click itself, which stops the link
+   * navigating. These are real links so they can be opened in a new tab and
+   * read by anything that walks the page — but letting one navigate while the
+   * page is mid-transition swaps the section out from under it.
+   */
+  onSelect?: (id: string) => boolean | void;
   /**
    * Where the selected item is on screen. The landing page uses this to line the
    * gap in the panel below up with the nav, so the two move together.
@@ -112,7 +118,11 @@ export function SlidingNav({
               ref={(el) => {
                 itemRefs.current[item.id] = el;
               }}
-              onClick={() => onSelect?.(item.id)}
+              onClick={(event) => {
+                // A modified click is someone asking for a new tab; leave it be.
+                if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                if (onSelect?.(item.id)) event.preventDefault();
+              }}
               aria-current={activeId === item.id ? "page" : undefined}
               aria-label={item.node ? item.label : undefined}
               className={`relative block text-[0.95rem] transition-colors ${

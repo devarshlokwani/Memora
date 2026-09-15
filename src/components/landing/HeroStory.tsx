@@ -33,6 +33,12 @@ const BEATS: Beat[] = [
     side: "right",
     title: "Hand over the PDF",
     body: "Lecture slides, a textbook chapter, your own half-written notes. Up to twelve files, read together as one body of material.",
+    aside: "pdf · docx · pptx · md · txt",
+    props: [
+      { kind: { art: "sheet", name: "lecture-04.pdf" }, x: 0.1, y: 0.2, size: 0.09, tilt: -7 },
+      { kind: { art: "sheet", name: "chapter-9.pdf" }, x: 0.29, y: 0.83, size: 0.085, tilt: 5 },
+      { kind: { art: "sheet", name: "my-notes.md" }, x: 0.55, y: 0.12, size: 0.078, tilt: 3 },
+    ],
   },
   {
     anchor: [0.92, -0.28, 0.24],
@@ -41,6 +47,11 @@ const BEATS: Beat[] = [
     side: "left",
     title: "Get a course, not a pile",
     body: "Memora finds the themes, orders them the way you should learn them, and splits each into topics worth a single sitting.",
+    aside: "modules, then topics",
+    props: [
+      { kind: { art: "branch" }, x: 0.88, y: 0.24, size: 0.13, tilt: 2 },
+      { kind: { art: "sheet", name: "chapter-9.pdf" }, x: 0.7, y: 0.85, size: 0.07, tilt: -6 },
+    ],
   },
   {
     anchor: [-0.1, 0.25, -0.92],
@@ -49,6 +60,12 @@ const BEATS: Beat[] = [
     side: "right",
     title: "Five ways to be asked",
     body: "Flashcards, multiple choice, fill-in-the-blank, matching, jargon drills. One topic, five different demands on you.",
+    aside: "recognition is not recall",
+    props: [
+      { kind: { art: "format", label: "Flashcard" }, x: 0.11, y: 0.18, size: 0.1, tilt: -6 },
+      { kind: { art: "format", label: "Multiple choice", inverted: true }, x: 0.3, y: 0.85, size: 0.1, tilt: 4 },
+      { kind: { art: "format", label: "Match" }, x: 0.56, y: 0.11, size: 0.085, tilt: 7 },
+    ],
   },
   {
     anchor: [0, -0.5, -0.78],
@@ -57,6 +74,11 @@ const BEATS: Beat[] = [
     side: "left",
     title: "Answers from your own words",
     body: "Your documents are split into numbered passages, and every card is written from the ones its topic came out of.",
+    aside: "traced, not invented",
+    props: [
+      { kind: { art: "passage" }, x: 0.87, y: 0.2, size: 0.14, tilt: 3 },
+      { kind: { art: "format", label: "Flashcard" }, x: 0.72, y: 0.84, size: 0.085, tilt: -5 },
+    ],
   },
   {
     anchor: [-0.35, 0.88, -0.1],
@@ -65,6 +87,11 @@ const BEATS: Beat[] = [
     side: "right",
     title: "Back the day you would forget",
     body: "Answer a card and Memora schedules it for the day it was about to slip away from you — and not a day before.",
+    aside: "1d · 3d · 8d · 21d",
+    props: [
+      { kind: { art: "curve" }, x: 0.13, y: 0.2, size: 0.155, tilt: -2 },
+      { kind: { art: "format", label: "Jargon" }, x: 0.34, y: 0.85, size: 0.085, tilt: 6 },
+    ],
   },
 ];
 
@@ -142,7 +169,13 @@ export function HeroStory({ onEnd }: { onEnd: (ended: boolean) => void }) {
 
   return (
     <>
-      <div ref={trackRef} className="relative h-[560vh]">
+      {/* Eight screens of scroll for seven moments — an opening, five stops and
+          a close. It was five and a half, which was enough when a stop was a
+          brain and a caption; with a stop now being several drawn things writing
+          themselves in, the same distance made every one of them a flicker. The
+          beats are laid out as fractions of this, so lengthening it slows the
+          whole telling evenly rather than stretching any one part of it. */}
+      <div ref={trackRef} className="relative h-[800vh]">
         {/* Stuck to the window while the track scrolls past behind it. Nothing
             above this may clip its overflow, or it stops sticking. */}
         <div className="sticky top-0 h-[100svh] overflow-hidden">

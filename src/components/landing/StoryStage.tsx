@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { BrainMark } from "@/components/layout/Logo";
+import { DRAW_STEPS, StoryArt, type StoryProp } from "@/components/landing/storyArt";
 import { prefersReducedMotion } from "@/lib/motion";
 
 /**
@@ -28,11 +29,31 @@ export type Beat = {
   side: "left" | "right";
   title: string;
   body: string;
+  /** The drawn things standing around the brain while this beat is up. */
+  props: StoryProp[];
+  /** A note in the margin, in the hand face, the way the rest of the site does. */
+  aside: string;
 };
 
 /** Everything the beats are laid out across, leaving room to arrive and leave. */
 const FIRST = 0.08;
 const LAST = 0.86;
+
+/* Turned side on to open. Head on, a brain is a circle with a crease down it;
+   from the side you get the length of it, the cerebellum tucked under the back
+   and the stem coming away, which is the view that reads as a brain at a glance. */
+const OPENING = { turn: -1.28, tilt: 0.1 };
+
+/* The width at which a label can stand beside the brain rather than under it.
+   The same number appears as a `min-[900px]:` variant on the cards below, and
+   the two have to agree: a card placed beside the brain by CSS while the brain
+   still thinks it has the whole stage to itself is a card with a brain on it. */
+const BESIDE_AT = 900;
+
+/** Clear air between the text and the edge of the brain. */
+const GAP = 44;
+/** How far the brain reaches from its own centre, in its own units. */
+const REACH = 1.02;
 
 export function StoryStage({
   beats,
@@ -46,6 +67,11 @@ export function StoryStage({
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const labelRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const propRefs = useRef<(HTMLDivElement | null)[][]>([]);
+  const numeralRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+  const asideRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+  const tickRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const progressRef = useRef<HTMLDivElement>(null);
   const lineRef = useRef<SVGSVGElement>(null);
   const dotRef = useRef<SVGSVGElement>(null);
   const [ready, setReady] = useState(false);
@@ -108,7 +134,7 @@ export function StoryStage({
         const box = host.getBoundingClientRect();
         width = Math.max(1, Math.round(box.width));
         height = Math.max(1, Math.round(box.height));
-        narrow = width < 640;
+        narrow = width < BESIDE_AT;
         camera.aspect = width / height;
         // On a tall narrow window the brain would fill the frame edge to edge,
         // leaving the labels nowhere to sit. Pulling back keeps it a subject.
@@ -147,8 +173,24 @@ export function StoryStage({
 
       const smooth = (t: number) => t * t * (3 - 2 * t);
       const clamp = (t: number) => Math.min(1, Math.max(0, t));
-      /** Which way the brain leans to leave the label its half of the screen. */
-      const aside = (side: Beat["side"]) => (side === "left" ? 0.46 : -0.46);
+
+      /**
+       * The strip of the stage the brain may stand in, given where a label sits.
+       *
+       * Measured from the label's own box rather than guessed at from a fixed
+       * offset: the card is a fraction of the viewport wide and the brain's size
+       * on screen depends on the camera, so any pair of numbers that clears the
+       * text at one window size buries it at another.
+       */
+      const roomBeside = (node: HTMLDivElement | null, side: Beat["side"]) => {
+        if (!node) return { centre: width / 2, room: width };
+        const box = node.getBoundingClientRect();
+        const stage = host.getBoundingClientRect();
+        const inner = side === "left" ? box.right - stage.left : box.left - stage.left;
+        const lo = side === "left" ? inner + GAP : 0;
+        const hi = side === "left" ? width : inner - GAP;
+        return { centre: (lo + hi) / 2, room: Math.max(60, hi - lo) };
+      };
 
       /* The scroll position is not read straight. A wheel arrives in lumps of a
          hundred pixels or more, and a brain wired directly to it jumps between
@@ -166,7 +208,7 @@ export function StoryStage({
         last = now;
         clock += delta;
 
-        eased += (clamp(progress.current) - eased) * Math.min(1, delta * 4.2);
+        eased += (clamp(progress.current) - eased) * Math.min(1, delta * 3.4);
         const p = eased;
         const { index, within } = readBeat(p);
 
@@ -185,25 +227,40 @@ export function StoryStage({
         // between stops looks switched off rather than waiting.
         const alive = (1 - open) * (1 - close);
 
-        brain.rotation.y =
-          here.turn + (next.turn - here.turn) * travel + Math.sin(clock * 0.37) * 0.055 * alive;
-        brain.rotation.x =
-          here.tilt + (next.tilt - here.tilt) * travel + Math.sin(clock * 0.51) * 0.035 * alive;
-        brain.rotation.z = Math.sin(clock * 0.29) * 0.035 * alive;
-        /* Low in the frame to open, so the title has the top of the screen to
-           itself, and rising into place as the first label comes up; drawn back
-           and down again at the close to clear the middle for the last line and
-           the way onward. Both ends are the same idea: the brain gets out of the
-           way of whatever there is to read. */
-        brain.scale.setScalar((narrow ? 1 : 0.92) * (1 - close * 0.38));
+        /* Read before anything is written this frame, so measuring the cards
+           never lands in the middle of the same frame's style changes. */
+        const from = roomBeside(labelRefs.current[index], here.side);
+        const to = roomBeside(labelRefs.current[Math.min(beats.length - 1, index + 1)], next.side);
+        const centrePx = from.centre + (to.centre - from.centre) * travel;
+        const room = from.room + (to.room - from.room) * travel;
 
-        /* Leaning away from whichever side the label is on. Centred, the brain
-           runs under the text — and moving over for it is the same gesture a
-           camera makes to give a caption room, so it reads as deliberate rather
-           than as a fix. Centred again at both ends, where there is no label. */
-        brain.position.x = narrow
-          ? 0
-          : (aside(here.side) + (aside(next.side) - aside(here.side)) * travel) * alive;
+        brain.rotation.y =
+          here.turn +
+          (next.turn - here.turn) * travel +
+          (OPENING.turn - beats[0].turn) * open +
+          Math.sin(clock * 0.37) * 0.055 * alive;
+        brain.rotation.x =
+          here.tilt +
+          (next.tilt - here.tilt) * travel +
+          (OPENING.tilt - beats[0].tilt) * open +
+          Math.sin(clock * 0.51) * 0.035 * alive;
+        brain.rotation.z = Math.sin(clock * 0.29) * 0.035 * alive;
+
+        /* World units per pixel at the depth the brain sits, which is what turns
+           a gap measured off a text box into somewhere to put a mesh. */
+        const perPixel = (2 * camera.position.z * Math.tan((camera.fov * Math.PI) / 360)) / height;
+        const reach = REACH / perPixel;
+        // Shrunk if the strip left over is narrower than the brain is wide, so
+        // it gives way to the words rather than the other way about.
+        const fit = narrow ? 1 : Math.min(1, room / (reach * 2));
+
+        brain.scale.setScalar(fit * (1 - close * 0.38));
+
+        /* Standing in the middle of whatever the label has left it, and back in
+           the middle of the stage at both ends where there is no label. Moving
+           over for the text is the same gesture a camera makes to give a caption
+           room, so it reads as deliberate rather than as a fix. */
+        brain.position.x = narrow ? 0 : (centrePx - width / 2) * perPixel * alive;
         // Lifted on a phone, where the label sits underneath rather than beside.
         brain.position.y =
           (narrow ? 0.34 : 0) - open * 0.62 - close * 0.34 + Math.sin(clock * 0.44) * 0.022 * alive;
@@ -218,11 +275,59 @@ export function StoryStage({
         for (let i = 0; i < beats.length; i++) {
           const node = labelRefs.current[i];
           if (node) node.style.opacity = String(i === index ? shown : 0);
+
+          const note = asideRefs.current[i];
+          if (note) note.style.opacity = String(i === index ? shown * 0.9 : 0);
+
+          const tick = tickRefs.current[i];
+          // The spine marks how far through the telling you are: the one you are
+          // on is inked, the rest are pencilled.
+          if (tick) {
+            const on = i === index && p > FIRST && p < LAST;
+            tick.style.backgroundColor = on ? "var(--color-accent)" : "var(--color-rule)";
+            tick.style.transform = `scale(${on ? 1 : 0.55})`;
+          }
+
+          const numeral = numeralRefs.current[i];
+          // The chapter number sits behind everything and lingers a little
+          // longer than the words, so the stage is never completely bare.
+          if (numeral) numeral.style.opacity = String(i === index ? shown * 0.55 : 0);
+
+          /* The props come up a touch after the label and drift while they are
+             there. Staggered by their own index so they arrive as a handful of
+             things being set down rather than as one block appearing. */
+          const row = propRefs.current[i] ?? [];
+          for (let n = 0; n < row.length; n++) {
+            const prop = row[n];
+            if (!prop) continue;
+            if (i !== index) {
+              prop.style.opacity = "0";
+              continue;
+            }
+            const late = smooth(clamp((within - 0.04 - n * 0.045) / 0.16));
+            prop.style.opacity = String(Math.min(late, shown) * (narrow ? 0 : 1));
+            const sway = Math.sin(clock * (0.31 + n * 0.07) + n * 1.7);
+            prop.style.transform = `translate(-50%, -50%) translateY(${(sway * 7).toFixed(1)}px) rotate(${(beats[i].props[n].tilt + sway * 1.1).toFixed(2)}deg)`;
+
+            /* Drawn rather than simply shown: the counters run in order, and
+               each stroke in the art is pinned to one of them, so the outline
+               goes round before the ruled lines are written and the words land
+               last. Scrub back up the page and it unwrites itself. */
+            const drawing = clamp((within - 0.03 - n * 0.05) / 0.44);
+            for (let step = 0; step < DRAW_STEPS; step++) {
+              const at = smooth(clamp((drawing - step * 0.055) / 0.4));
+              prop.style.setProperty(`--d${step}`, (100 - at * 100).toFixed(1));
+            }
+            prop.style.setProperty("--ink", smooth(clamp((drawing - 0.22) / 0.34)).toFixed(3));
+          }
         }
 
         // Where the labelled part of the brain has got to on screen.
         point.set(...here.anchor).applyMatrix4(brain.matrixWorld);
-        normal.set(...here.anchor).normalize().transformDirection(brain.matrixWorld);
+        normal
+          .set(...here.anchor)
+          .normalize()
+          .transformDirection(brain.matrixWorld);
         toCamera.copy(camera.position).sub(point).normalize();
         const facing = normal.dot(toCamera);
 
@@ -262,15 +367,18 @@ export function StoryStage({
           }
         }
 
+        if (progressRef.current) {
+          progressRef.current.style.transform = `scaleX(${p.toFixed(4)})`;
+        }
+
         renderer.render(scene, camera);
       };
 
       if (still) {
         // No loop at all: one frame at the first beat, and the labels stacked
         // as plain text underneath by the caller.
-        brain.rotation.y = beats[0].turn;
-        brain.rotation.x = beats[0].tilt;
-        brain.scale.setScalar(narrow ? 1 : 0.92);
+        brain.rotation.y = OPENING.turn;
+        brain.rotation.x = OPENING.tilt;
         brain.updateMatrixWorld();
         renderer.render(scene, camera);
       } else {
@@ -280,9 +388,25 @@ export function StoryStage({
       return () => {
         cancelAnimationFrame(frame);
         sizes.disconnect();
-        releaseBrain();
-        renderer.dispose();
+        // Off the screen straight away, which is all that has to be immediate.
         renderer.domElement.remove();
+
+        /* The rest is walking every geometry in the scene and dropping a GL
+           context, and it was landing in the same frame as the section change
+           that unmounted this — one frame doing the teardown, the mount of a
+           whole new page and a scroll to the top. Nothing is waiting on it, so
+           it goes when the browser next has a moment. */
+        const release = () => {
+          releaseBrain();
+          renderer.dispose();
+        };
+        const idle = (
+          window as Window & {
+            requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number;
+          }
+        ).requestIdleCallback;
+        if (idle) idle(release, { timeout: 1200 });
+        else window.setTimeout(release, 300);
       };
     };
 
@@ -303,12 +427,13 @@ export function StoryStage({
         <BrainMark className="absolute left-1/2 top-1/2 h-32 w-36 -translate-x-1/2 -translate-y-1/2 text-ink/40" />
       )}
 
-      {/* Behind the brain, so the run of it that would cross the surface is
-          simply hidden and the line reads as going round the back. */}
+      {/* Over the brain rather than behind it. A leader that vanishes where it
+          crosses the surface leaves the card pointing at nothing; a line drawn
+          across it is read as a line drawn across it. */}
       <svg
         ref={lineRef}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-visible"
+        className="pointer-events-none absolute inset-0 z-20 h-full w-full overflow-visible"
       >
         <path
           data-lead=""
@@ -329,6 +454,94 @@ export function StoryStage({
         <circle data-dot="" r="4.5" fill="var(--color-accent)" />
       </svg>
 
+      {/* How far through the telling you are, down the edge of the page. */}
+      <div className="pointer-events-none absolute left-[2.2vw] top-1/2 z-10 hidden -translate-y-1/2 flex-col items-center gap-3 min-[900px]:flex">
+        {beats.map((beat, i) => (
+          <span
+            key={`tick-${beat.title}`}
+            ref={(el) => {
+              tickRefs.current[i] = el;
+            }}
+            aria-hidden="true"
+            className="block h-2 w-2 rounded-full transition-[background-color,transform] duration-300"
+            style={{ backgroundColor: "var(--color-rule)", transform: "scale(0.55)" }}
+          />
+        ))}
+      </div>
+
+      {/* The scroll, drawn along the foot. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-px bg-rule/40"
+      >
+        <div
+          ref={progressRef}
+          className="h-full w-full origin-left bg-accent/70"
+          style={{ transform: "scaleX(0)" }}
+        />
+      </div>
+
+      {/* A note in the margin, the way the rest of the site annotates itself. */}
+      {beats.map((beat, i) => (
+        <p
+          key={`aside-${beat.title}`}
+          ref={(el) => {
+            asideRefs.current[i] = el;
+          }}
+          aria-hidden="true"
+          style={{ opacity: 0 }}
+          className={`pointer-events-none absolute bottom-[7vh] z-10 hidden font-hand text-lg text-ink-faint min-[900px]:block ${
+            beat.side === "left" ? "left-[7vw]" : "right-[7vw]"
+          }`}
+        >
+          {beat.aside}
+        </p>
+      ))}
+
+      {/* Behind everything: the chapter number, big enough to be scenery. */}
+      {beats.map((beat, i) => (
+        <p
+          key={`numeral-${beat.title}`}
+          ref={(el) => {
+            numeralRefs.current[i] = el;
+          }}
+          aria-hidden="true"
+          style={{ opacity: 0 }}
+          /* Set high rather than dead centre: centred it sits squarely behind
+             the brain and never shows at all. From here its top half stands in
+             the empty strip above, which is the space it is there to fill. */
+          className="pointer-events-none absolute left-1/2 top-[27%] z-0 -translate-x-1/2 -translate-y-1/2 select-none font-reading text-[42vh] leading-none text-ink/[0.05]"
+        >
+          0{i + 1}
+        </p>
+      ))}
+
+      {/* The drawn things standing around it. */}
+      {beats.map((beat, i) => (
+        <div key={`props-${beat.title}`}>
+          {beat.props.map((prop, n) => (
+            <div
+              key={n}
+              ref={(el) => {
+                if (!propRefs.current[i]) propRefs.current[i] = [];
+                propRefs.current[i][n] = el;
+              }}
+              aria-hidden="true"
+              style={{
+                opacity: 0,
+                left: `${prop.x * 100}%`,
+                top: `${prop.y * 100}%`,
+                width: `${prop.size * 100}%`,
+                transform: "translate(-50%, -50%)",
+              }}
+              className="pointer-events-none absolute z-10 hidden min-[900px]:block"
+            >
+              <StoryArt kind={prop.kind} />
+            </div>
+          ))}
+        </div>
+      ))}
+
       {beats.map((beat, i) => (
         <div
           key={beat.title}
@@ -339,8 +552,10 @@ export function StoryStage({
           /* Under the brain on a phone and beside it on anything wider. The
              line to the anchor is measured from wherever the card actually
              lands, so it follows this without being told. */
-          className={`pointer-events-none absolute inset-x-5 bottom-[7%] z-20 text-left sm:inset-x-auto sm:bottom-auto sm:top-1/2 sm:w-[min(21rem,40vw)] sm:-translate-y-1/2 ${
-            beat.side === "left" ? "sm:left-[6vw] sm:text-left" : "sm:right-[6vw] sm:text-right"
+          className={`pointer-events-none absolute inset-x-5 bottom-[7%] z-20 text-left min-[900px]:inset-x-auto min-[900px]:bottom-auto min-[900px]:top-1/2 min-[900px]:w-[min(21rem,38vw)] min-[900px]:-translate-y-1/2 ${
+            beat.side === "left"
+              ? "min-[900px]:left-[5vw] min-[900px]:text-left"
+              : "min-[900px]:right-[5vw] min-[900px]:text-right"
           }`}
         >
           <p className="font-hand text-lg text-accent">0{i + 1}</p>
