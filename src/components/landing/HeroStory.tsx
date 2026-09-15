@@ -86,7 +86,7 @@ const BEATS: Beat[] = [
     tilt: 0.45,
     side: "right",
     title: "Back the day you would forget",
-    body: "Answer a card and Memora schedules it for the day it was about to slip away from you — and not a day before.",
+    body: "Answer a card and Memora schedules it for the day it was about to slip away from you, and not a day before.",
     aside: "1d · 3d · 8d · 21d",
     props: [
       { kind: { art: "curve" }, x: 0.13, y: 0.2, size: 0.155, tilt: -2 },
@@ -169,7 +169,7 @@ export function HeroStory({ onEnd }: { onEnd: (ended: boolean) => void }) {
 
   return (
     <>
-      {/* Eight screens of scroll for seven moments — an opening, five stops and
+      {/* Eight screens of scroll for seven moments, an opening, five stops and
           a close. It was five and a half, which was enough when a stop was a
           brain and a caption; with a stop now being several drawn things writing
           themselves in, the same distance made every one of them a flicker. The

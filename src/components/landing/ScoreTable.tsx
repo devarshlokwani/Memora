@@ -5,7 +5,7 @@ export type Result = "knew" | "missed" | null;
 /**
  * A marked register rather than a running total: one column per question, one
  * row for each verdict, filled in as you go. It reads like a page of marking,
- * which is the point — and it stays in ink, so the only colour on the card is
+ * which is the point, and it stays in ink, so the only colour on the card is
  * the moment you are choosing.
  */
 export function ScoreTable({ results }: { results: Result[] }) {

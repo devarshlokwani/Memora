@@ -8,8 +8,8 @@ import { PushButton } from "@/components/ui/PushButton";
  * building something carries further on a page like this than another list of
  * features does.
  *
- * Set the way every other section on the site is set — a handwritten aside, the
- * reading face for the headline, a drawn mark under the phrase that matters —
+ * Set the way every other section on the site is set: a handwritten aside, the
+ * reading face for the headline, a drawn mark under the phrase that matters,
  * and laid out left against a portrait rather than centred, because it is the
  * end of the page rather than the start of another section.
  *
@@ -33,7 +33,7 @@ export function MeetTheCreator() {
           </h2>
 
           <p className="mt-4 max-w-[46ch] text-[0.95rem] leading-relaxed text-ink-soft sm:mt-5 sm:text-[1.05rem]">
-            Memora came out of my own revision week — a term of slides, seven days left, and no
+            Memora came out of my own revision week: a term of slides, seven days left, and no
             real idea what to drill first. I built the thing I wanted to exist, and I am still
             building it.
           </p>
@@ -43,7 +43,7 @@ export function MeetTheCreator() {
               Visit
             </PushButton>
             <span className="font-hand text-base text-ink-faint sm:text-lg">
-              Devarsh Lokwani — everything else I have built
+              Devarsh Lokwani. Everything else I have built
             </span>
           </div>
         </div>

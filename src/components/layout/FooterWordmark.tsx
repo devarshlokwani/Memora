@@ -47,7 +47,7 @@ export function FooterWordmark() {
                plain pixels rather than as a fraction of it.
 
                It used to hang off the whole footer at "top 80%", which was fine
-               until the creator's note went in above this — that pushed the
+               until the creator's note went in above this. That pushed the
                footer's top 800px clear of the wordmark, so the name had finished
                rising 600px of scroll before any of it was on screen. Nobody ever
                saw it move.
@@ -66,7 +66,7 @@ export function FooterWordmark() {
     }, clip);
 
     /* The footer is the last thing on the page, so its trigger position is the
-       sum of everything above it — and the landing page changes that height every
+       sum of everything above it, and the landing page changes that height every
        time you pick a different section. Once the page gets shorter than it was
        when this was measured, the start point sits below where the page now ends
        and the word never comes up at all. Re-measure whenever the page resizes,

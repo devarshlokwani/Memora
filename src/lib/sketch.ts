@@ -140,7 +140,7 @@ function bandStrokes(width: number, top: number, seed: string): PaperStroke[] {
   const count = Math.max(3, Math.round((width * MARK_BAND) / SPACING));
 
   for (let i = 0; i < count; i++) {
-    // Mostly lying along the page, with a few running down it — enough variety
+    // Mostly lying along the page, with a few running down it, enough variety
     // that no two strokes read as belonging to the same set of rules.
     const angle = rand() < 0.24 ? between(1.2, 1.94) : between(-0.42, 0.42);
     // Weighted short: a page of uniformly long sweeps starts to look ruled
@@ -163,7 +163,7 @@ function bandStrokes(width: number, top: number, seed: string): PaperStroke[] {
     for (let n = 0; n < repeats; n++) {
       const slip = n === 0 ? 0 : between(4, 10) * (rand() < 0.5 ? -1 : 1);
       // Bowed in proportion to how far the stroke runs, so a long one bends by
-      // as much as a short one does — a fixed offset leaves the long ones ruler
+      // as much as a short one does, a fixed offset leaves the long ones ruler
       // straight. A third of them bend back the other way at the far end.
       const bow = length * between(-0.05, 0.05);
       const far = rand() < 0.34 ? -bow * between(0.6, 1.2) : bow * between(0.35, 0.9);
@@ -192,7 +192,7 @@ function bandStrokes(width: number, top: number, seed: string): PaperStroke[] {
  *
  * Points at jittered radii joined through a Catmull-Rom spline rather than a
  * polygon, so the line stays smooth between the wobbles instead of showing its
- * corners — a drawn circle is uneven, not faceted.
+ * corners, a drawn circle is uneven, not faceted.
  */
 export function drawnCirclePath(size: number, seed: string, wobble = 3.4) {
   const rand = seeded(seed);

@@ -1,5 +1,5 @@
 /**
- * One stroke shape for every underline on the site — the headline mark, the
+ * One stroke shape for every underline on the site, the headline mark, the
  * footer links, the grading buttons, the nav. Exported so the nav can drive the
  * same path from GSAP rather than redrawing it.
  */

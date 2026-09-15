@@ -14,8 +14,8 @@ const HIDDEN = 190;
 /**
  * The same nav again, arriving at the foot of the story.
  *
- * Its gap is cut the other way — rising out of the bar into the page above it
- * rather than dipping down — so it reads as the top bar turned over, which is
+ * Its gap is cut the other way, rising out of the bar into the page above it
+ * rather than dipping down, so it reads as the top bar turned over, which is
  * what tells you it is the same control and that there is somewhere to go.
  *
  * It only shows and hides itself. Picking something from it starts a sweep up
@@ -124,7 +124,7 @@ export function BottomNav({
     >
       {/* Exactly as tall as the notch is deep, and dropped a pixel into the bar.
           Any taller and the flat side of the bump stops short of the bar's top
-          edge, leaving a hairline of the page showing between the two — which is
+          edge, leaving a hairline of the page showing between the two, which is
           the grey line that looked like a seam in the white. */}
       <svg
         ref={notchRef}

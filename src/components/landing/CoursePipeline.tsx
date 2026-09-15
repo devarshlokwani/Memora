@@ -11,7 +11,7 @@ import { drawnRectPath } from "@/lib/sketch";
  * The three passes a course goes through, drawn as a diagram you can step
  * through rather than three paragraphs claiming it happens.
  *
- * It advances on its own until you touch it, then it is yours — a widget that
+ * It advances on its own until you touch it, then it is yours. A widget that
  * keeps moving after someone has taken hold of it is fighting them.
  */
 
@@ -25,7 +25,7 @@ const STEPS: { id: StageId; title: string; body: string }[] = [
   {
     id: "intake",
     title: "Drop in your material",
-    body: "Lecture slides, a textbook chapter, your own notes. Up to twelve files at once — Memora reads them together as one body of material rather than one file at a time.",
+    body: "Lecture slides, a textbook chapter, your own notes. Up to twelve files at once, read together as one body of material rather than one file at a time.",
   },
   {
     id: "outline",
@@ -207,7 +207,7 @@ function Intake() {
         </Box>
       </g>
 
-      <Caption>twelve files, read together — not one at a time</Caption>
+      <Caption>twelve files, read together, not one at a time</Caption>
     </>
   );
 }
@@ -456,7 +456,7 @@ export function CoursePipeline() {
         { opacity: 0, y: 16 },
         { opacity: 1, y: 0, duration: 0.5, ease: EASE, stagger: 0.055 },
       );
-      // The connectors are dashed, so they cannot be drawn with a dash offset —
+      // The connectors are dashed, so they cannot be drawn with a dash offset:
       // that marches the pattern along instead. A clip growing downward over
       // them is the same gesture without fighting the stroke.
       gsap.fromTo(

@@ -12,11 +12,11 @@ import { prefersReducedMotion } from "@/lib/motion";
  *
  * Nothing here re-renders. Scroll writes a number into `progress`, and the
  * animation loop reads it and writes transforms and opacities straight onto the
- * nodes — putting five labels and a rotating mesh through React state at sixty
+ * nodes. Putting five labels and a rotating mesh through React state at sixty
  * frames a second would spend the whole budget on reconciliation.
  *
  * The label cards sit still and the line to the brain moves. The other way
- * round — cards chasing their anchors around the screen — is far harder to read
+ * round (cards chasing their anchors around the screen) is far harder to read
  * and lands the text somewhere different at every window size.
  */
 
@@ -194,7 +194,7 @@ export function StoryStage({
 
       /* The scroll position is not read straight. A wheel arrives in lumps of a
          hundred pixels or more, and a brain wired directly to it jumps between
-         those lumps — worst of all through a turn, where the whole move can land
+         those lumps, worst of all through a turn, where the whole move can land
          in two frames. Chasing the scroll instead of matching it gives the mass
          back. */
       let eased = clamp(progress.current);
@@ -214,7 +214,7 @@ export function StoryStage({
 
         /* Each beat holds still while its label is up, then turns to the next
            one. Turning the whole time would mean never actually looking at the
-           thing being labelled — and holding for less than about two thirds of
+           thing being labelled, and holding for less than about two thirds of
            the beat leaves more of the scroll spent watching it move than
            reading. */
         const here = beats[index];
@@ -393,7 +393,7 @@ export function StoryStage({
 
         /* The rest is walking every geometry in the scene and dropping a GL
            context, and it was landing in the same frame as the section change
-           that unmounted this — one frame doing the teardown, the mount of a
+           that unmounted this. One frame doing the teardown, the mount of a
            whole new page and a scroll to the top. Nothing is waiting on it, so
            it goes when the browser next has a moment. */
         const release = () => {

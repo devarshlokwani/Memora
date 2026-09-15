@@ -10,43 +10,58 @@ import { PushButton } from "@/components/ui/PushButton";
 import { SketchFrame } from "@/components/ui/SketchFrame";
 import { prefersReducedMotion } from "@/lib/motion";
 
-type Sample = { id: string; topic: string; front: string; back: string };
+type Sample = {
+  id: string;
+  topic: string;
+  front: string;
+  /* The answer itself, which is a word or two. A paragraph here is a paragraph
+     you have to grade yourself against, and the thing being shown is the loop,
+     not how well anyone knows biology. */
+  back: string;
+  /** The why, underneath, for anyone who wants it. */
+  note: string;
+};
 
 /**
  * Deliberately easy. This is the first card a stranger ever sees, so it has to
- * be answerable by anyone — the thing being demonstrated is the loop, not the
+ * be answerable by anyone. The thing being demonstrated is the loop, not the
  * subject.
  */
 const DECK: Sample[] = [
   {
     id: "deck-mitochondria",
     topic: "Biology",
-    front: "What is the job of the mitochondria?",
-    back: "Releasing energy. It breaks glucose down into ATP, which is why it gets called the powerhouse of the cell.",
+    front: "What does the mitochondria make?",
+    back: "ATP",
+    note: "It breaks glucose down into the fuel the rest of the cell runs on.",
   },
   {
     id: "deck-seasons",
     topic: "Geography",
-    front: "Why do we get seasons?",
-    back: "Because the Earth is tilted. The hemisphere leaning toward the Sun gets more direct light and longer days — it is not about being closer to the Sun.",
+    front: "What gives us seasons?",
+    back: "Tilt",
+    note: "The hemisphere leaning toward the Sun gets longer days and more direct light.",
   },
   {
     id: "deck-demand",
     topic: "Economics",
-    front: "Demand rises and supply stays the same. What happens to the price?",
-    back: "It goes up. More buyers competing for the same quantity pushes the market to a higher price.",
+    front: "Demand rises, supply holds. The price does what?",
+    back: "Rises",
+    note: "More buyers competing for the same quantity pushes the market higher.",
   },
   {
     id: "deck-moon",
     topic: "History",
-    front: "What is 1969 remembered for?",
-    back: "The first Moon landing. Apollo 11 touched down that July, and Neil Armstrong became the first person to walk on the Moon.",
+    front: "Who walked on the Moon first?",
+    back: "Armstrong",
+    note: "Apollo 11 touched down in July 1969.",
   },
   {
     id: "deck-newton",
     topic: "Physics",
-    front: "Newton's third law, in one sentence?",
-    back: "Every action has an equal and opposite reaction. Push on a wall and the wall pushes back on you just as hard.",
+    front: "Newton's third law is about forces being what?",
+    back: "Equal and opposite",
+    note: "Push on a wall and the wall pushes back just as hard.",
   },
 ];
 
@@ -55,7 +70,7 @@ type Grade = "knew" | "missed";
 /**
  * One pile, cycling. Depth 0 is the card you are on and every other card sits
  * further down the stack. Answering sends a card round to the deepest place
- * rather than off the page — a deck of five always has five cards in it, and the
+ * rather than off the page. A deck of five always has five cards in it, and the
  * pile never thins out as you work through it.
  *
  * Each depth sits at its own angle and offset, so the stack reads as cards
@@ -147,7 +162,7 @@ export function DemoCard() {
     setResults((r) => r.map((existing, i) => (i === index ? value : existing)));
   }
 
-  // Round and round. The deck does not end, it comes back to the first card —
+  // Round and round. The deck does not end, it comes back to the first card:
   // which is what a deck of cards does.
   function advance() {
     setIndex((i) => (i + 1) % DECK.length);
@@ -165,6 +180,9 @@ export function DemoCard() {
           const inverted = i % 2 === 1;
           const ink = inverted ? "text-paper" : "text-ink";
           const faint = inverted ? "text-paper/55" : "text-ink-faint";
+          // The reason under the answer is a second thought, not marginalia:
+          // mahogany is the site's marking colour and too loud for a whole line.
+          const muted = inverted ? "text-paper/70" : "text-ink-soft";
 
           return (
             <div
@@ -234,9 +252,10 @@ export function DemoCard() {
                         )}
                       </div>
 
-                      <p className={`font-reading text-[1.2rem] leading-relaxed ${ink}`}>
+                      <p className={`font-reading text-[2rem] leading-tight ${ink}`}>
                         {card.back}
                       </p>
+                      <p className={`mt-2 text-[0.92rem] leading-relaxed ${muted}`}>{card.note}</p>
 
                       {grade === null ? (
                         <div className="mt-6 flex items-center gap-3">
@@ -329,7 +348,7 @@ function GradeButton({
   onClick: () => void;
   children: React.ReactNode;
 }) {
-  // Mahogany is 3:1 on an ink card — the brighter red is the one that reads there.
+  // Mahogany is 3:1 on an ink card. The brighter red is the one that reads there.
   const line = inverted ? "var(--color-missed-dark)" : "var(--color-accent)";
   const rest = inverted ? "border-paper text-paper" : "border-ink text-ink";
 

@@ -11,11 +11,11 @@ const MARGIN = 48;
 
 /**
  * The panel the whole landing page sits in. Its top edge dips into a gap, and
- * that gap slides along to sit under whichever nav item is selected — so the
+ * that gap slides along to sit under whichever nav item is selected, so the
  * panel and the nav read as one object rather than two.
  *
  * Only the gap is ever painted. The panel and the page behind it are the same
- * tone, so a fill across the whole panel would be invisible ink — and worse, it
+ * tone, so a fill across the whole panel would be invisible ink, and worse, it
  * would cover the dotted grid on the page and leave the panel as a blank
  * rectangle in the middle of it. What is drawn here is the dip itself, in the
  * nav's colour, as though the nav had leaked down into the page.
@@ -38,7 +38,7 @@ export function NotchPanel({
   className?: string;
   /**
    * The gap's own element, for anything that wants to work it while it is being
-   * drawn — the sweep out of the story grows this one in as it flattens the one
+   * drawn: the sweep out of the story grows this one in as it flattens the one
    * rising out of the bar.
    */
   notchRef?: React.Ref<SVGSVGElement>;

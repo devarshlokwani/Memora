@@ -10,7 +10,7 @@ import { drawnCirclePath } from "@/lib/sketch";
  * The photograph, cut to a circle and framed by hand.
  *
  * Two rings: one in ink round the picture, and a second in mahogany sitting
- * slightly off register behind it — the same second pass of the pen the cards
+ * slightly off register behind it, the same second pass of the pen the cards
  * use, which is what stops a perfect circle looking stamped out.
  *
  * The paths are built at the frame's real pixel size rather than stretched from

@@ -7,7 +7,7 @@ import { prefersReducedMotion } from "@/lib/motion";
 
 /**
  * A tick or a cross that draws itself, stroke by stroke, the way you would mark
- * a page. The cross draws its two strokes in sequence rather than together —
+ * a page. The cross draws its two strokes in sequence rather than together:
  * both at once looks like a shape appearing, one after the other looks like a
  * hand.
  */
@@ -18,7 +18,7 @@ export function DrawnMark({
 }: {
   type: "knew" | "missed";
   className?: string;
-  /** Overrides the red/green pair — the score table draws these in ink. */
+  /** Overrides the red/green pair, the score table draws these in ink. */
   colour?: string;
 }) {
   const ref = useRef<SVGSVGElement>(null);

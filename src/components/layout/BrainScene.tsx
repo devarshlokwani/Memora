@@ -47,7 +47,7 @@ export function BrainScene({ className = "" }: { className?: string }) {
       try {
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       } catch {
-        // No WebGL — a phone with it switched off, or a locked-down browser.
+        // No WebGL, a phone with it switched off, or a locked-down browser.
         if (!cancelled) setFailed(true);
         return;
       }
@@ -86,7 +86,7 @@ export function BrainScene({ className = "" }: { className?: string }) {
 
       /* Tracked from the window rather than from the canvas, because the canvas
          takes no pointer events at all: it is a square box laid over other
-         things — in the footer, over the links beside the wordmark — and a
+         things (in the footer, over the links beside the wordmark) and a
          decoration that swallows a click on a real link is not worth a tilt.
          The pull falls off with distance instead, so it answers a cursor near
          it and ignores one on the other side of the page. */
@@ -139,7 +139,7 @@ export function BrainScene({ className = "" }: { className?: string }) {
 
     /* Nothing is fetched until the footer is nearly in view. three.js is a
        large thing to hand someone who has only opened the page, and the effect
-       runs the moment this mounts — which, since the footer is on every route,
+       runs the moment this mounts, which, since the footer is on every route,
        is immediately. The margin gives it a screen's warning so it is ready by
        the time anyone has scrolled to it. */
     const approach = new IntersectionObserver(

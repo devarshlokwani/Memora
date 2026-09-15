@@ -1,7 +1,7 @@
 /**
  * Drawn marks. In a monochrome scheme these do the work that green and red
  * normally do, so right and wrong stay distinguishable by shape rather than hue
- * — which also survives being printed, dimmed, or read by someone colourblind.
+ *, which also survives being printed, dimmed, or read by someone colourblind.
  */
 
 export function CheckMark({ className = "h-5 w-5" }: { className?: string }) {

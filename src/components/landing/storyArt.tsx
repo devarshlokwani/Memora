@@ -3,14 +3,14 @@ import { drawnRectPath } from "@/lib/sketch";
 /**
  * The drawn things that stand around the brain while the story is told.
  *
- * Each one is a small piece of the thing its beat is talking about — sheets of
+ * Each one is a small piece of the thing its beat is talking about: sheets of
  * paper for what you hand over, a course tree for what comes back, a card for
  * each way of being asked. They are not decoration for its own sake: a stage
  * with nothing on it but a subject and a caption reads as a diagram, and the
  * point of this part of the site is that it should read as a story.
  *
- * All of them are drawn the way the rest of the site is drawn — wobbling boxes,
- * dashed rules, marginalia in the hand face — so they belong to the same page.
+ * All of them are drawn the way the rest of the site is drawn (wobbling boxes,
+ * dashed rules, marginalia in the hand face) so they belong to the same page.
  *
  * And they are drawn in front of you rather than simply appearing. Every stroke
  * takes its dash offset from a custom property that the stage counts down as the
@@ -31,7 +31,7 @@ const drawn = (step: number) => ({
   style: { strokeDashoffset: `var(--d${Math.min(7, step)}, 0)` },
 });
 
-/** Anything a line cannot draw — words, fills, dots — which fades instead. */
+/** Anything a line cannot draw: words, fills and dots, which fade instead. */
 const inked = { style: { opacity: "var(--ink, 1)" } };
 
 function Box({

@@ -7,7 +7,7 @@ import { DemoCard } from "@/components/landing/DemoCard";
 import { Faq } from "@/components/landing/Faq";
 import { LandingShell } from "@/components/landing/LandingShell";
 import { SectionIntro } from "@/components/landing/SectionIntro";
-import { SourceTrace } from "@/components/landing/SourceTrace";
+import { SourceProof } from "@/components/landing/SourceProof";
 import { DashedRule } from "@/components/ui/DashedRule";
 import { Marked } from "@/components/ui/Marked";
 import { PushButton } from "@/components/ui/PushButton";
@@ -15,11 +15,11 @@ import { SketchCard } from "@/components/ui/SketchFrame";
 import { CARD_TYPES, MODE_BLURBS, MODE_LABELS } from "@/lib/types";
 import { getUser } from "@/server/db/client";
 
-/** What each format is actually good for — the part a student has to decide. */
+/** What each format is actually good for, the part a student has to decide. */
 const FORMAT_USES: Record<string, string> = {
   flashcard: "Best for the ideas you have to be able to explain, not just recognise.",
   mcq: "Closest to how most exams ask. The wrong options are real misconceptions.",
-  fill_blank: "For the sentence you need word-perfect — a definition, a law, a formula.",
+  fill_blank: "For the sentence you need word-perfect: a definition, a law, a formula.",
   match: "For sets that blur together: structures and functions, terms and dates.",
   jargon: "For vocabulary you must produce from memory, not pick from a list.",
 };
@@ -27,7 +27,7 @@ const FORMAT_USES: Record<string, string> = {
 function Fact({ figure, label }: { figure: string; label: string }) {
   return (
     <div>
-      <p className="font-reading text-[2rem] leading-none text-ink">{figure}</p>
+      <p className="font-reading text-[1.5rem] leading-snug text-ink">{figure}</p>
       <p className="mt-2 text-[0.9rem] leading-relaxed text-ink-soft">{label}</p>
     </div>
   );
@@ -54,9 +54,18 @@ function TrySection() {
         <DashedRule />
       </div>
       <dl className="mx-auto mt-10 grid max-w-3xl gap-10 text-left sm:grid-cols-3">
-        <Fact figure="5" label="card formats per topic, so a topic you keep missing can be attacked from another side." />
-        <Fact figure="12" label="documents to a course. Slides and the chapter they came from end up in the same topics." />
-        <Fact figure="20" label="cards a sitting, drawn due-first — short enough to actually finish on a bad day." />
+        <Fact
+          figure="Hand it over"
+          label="Slides, a chapter, your own notes. Whatever you have, in whatever state it is in."
+        />
+        <Fact
+          figure="Drill it your way"
+          label="Flashcards, multiple choice, fill-ins, matching, jargon. Switch when one stops working."
+        />
+        <Fact
+          figure="Forget nothing"
+          label="Every card comes back on the day it was about to slip, and not before."
+        />
       </dl>
     </div>
   );
@@ -83,10 +92,10 @@ function HowSection() {
           <p className="mt-2.5 max-w-[68ch] text-[0.95rem] leading-relaxed text-ink-soft">
             Your documents are split into numbered passages, and the structuring pass records which
             passages each topic came from. Writing the cards for a topic then means reading those
-            passages back — so an answer traces to something in your material rather than to general
+            passages back, so an answer traces to something in your material rather than to general
             knowledge about the subject.
           </p>
-          <SourceTrace />
+          <SourceProof />
         </div>
 
         <div className="mt-16">
@@ -119,7 +128,7 @@ function FormatsSection() {
       <SectionIntro
         eyebrow="Five ways in,"
         title={<>One topic, <Marked>five ways</Marked> to learn it</>}
-        blurb="Recognition and recall are different skills, and exams test both. Switch formats when a topic stops sinking in — the material is the same, the demand on you is not."
+        blurb="Recognition and recall are different skills, and exams test both. Switch formats when a topic stops sinking in. The material is the same; the demand on you is not."
       />
 
       <ul className="mx-auto mt-14 grid max-w-4xl gap-5 sm:grid-cols-2">
@@ -155,7 +164,7 @@ function FormatsSection() {
       </ul>
 
       <p className="mx-auto mt-10 max-w-[58ch] text-center text-[0.95rem] leading-relaxed text-ink-soft">
-        Or mix all five in one sitting. However you answer, the card is rescheduled the same way —
+        Or mix all five in one sitting. However you answer, the card is rescheduled the same way:
         the format changes what is being asked of you, not how Memora tracks whether it stuck.
       </p>
 

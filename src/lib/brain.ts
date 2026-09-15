@@ -4,7 +4,7 @@
  * Built rather than downloaded. Every anatomical mesh worth having is either
  * licensed in a way that follows you around (ShareAlike) or sits behind a
  * download the browser cannot reach, and the ones that are freely floating
- * about have no stated provenance at all — not something to bury in a product.
+ * about have no stated provenance at all, not something to bury in a product.
  * Generating it also means it can be drawn to match the rest of the site
  * instead of arriving as a photoreal object that belongs to another page.
  *
@@ -89,7 +89,7 @@ function noise(x: number, y: number, z: number) {
  * of. Plain noise gives a lumpy potato; this gives gyri.
  *
  * The stretch matters. This noise stays inside about ±0.45 nine times in ten,
- * so `1 - |noise|` averages 0.8 rather than 0.5 — left as it is, the fold comes
+ * so `1 - |noise|` averages 0.8 rather than 0.5. Left as it is, the fold comes
  * out as a constant bulge with a few per cent of relief on it, and the brain
  * renders as a smooth pebble. Scaled up first, the ridge fills 0 to 1 and sits
  * around the middle, so the term adds and subtracts about equally.
@@ -117,7 +117,7 @@ const LENGTH = 0.98;
  * A point on the cerebrum, from a direction on the unit sphere.
  *
  * An ellipsoid does the gross shape; the rest is what makes it read as a brain
- * rather than an egg — a narrower front, a flat underside, temporal lobes
+ * rather than an egg, a narrower front, a flat underside, temporal lobes
  * bulging at the sides, folds all over, and the fissure down the middle that
  * everyone actually recognises it by.
  */
@@ -165,7 +165,7 @@ export function cerebrumPoint(x: number, y: number, z: number): Vec3 {
 }
 
 /**
- * A point on the cerebellum — the smaller body tucked under the back of the
+ * A point on the cerebellum, the smaller body tucked under the back of the
  * brain. Its folds are fine and near-parallel rather than winding, so the noise
  * it uses is stretched flat in y to band them.
  */

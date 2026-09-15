@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { MARK_BAND, paperStrokes } from "@/lib/sketch";
 
 /**
- * The pencil marks lying under every page — loose strokes at their own angles
+ * The pencil marks lying under every page, loose strokes at their own angles
  * rather than a ruled grid, which is what a repeating tile always turns into
  * however softly it is drawn.
  *
@@ -21,7 +21,7 @@ export function PaperMarks() {
     const measure = () => {
       const width = document.documentElement.clientWidth;
       // Rounded up to a whole band, so the state only changes when there is a
-      // band to add or drop — a height that animates would otherwise re-render
+      // band to add or drop, a height that animates would otherwise re-render
       // every stroke on the page on every frame of the tween.
       const raw = Math.max(document.body.scrollHeight, window.innerHeight);
       const height = Math.ceil(raw / MARK_BAND) * MARK_BAND;

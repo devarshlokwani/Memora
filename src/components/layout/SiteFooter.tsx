@@ -82,7 +82,7 @@ export function SiteFooter() {
 
           {/* The brain stands in front and the name rises from behind it. The
               wordmark is inside its own clip, so the brain has to be a sibling
-              of that clip rather than a child — anything in there is cut off at
+              of that clip rather than a child. Anything in there is cut off at
               the line box along with the letters. Resting on the panel's bottom
               edge rather than centred on the word, because the panel clips there
               too and a 3D object sliced off mid-turn reads as broken, where
@@ -98,7 +98,7 @@ export function SiteFooter() {
       </div>
 
       {/* Full width and the nav's colour, so the page closes on what it opened
-          with — and so over-scrolling past the bottom meets white rather than a
+          with, and so over-scrolling past the bottom meets white rather than a
           seam between the strip and the canvas behind it. */}
       <div className="mt-12 bg-paper">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-7 text-sm text-ink-faint sm:flex-row sm:items-center sm:justify-between">

@@ -14,7 +14,7 @@ const ENTRIES: Entry[] = [
   {
     question: "Do I have to organise my notes first?",
     answer:
-      "No. Drop in whatever you have — lecture slides, a textbook chapter, your own half-written notes — and Memora reads them together as one body of material. Working out the order is the job it is doing for you.",
+      "No. Drop in whatever you have (lecture slides, a textbook chapter, your own half-written notes) and Memora reads them together as one body of material. Working out the order is the job it is doing for you.",
   },
   {
     question: "What can I upload?",
@@ -39,7 +39,7 @@ const ENTRIES: Entry[] = [
   {
     question: "How does it decide when to show me a card again?",
     answer:
-      "Spaced repetition. Every answer adjusts how long that card waits — a card you find easy comes back in weeks, one you miss comes back within the hour. The aim is to meet each card just before you would have forgotten it.",
+      "Spaced repetition. Every answer adjusts how long that card waits. A card you find easy comes back in weeks; one you miss comes back within the hour. The aim is to meet each card just before you would have forgotten it.",
   },
   {
     question: "Who can see my material?",
@@ -55,7 +55,7 @@ export function Faq() {
 
   const toggle = (index: number) => {
     /* A press the row gives under and comes back from. Done on the click rather
-       than with :active so it plays in full however briefly the button is held —
+       than with :active so it plays in full however briefly the button is held:
        a quick tap on a CSS active state can be over before a single frame has
        been drawn, and then nothing has told you the click landed. */
     const row = rows.current[index];
@@ -87,8 +87,8 @@ export function Faq() {
         duration: 0.42,
         ease: EASE,
         /* Back to auto once it has arrived. Left at the pixel height it was
-           measured at, an answer that rewraps — a narrower window, a larger
-           font — would be cut off or leave a gap under itself. */
+           measured at, an answer that rewraps (a narrower window, a larger
+           font) would be cut off or leave a gap under itself. */
         onComplete: opening ? () => gsap.set(panel, { height: "auto" }) : undefined,
       });
 

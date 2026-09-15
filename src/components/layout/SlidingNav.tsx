@@ -11,7 +11,7 @@ export type NavItem = {
   id: string;
   label: string;
   href: string;
-  /** Shown instead of the label — the wordmark sits in the row as an item. */
+  /** Shown instead of the label: the wordmark sits in the row as an item. */
   node?: React.ReactNode;
   /** Off for an item the underline would not suit, such as the wordmark. */
   marked?: boolean;
@@ -22,7 +22,7 @@ export type NavItem = {
  *
  * Changing section un-draws the old mark right to left, then draws the new one
  * left to right. It used to be a single mark that slid between items, which made
- * the same stroke look like it was being dragged across the nav — the line you
+ * the same stroke look like it was being dragged across the nav. The line you
  * had chosen never actually went away.
  *
  * Both directions are the same property: with `pathLength` normalised to 100,
@@ -46,7 +46,7 @@ export function SlidingNav({
   /**
    * Returns true when it has dealt with the click itself, which stops the link
    * navigating. These are real links so they can be opened in a new tab and
-   * read by anything that walks the page — but letting one navigate while the
+   * read by anything that walks the page, but letting one navigate while the
    * page is mid-transition swaps the section out from under it.
    */
   onSelect?: (id: string) => boolean | void;
@@ -87,7 +87,7 @@ export function SlidingNav({
   }, [activeId]);
 
   // Reported separately from the marks so a consumer can line something else up
-  // with the selected item — the landing page hangs the panel gap off this.
+  // with the selected item, the landing page hangs the panel gap off this.
   const reportSelected = useRef(() => {});
   reportSelected.current = () => {
     if (!onSelectedRect) return;

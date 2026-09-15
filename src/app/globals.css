@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Memora — ink on paper.
+/* Memora, ink on paper.
    Black and white only. Everything that would normally be carried by colour is
    carried by line weight, texture and drawn marks instead. */
 
@@ -21,14 +21,14 @@
   --color-rule-soft: #c9c7c6;
 
   /* Guide lines: the dotted grid behind the page and any edge drawn as dashes.
-     Deliberately near the paper — it should register as texture you notice on
+     Deliberately near the paper. It should register as texture you notice on
      second glance, never as a grid you are being asked to read. */
   --color-guide: #0b090a1c;
   --color-guide-strong: #0b090a3d;
 
   /* Kept as token names so the whole app re-themes at once. Inside a study
-     session these stay values rather than hues — correct is full ink, wrong is
-     washed out — and always carry a drawn mark beside them. */
+     session these stay values rather than hues. Correct is full ink, wrong is
+     washed out, and both always carry a drawn mark beside them. */
   --color-highlight: #e5383b;
   --color-highlight-deep: #0b090a;
   --color-correct: #0b090a;
@@ -48,7 +48,7 @@
   --color-missed: #a4161a;
 
   /* The same two judgements on a dark card. Carbon-black on onyx is 1.1:1 and
-     mahogany is 2.6:1 — both effectively invisible — so the ink card gets the
+     mahogany is 2.6:1 (both effectively invisible) so the ink card gets the
      light end of the palette and the brighter red instead. */
   --color-knew-dark: #f5f3f4;
   --color-missed-dark: #e5383b;
@@ -79,7 +79,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Paper fibre. It should read as texture, never as pattern — the loose strokes
+/* Paper fibre. It should read as texture, never as pattern. The loose strokes
    over it are drawn by PaperMarks, across the whole document rather than tiled,
    because anything that repeats stops being a hand and becomes a grid. */
 :root {
@@ -151,7 +151,7 @@ body[data-story="on"] > footer {
   transform: rotate(var(--tilt, 0deg));
 }
 
-/* Hatching, for the "not quite" state — texture instead of a colour. */
+/* Hatching, for the "not quite" state, texture instead of a colour. */
 .hatch {
   background-image: repeating-linear-gradient(
     45deg,

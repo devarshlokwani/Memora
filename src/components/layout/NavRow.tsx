@@ -11,7 +11,7 @@ import { PushButton } from "@/components/ui/PushButton";
  *
  * One component because it is rendered twice: at the top of the page, and again
  * at the foot of the story where it arrives to say there is more below. The
- * second has to be the first one exactly — it slides up and takes the first
+ * second has to be the first one exactly. It slides up and takes the first
  * one's place, and any difference between them shows as a jump at the handover.
  */
 export function NavRow({
@@ -28,7 +28,7 @@ export function NavRow({
   return (
     /* w-full rather than relying on the parent to stretch it. In the bar
          at the foot of the story this is a flex item, and auto side margins on a
-         flex item soak up the free space instead of filling it — the row
+         flex item soak up the free space instead of filling it. The row
          collapsed to its own width and the call to action landed on top of the
          last link. */
       <div className="relative mx-auto w-full max-w-6xl px-6 py-4">

@@ -27,7 +27,7 @@ export function SketchFrame({
   seed: string;
   /** Cards are filled; frames used purely as an outline are not. */
   filled?: boolean;
-  /** Ink card, paper line — the other half of an alternating stack. */
+  /** Ink card, paper line, the other half of an alternating stack. */
   invert?: boolean;
   /** A pencilled-in edge, for something provisional or not yet chosen. */
   dashed?: boolean;

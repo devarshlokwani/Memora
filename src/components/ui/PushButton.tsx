@@ -27,7 +27,7 @@ export function PushButton({
 }) {
   /* The full size steps down on a phone: at its desktop padding a button with a
      domain on it is wider than a narrow column has to give, and it spills over
-     whatever is beside it. The small size stays put — it is already near the
+     whatever is beside it. The small size stays put. It is already near the
      floor for something meant to be tapped. */
   const pad =
     size === "sm"

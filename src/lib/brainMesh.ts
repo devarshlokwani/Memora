@@ -5,14 +5,14 @@ import { brainstemRing, cerebellumPoint, cerebrumPoint } from "@/lib/brain";
 /**
  * The brain as three.js objects, built from the shapes in `lib/brain`.
  *
- * Kept out of any one component because two places show the same brain now —
+ * Kept out of any one component because two places show the same brain now:
  * standing in front of the wordmark in the footer, and turning through the
- * story at the top of the site — and two copies of this would drift apart the
- * first time either was touched.
+ * story at the top of the site. Two copies of this would drift apart the first
+ * time either was touched.
  *
  * `THREE` is handed in rather than imported: the library is loaded on demand by
  * whichever component needs it, and importing it here would drag the whole of
- * it into the initial bundle. The type import costs nothing — it is erased.
+ * it into the initial bundle. The type import costs nothing, being erased.
  */
 
 /* Icosahedron detail is not a doubling: each face is cut into (detail + 1)^2
@@ -33,7 +33,7 @@ export function buildBrain(THREE: typeof ThreeNS): BrainMesh {
 
      Sixteen steps, not four. Toon shading looks the ramp up at
      `dot(normal, light) * 0.5 + 0.5`, so everything facing the light at all is
-     squeezed into the top half of the texture — a four-step ramp spends two of
+     squeezed into the top half of the texture. A four-step ramp spends two of
      them on the shadow side and leaves the whole lit surface with a single tone,
      which is how a folded brain comes out as a smooth pebble. Weighted light, so
      it reads as paper with shadow in the sulci rather than as a grey rock. */
@@ -92,7 +92,7 @@ export function buildBrain(THREE: typeof ThreeNS): BrainMesh {
 
   /* The outline: the same geometry again, a little larger and drawn inside-out,
      so only its far side survives and reads as a line round the edge. Scaled
-     from the centre rather than pushed out along each normal — normals in a fold
+     from the centre rather than pushed out along each normal: normals in a fold
      point at each other, so an offset shell turns itself inside out in every
      sulcus and scribbles black through the surface. */
   for (const geometry of parts) {

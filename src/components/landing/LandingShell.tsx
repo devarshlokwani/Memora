@@ -16,13 +16,13 @@ import { NOTCH_PADDING } from "@/lib/notch";
 
 export type SectionId = "hero" | "try" | "how" | "formats";
 
-/** Everything the sweep can arrive at — the story is what it leaves. */
+/** Everything the sweep can arrive at. The story is what it leaves. */
 type Landing = Exclude<SectionId, "hero">;
 
 /* The wordmark is a nav item like any other, sitting in the middle of the row:
    it opens the story that introduces Memora, and the gap in the panel tracks it
-   the same way it tracks the rest. It carries no underline — a drawn line under
-   the wordmark reads as a mistake rather than as a selection — so the gap alone
+   the same way it tracks the rest. It carries no underline: a drawn line under
+   the wordmark reads as a mistake rather than as a selection, so the gap alone
    says it is the one you are on.
 
    Sign in rides in the cluster too, so the row stays balanced around the middle.
@@ -38,7 +38,7 @@ const ITEMS: NavItem[] = [
 export function LandingShell({
   sections,
 }: {
-  /** The story is not one of these — the shell renders it itself. */
+  /** The story is not one of these. The shell renders it itself. */
   sections: Record<Exclude<SectionId, "hero">, React.ReactNode>;
 }) {
   const [active, setActive] = useState<SectionId>("try");
@@ -77,7 +77,7 @@ export function LandingShell({
   /* The story is the whole page while it is running: a footer sitting under it
      ends the scroll early, and the closing line and the bar that arrives with
      it land on a page that has already moved on. Marked on the body rather than
-     passed down, because the footer is mounted by the root layout — this is a
+     passed down, because the footer is mounted by the root layout. This is a
      mode the page is in, not a prop it can hand over. */
   useEffect(() => {
     if (active === "hero") {
@@ -85,8 +85,8 @@ export function LandingShell({
       return;
     }
 
-    /* Letting the footer back in means laying out the whole of it — a portrait,
-       a wordmark and a second canvas — and at the end of a sweep that lands in
+    /* Letting the footer back in means laying out the whole of it (a portrait,
+       a wordmark and a second canvas) and at the end of a sweep that lands in
        the same frame as everything else. It is a long way below the fold by
        then, so it can wait for the dust to settle. */
     const id = window.setTimeout(() => {
@@ -96,7 +96,7 @@ export function LandingShell({
   }, [active]);
 
   /**
-   * Clicking the nav is local state plus a URL rewrite, not a navigation — the
+   * Clicking the nav is local state plus a URL rewrite, not a navigation. The
    * section should change instantly rather than waiting on the router.
    *
    * It goes back to the top first. The gap in the panel is cut directly beneath
@@ -125,7 +125,7 @@ export function LandingShell({
    *
    * Earlier versions wiped the story away with the bar as the moving edge, which
    * meant the arriving section had to be on screen while it was still arriving.
-   * Whatever it did on its way in — a drawn mark filling, a rule wiping across —
+   * Whatever it did on its way in (a drawn mark filling, a rule wiping across)
    * happened in front of the reader and read as the page loading a second time.
    * Nothing gets rid of that, because mounting a page is mounting a page. So the
    * page is mounted behind a panel that covers the window instead, and none of
@@ -262,7 +262,7 @@ export function LandingShell({
   return (
     <div className="flex flex-1 flex-col">
       {/* Fixed to the top of the page rather than the viewport. The gap is cut
-          directly beneath it, so the two have to scroll together — a nav that
+          directly beneath it, so the two have to scroll together. A nav that
           follows you leaves its own notch behind. Solid, never translucent: the
           gap reveals this exact colour. */}
       <header className="relative z-50 bg-paper">
@@ -328,7 +328,7 @@ export function LandingShell({
 
       {/* Rendered by the shell rather than by the story, so that picking
           something from it can fly it up to the top bar's place while the page
-          underneath changes section — inside the story it was unmounted the
+          underneath changes section. Inside the story it was unmounted the
           moment the new section arrived, mid-flight. */}
       <BottomNav
         items={ITEMS}

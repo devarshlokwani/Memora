@@ -14,7 +14,7 @@ const STAGE_COPY: Record<Exclude<Stage, "idle">, { title: string; body: string }
   },
   structuring: {
     title: "Building the structure",
-    body: "Working out the themes and splitting them into topics. This is the slow part — a minute or two for a long document.",
+    body: "Working out the themes and splitting them into topics. This is the slow part: a minute or two for a long document.",
   },
 };
 
