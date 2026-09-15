@@ -25,14 +25,13 @@ type Landing = Exclude<SectionId, "hero">;
    the wordmark reads as a mistake rather than as a selection, so the gap alone
    says it is the one you are on.
 
-   Sign in rides in the cluster too, so the row stays balanced around the middle.
-   Only the call to action sits out on the right. */
+   Nothing signs in yet, so the row is the three sections and the wordmark, and
+   the call to action out on the right is the waitlist. */
 const ITEMS: NavItem[] = [
   { id: "try", label: "Try a card", href: "/?s=try" },
   { id: "how", label: "How it works", href: "/?s=how" },
   { id: "hero", label: "Memora", href: "/?s=hero", node: <Logo />, marked: false },
   { id: "formats", label: "Formats", href: "/?s=formats" },
-  { id: "signin", label: "Sign in", href: "/login" },
 ];
 
 export function LandingShell({
@@ -271,15 +270,16 @@ export function LandingShell({
           activeId={navActive}
           onSelectedRect={placeNotch}
           onSelect={(id) => {
-            // Sign in leaves the page; it should not also swap the panel.
-            if (id !== "signin") choose(id as SectionId);
+            setNavActive(id as SectionId);
+            choose(id as SectionId);
+            return true;
           }}
         />
       </header>
 
       {/* Phone: tabs sit under the wordmark, where the nav links cannot fit. */}
       <div className="flex gap-5 px-6 pb-3 text-sm md:hidden">
-        {ITEMS.filter((i) => i.id !== "signin").map((item) => (
+        {ITEMS.filter((i) => i.id !== "hero").map((item) => (
           <button
             key={item.id}
             type="button"
@@ -341,7 +341,6 @@ export function LandingShell({
           barItem.current = rect;
         }}
         onSelect={(id) => {
-          if (id === "signin") return false;
           // The wordmark in this bar is the story you are already reading, so
           // it takes you back to the top of it rather than sweeping anywhere.
           if (id === "hero") {

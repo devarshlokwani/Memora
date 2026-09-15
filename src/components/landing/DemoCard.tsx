@@ -314,8 +314,8 @@ export function DemoCard() {
             you are about to forget them.
           </p>
           <div className="mt-5 flex flex-wrap items-center justify-center gap-4">
-            <PushButton href="/signup" size="sm">
-              Build my first course
+            <PushButton href="/waitlist" size="sm">
+              Join the waitlist
             </PushButton>
             <button
               type="button"

@@ -22,19 +22,17 @@ const COLUMNS: Column[] = [
     ],
   },
   {
-    heading: "Your courses",
+    heading: "Coming",
     links: [
-      { label: "Dashboard", href: "/dashboard" },
-      { label: "Review what's due", href: "/review" },
-      { label: "New course", href: "/courses/new" },
+      { label: "Join the waitlist", href: "/waitlist" },
+      { label: "The story", href: "/?s=hero" },
     ],
   },
   {
-    heading: "Account",
+    heading: "Small print",
     links: [
-      { label: "Sign in", href: "/login" },
-      { label: "Create an account", href: "/signup" },
-      { label: "Set up Memora", href: "/setup" },
+      { label: "Terms", href: "/terms" },
+      { label: "Privacy", href: "/privacy" },
     ],
   },
 ];
@@ -48,7 +46,7 @@ export function SiteFooter() {
         {/* overflow-hidden is what makes the wordmark surface from inside the
             block rather than slide past behind it. */}
         <div className="overflow-hidden rounded-[2rem] bg-footer px-7 pt-12 sm:px-12 sm:pt-14">
-          <div className="grid gap-12 md:grid-cols-[1.2fr_2fr]">
+          <div className="grid gap-12 md:grid-cols-[1fr_1.9fr]">
             <div>
               <Link href="/" className="inline-flex items-center gap-3 text-ink">
                 <BrainMark className="h-10 w-11 shrink-0" />
@@ -61,13 +59,13 @@ export function SiteFooter() {
               </p>
             </div>
 
-            <nav className="grid gap-10 sm:grid-cols-3">
+            <nav className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 sm:gap-x-10">
               {COLUMNS.map((column) => (
                 <div key={column.heading}>
                   {/* ink-soft rather than ink-faint: on the footer's deeper tone the faint
                       grey drops to 3.9:1. The handwritten face is what separates a
                       heading from its links here, not the weight of the ink. */}
-                  <h2 className="font-hand text-lg text-ink-soft">{column.heading}</h2>
+                  <h2 className="whitespace-nowrap font-hand text-lg text-ink-soft">{column.heading}</h2>
                   <ul className="mt-3 space-y-2.5">
                     {column.links.map((link) => (
                       <li key={link.href}>

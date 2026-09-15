@@ -11,13 +11,16 @@ import Link from "next/link";
  */
 export function PushButton({
   href,
+  onPress,
   children,
   variant = "solid",
   size = "md",
   external = false,
   className = "",
 }: {
-  href: string;
+  href?: string;
+  /** Makes it a button rather than a link, for things that happen in place. */
+  onPress?: () => void;
   children: React.ReactNode;
   variant?: "solid" | "outline";
   size?: "sm" | "md";
@@ -39,13 +42,8 @@ export function PushButton({
       ? "bg-ink text-paper border border-ink"
       : "bg-paper text-ink border border-ink";
 
-  return (
-    <Link
-      href={href}
-      target={external ? "_blank" : undefined}
-      rel={external ? "noreferrer" : undefined}
-      className={`group relative inline-block select-none ${className}`}
-    >
+  const inside = (
+    <>
       {/* The layer underneath. It never moves up, only further down and back. */}
       <span
         aria-hidden="true"
@@ -56,6 +54,27 @@ export function PushButton({
       >
         {children}
       </span>
+    </>
+  );
+
+  const shell = `group relative inline-block select-none ${className}`;
+
+  if (onPress) {
+    return (
+      <button type="button" onClick={onPress} className={shell}>
+        {inside}
+      </button>
+    );
+  }
+
+  return (
+    <Link
+      href={href ?? "/"}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noreferrer" : undefined}
+      className={shell}
+    >
+      {inside}
     </Link>
   );
 }

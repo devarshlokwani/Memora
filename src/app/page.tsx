@@ -7,10 +7,10 @@ import { DemoCard } from "@/components/landing/DemoCard";
 import { Faq } from "@/components/landing/Faq";
 import { LandingShell } from "@/components/landing/LandingShell";
 import { SectionIntro } from "@/components/landing/SectionIntro";
-import { SourceProof } from "@/components/landing/SourceProof";
+import { WaitlistCta } from "@/components/landing/WaitlistCta";
+import { ScanDoc } from "@/components/landing/ScanDoc";
 import { DashedRule } from "@/components/ui/DashedRule";
 import { Marked } from "@/components/ui/Marked";
-import { PushButton } from "@/components/ui/PushButton";
 import { SketchCard } from "@/components/ui/SketchFrame";
 import { CARD_TYPES, MODE_BLURBS, MODE_LABELS } from "@/lib/types";
 import { getUser } from "@/server/db/client";
@@ -42,9 +42,9 @@ function TrySection() {
         title={<>Hand over the PDF. Get back a way to <Marked>study it</Marked>.</>}
         blurb="Memora reads your course material, builds the structure your lecturer never gave you, and turns every topic into cards you can actually drill."
       />
-      <PushButton href="/signup" className="mt-7">
-        Build my first course
-      </PushButton>
+      <div id="waitlist" className="mt-8 scroll-mt-28">
+        <WaitlistCta source="hero" />
+      </div>
 
       <div className="mt-14 flex justify-center">
         <DemoCard />
@@ -85,17 +85,18 @@ function HowSection() {
       <div className="mx-auto mt-20 max-w-5xl">
         <DashedRule />
 
-        <div className="mt-12">
-          <h3 className="font-reading text-xl text-ink">
-            Cards come from your source, not the web
-          </h3>
-          <p className="mt-2.5 max-w-[68ch] text-[0.95rem] leading-relaxed text-ink-soft">
-            Your documents are split into numbered passages, and the structuring pass records which
-            passages each topic came from. Writing the cards for a topic then means reading those
-            passages back, so an answer traces to something in your material rather than to general
-            knowledge about the subject.
-          </p>
-          <SourceProof />
+        <div className="mt-12 grid gap-10 lg:grid-cols-2 lg:items-center">
+          <div>
+            <h3 className="font-reading text-xl text-ink">
+              Cards come from your source, not the web
+            </h3>
+            <p className="mt-2.5 max-w-[46ch] text-[0.95rem] leading-relaxed text-ink-soft">
+              Memora reads the document you handed over, a line at a time, and writes every card out
+              of what is actually on the page. An answer traces back to your own material rather
+              than to general knowledge about the subject.
+            </p>
+          </div>
+          <ScanDoc />
         </div>
 
         <div className="mt-16">
@@ -115,8 +116,14 @@ function HowSection() {
         </div>
       </div>
 
-      <div className="mt-16 text-center">
-        <PushButton href="/signup">Build my first course</PushButton>
+      <div className="mx-auto mt-16 max-w-md text-center">
+        <p className="font-hand text-2xl text-ink-soft">Not built yet, nearly there,</p>
+        <h3 className="mt-2 font-reading text-[1.9rem] leading-snug text-ink">
+          Be there when it opens
+        </h3>
+        <div className="mt-6">
+          <WaitlistCta source="how" label="Build my first course" />
+        </div>
       </div>
     </div>
   );

@@ -43,7 +43,7 @@ export function MeetTheCreator() {
               Visit
             </PushButton>
             <span className="font-hand text-base text-ink-faint sm:text-lg">
-              Devarsh Lokwani. Everything else I have built
+              everything else I have built
             </span>
           </div>
         </div>

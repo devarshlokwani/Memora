@@ -11,7 +11,7 @@ export function FooterLink({ href, children }: { href: string; children: React.R
   return (
     <Link
       href={href}
-      className="group inline-flex items-center text-[0.95rem] text-ink-soft transition-colors hover:text-ink"
+      className="group inline-flex items-center whitespace-nowrap text-[0.95rem] text-ink-soft transition-colors hover:text-ink"
     >
       <span className="relative">
         {children}

@@ -3,7 +3,18 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { isSupabaseConfigured, supabaseEnv } from "@/lib/supabase/env";
 
-const PUBLIC_PATHS = ["/", "/login", "/signup", "/auth", "/setup"];
+const PUBLIC_PATHS = [
+  "/",
+  "/login",
+  "/signup",
+  "/auth",
+  "/setup",
+  // The pre-launch pages. Sending someone reading the terms to a login screen
+  // would be a strange way to ask them to agree to anything.
+  "/waitlist",
+  "/terms",
+  "/privacy",
+];
 
 export async function updateSession(request: NextRequest) {
   const path = request.nextUrl.pathname;

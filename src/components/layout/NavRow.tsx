@@ -6,6 +6,11 @@ import { Logo } from "@/components/layout/Logo";
 import { SlidingNav, type NavItem } from "@/components/layout/SlidingNav";
 import { PushButton } from "@/components/ui/PushButton";
 
+/* A page rather than an anchor. The form on the landing page only exists on one
+   section and only after somebody has asked for it, so a link into it lands
+   nowhere from anywhere else. A route always has something to show. */
+const WAITLIST = "/waitlist";
+
 /**
  * The bar of nav links, wordmark and call to action.
  *
@@ -36,8 +41,8 @@ export function NavRow({
         <Link href="/" aria-label="Memora home">
           <Logo />
         </Link>
-        <PushButton href="/signup" size="sm">
-          Get started
+        <PushButton href={WAITLIST} size="sm">
+          Join the waitlist
         </PushButton>
       </div>
 
@@ -51,8 +56,8 @@ export function NavRow({
       </div>
 
       <div className="absolute right-6 top-1/2 hidden -translate-y-1/2 items-center gap-4 md:flex">
-        <PushButton href="/signup" size="sm">
-          Get started
+        <PushButton href={WAITLIST} size="sm">
+          Join the waitlist
         </PushButton>
       </div>
     </div>
