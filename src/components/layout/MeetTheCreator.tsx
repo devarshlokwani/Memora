@@ -40,9 +40,9 @@ export function MeetTheCreator() {
 
           <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3 sm:mt-8">
             <PushButton href="https://devarshlokwani.com" external>
-              devarshlokwani.com
+              Visit
             </PushButton>
-            <span className="font-hand text-lg text-ink-faint">
+            <span className="font-hand text-base text-ink-faint sm:text-lg">
               Devarsh Lokwani — everything else I have built
             </span>
           </div>

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { BrainMark } from "@/components/layout/Logo";
-import { brainstemRing, cerebellumPoint, cerebrumPoint } from "@/lib/brain";
+import { brainLights, buildBrain } from "@/lib/brainMesh";
 import { prefersReducedMotion } from "@/lib/motion";
 
 /**
@@ -66,102 +66,12 @@ export function BrainScene({ className = "" }: { className?: string }) {
       renderer.domElement.style.display = "block";
       host.appendChild(renderer.domElement);
 
-      /* Banded shading, which is what turns a lit surface into something that
-         looks drawn rather than photographed.
-
-         Sixteen steps, not four. Toon shading looks the ramp up at
-         `dot(normal, light) * 0.5 + 0.5`, so everything facing the light at all
-         is squeezed into the top half of the texture — a four-step ramp spends
-         two of them on the shadow side and leaves the whole lit surface with a
-         single tone, which is how a folded brain comes out as a smooth pebble.
-         Weighted light, so it reads as paper with shadow in the sulci rather
-         than as a grey rock. */
-      const STEPS = 16;
-      const ramp = new THREE.DataTexture(
-        new Uint8Array(
-          Array.from({ length: STEPS }, (_, i) => {
-            const t = i / (STEPS - 1);
-            const value = Math.round(255 * (0.17 + 0.83 * Math.pow(t, 0.8)));
-            return [value, value, value, 255];
-          }).flat(),
-        ),
-        STEPS,
-        1,
-        THREE.RGBAFormat,
-      );
-      ramp.minFilter = THREE.NearestFilter;
-      ramp.magFilter = THREE.NearestFilter;
-      ramp.needsUpdate = true;
-
-      const surface = new THREE.MeshToonMaterial({ color: 0xffffff, gradientMap: ramp });
-      const outline = new THREE.MeshBasicMaterial({ color: 0x0b090a, side: THREE.BackSide });
-
-      const spent: { dispose: () => void }[] = [ramp, surface, outline, renderer];
-
-      /* Icosahedron detail is not a doubling: each face is cut into
-         (detail + 1)^2 triangles, so 5 is 720 triangles for the whole sphere and
-         far too coarse to hold a fold. These numbers are chosen for the size of
-         the features they have to carry. */
-      const CEREBRUM = 30;
-      const CEREBELLUM = 14;
-
-      /** Reshapes an icosphere's vertices through one of the brain functions. */
-      const shaped = (detail: number, map: (x: number, y: number, z: number) => number[]) => {
-        const geometry = new THREE.IcosahedronGeometry(1, detail);
-        const position = geometry.getAttribute("position");
-        for (let i = 0; i < position.count; i++) {
-          const [x, y, z] = map(position.getX(i), position.getY(i), position.getZ(i));
-          position.setXYZ(i, x, y, z);
-        }
-        geometry.computeVertexNormals();
-        spent.push(geometry);
-        return geometry;
-      };
-
-      const stem = () => {
-        const geometry = new THREE.CylinderGeometry(1, 1, 1, 24, 12, true);
-        const position = geometry.getAttribute("position");
-        for (let i = 0; i < position.count; i++) {
-          // The cylinder's own coordinates carry the ring angle and the height.
-          const angle = Math.atan2(position.getZ(i), position.getX(i));
-          const [x, y, z] = brainstemRing(0.5 - position.getY(i), angle);
-          position.setXYZ(i, x, y, z);
-        }
-        geometry.computeVertexNormals();
-        spent.push(geometry);
-        return geometry;
-      };
-
-      const brain = new THREE.Group();
-      const parts = [shaped(CEREBRUM, cerebrumPoint), shaped(CEREBELLUM, cerebellumPoint), stem()];
-      for (const geometry of parts) brain.add(new THREE.Mesh(geometry, surface));
-
-      /* The outline: the same geometry again, a little larger and drawn
-         inside-out, so only its far side survives and reads as a line round the
-         edge. Scaled from the centre rather than pushed out along each normal —
-         normals in a fold point at each other, so an offset shell turns itself
-         inside out in every sulcus and scribbles black through the surface. */
-      for (const geometry of parts) {
-        const shell = new THREE.Mesh(geometry, outline);
-        shell.scale.setScalar(1.012);
-        brain.add(shell);
-      }
-
+      const { group: brain, dispose: releaseBrain } = buildBrain(THREE);
       brain.rotation.y = 1.15;
       scene.add(brain);
+      for (const light of brainLights(THREE)) scene.add(light);
 
-      /* Kept low on purpose. The bands are what draw the folds, and anything
-         much past full brightness pins the whole surface to the top of the ramp
-         and hands back a white blob with an outline round it. */
-      // Ambient stays low: it lifts every band by the same amount, and enough
-      // of it flattens the shading back out into one tone.
-      scene.add(new THREE.AmbientLight(0xffffff, 0.2));
-      const key = new THREE.DirectionalLight(0xffffff, 1.35);
-      key.position.set(-1.5, 2.1, 2.2);
-      scene.add(key);
-      const rim = new THREE.DirectionalLight(0xffffff, 0.3);
-      rim.position.set(2.2, -0.4, -1.9);
-      scene.add(rim);
+      const spent: { dispose: () => void }[] = [renderer, { dispose: releaseBrain }];
 
       if (cancelled) {
         for (const item of spent) item.dispose();

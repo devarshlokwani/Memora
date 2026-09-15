@@ -6,21 +6,30 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { Logo } from "@/components/layout/Logo";
-import { SlidingNav, type NavItem } from "@/components/layout/SlidingNav";
+import { NavRow } from "@/components/layout/NavRow";
+import { type NavItem } from "@/components/layout/SlidingNav";
+import { BottomNav } from "@/components/layout/BottomNav";
+import { HeroStory } from "@/components/landing/HeroStory";
 import { NotchPanel } from "@/components/landing/NotchPanel";
-import { PushButton } from "@/components/ui/PushButton";
 import { EASE, prefersReducedMotion } from "@/lib/motion";
 
 /** How much wider the gap is than the nav item it sits under. */
 const NOTCH_PADDING = 22;
 
-export type SectionId = "try" | "how" | "formats";
+export type SectionId = "hero" | "try" | "how" | "formats";
 
-// Sign in rides in the centred cluster with the rest, so the nav stays balanced
-// around the wordmark. Only the call to action sits out on the right.
+/* The wordmark is a nav item like any other, sitting in the middle of the row:
+   it opens the story that introduces Memora, and the gap in the panel tracks it
+   the same way it tracks the rest. It carries no underline — a drawn line under
+   the wordmark reads as a mistake rather than as a selection — so the gap alone
+   says it is the one you are on.
+
+   Sign in rides in the cluster too, so the row stays balanced around the middle.
+   Only the call to action sits out on the right. */
 const ITEMS: NavItem[] = [
   { id: "try", label: "Try a card", href: "/?s=try" },
   { id: "how", label: "How it works", href: "/?s=how" },
+  { id: "hero", label: "Memora", href: "/?s=hero", node: <Logo />, marked: false },
   { id: "formats", label: "Formats", href: "/?s=formats" },
   { id: "signin", label: "Sign in", href: "/login" },
 ];
@@ -28,13 +37,16 @@ const ITEMS: NavItem[] = [
 export function LandingShell({
   sections,
 }: {
-  sections: Record<SectionId, React.ReactNode>;
+  /** The story is not one of these — the shell renders it itself. */
+  sections: Record<Exclude<SectionId, "hero">, React.ReactNode>;
 }) {
   const [active, setActive] = useState<SectionId>("try");
   const [notch, setNotch] = useState<{ centre: number | null; width: number }>({
     centre: null,
     width: 0,
   });
+  /** The story has been read to the end and the way onward can be offered. */
+  const [storyEnded, setStoryEnded] = useState(false);
 
   const panelRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -47,8 +59,20 @@ export function LandingShell({
   const params = useSearchParams();
   useEffect(() => {
     const id = params.get("s");
-    if (id === "try" || id === "how" || id === "formats") setActive(id);
+    if (id === "hero" || id === "try" || id === "how" || id === "formats") setActive(id);
   }, [params]);
+
+  /* The story is the whole page while it is running: a footer sitting under it
+     ends the scroll early, and the closing line and the bar that arrives with
+     it land on a page that has already moved on. Marked on the body rather than
+     passed down, because the footer is mounted by the root layout — this is a
+     mode the page is in, not a prop it can hand over. */
+  useEffect(() => {
+    document.body.dataset.story = active === "hero" ? "on" : "";
+    return () => {
+      document.body.dataset.story = "";
+    };
+  }, [active]);
 
   /**
    * Clicking the nav is local state plus a URL rewrite, not a navigation — the
@@ -125,40 +149,15 @@ export function LandingShell({
           follows you leaves its own notch behind. Solid, never translucent: the
           gap reveals this exact colour. */}
       <header className="relative z-50 bg-paper">
-        <div className="relative mx-auto max-w-6xl px-6 py-4">
-          <div className="flex items-center justify-between md:hidden">
-            <Link href="/" aria-label="Memora home">
-              <Logo />
-            </Link>
-            <PushButton href="/signup" size="sm">
-              Get started
-            </PushButton>
-          </div>
-
-          <div className="hidden items-center justify-center md:flex">
-            <SlidingNav
-              items={ITEMS}
-              activeId={active}
-              splitAt={2}
-              onSelectedRect={placeNotch}
-              onSelect={(id) => {
-                // Sign in leaves the page; it should not also swap the panel.
-                if (id !== "signin") choose(id as SectionId);
-              }}
-              center={
-                <Link href="/" aria-label="Memora home" className="px-2">
-                  <Logo />
-                </Link>
-              }
-            />
-          </div>
-
-          <div className="absolute right-6 top-1/2 hidden -translate-y-1/2 items-center gap-4 md:flex">
-            <PushButton href="/signup" size="sm">
-              Get started
-            </PushButton>
-          </div>
-        </div>
+        <NavRow
+          items={ITEMS}
+          activeId={active}
+          onSelectedRect={placeNotch}
+          onSelect={(id) => {
+            // Sign in leaves the page; it should not also swap the panel.
+            if (id !== "signin") choose(id as SectionId);
+          }}
+        />
       </header>
 
       {/* Phone: tabs sit under the wordmark, where the nav links cannot fit. */}
@@ -175,20 +174,48 @@ export function LandingShell({
         ))}
       </div>
 
-      <main className="px-4 pb-20 sm:px-6">
-        {/* The ref must sit on the centred panel itself: measuring the full-width
-            wrapper would offset the gap by half the leftover margin. */}
-        <div ref={panelRef} className="mx-auto max-w-6xl">
-          <NotchPanel notchCentre={notch.centre} notchWidth={notch.width}>
-            <div ref={frameRef} className="overflow-hidden">
-              <div ref={contentRef} key={active} className="px-6 py-14 sm:px-10 sm:py-16">
-                {sections[active]}
+      {/* The story runs full width and outside the panel. It has to: the panel
+          clips its overflow to animate its own height, and a sticky stage inside
+          anything that clips has nothing left to stick to. */}
+      {active === "hero" ? (
+        <main>
+          {/* Wrapped in the panel too, so the gap under the wordmark is cut here
+              exactly as it is cut under every other section. The panel paints
+              only that gap and clips nothing, so the stage inside can still
+              stick. */}
+          <div ref={panelRef}>
+            <NotchPanel notchCentre={notch.centre} notchWidth={notch.width}>
+              <HeroStory onEnd={setStoryEnded} />
+            </NotchPanel>
+          </div>
+        </main>
+      ) : (
+        <main className="px-4 pb-20 sm:px-6">
+          {/* The ref must sit on the centred panel itself: measuring the full-width
+              wrapper would offset the gap by half the leftover margin. */}
+          <div ref={panelRef} className="mx-auto max-w-6xl">
+            <NotchPanel notchCentre={notch.centre} notchWidth={notch.width}>
+              <div ref={frameRef} className="overflow-hidden">
+                <div ref={contentRef} key={active} className="px-6 py-14 sm:px-10 sm:py-16">
+                  {sections[active]}
+                </div>
               </div>
-            </div>
-          </NotchPanel>
-        </div>
-      </main>
-
+            </NotchPanel>
+          </div>
+        </main>
+      )}
+      {/* Rendered by the shell rather than by the story, so that picking
+          something from it can fly it up to the top bar's place while the page
+          underneath changes section — inside the story it was unmounted the
+          moment the new section arrived, mid-flight. */}
+      <BottomNav
+        items={ITEMS}
+        activeId={active}
+        shown={active === "hero" && storyEnded}
+        onSelect={(id) => {
+          if (id !== "signin") choose(id as SectionId);
+        }}
+      />
     </div>
   );
 }

@@ -25,7 +25,14 @@ export function PushButton({
   external?: boolean;
   className?: string;
 }) {
-  const pad = size === "sm" ? "px-5 py-2 text-[0.9rem]" : "px-8 py-3.5 text-[1rem]";
+  /* The full size steps down on a phone: at its desktop padding a button with a
+     domain on it is wider than a narrow column has to give, and it spills over
+     whatever is beside it. The small size stays put — it is already near the
+     floor for something meant to be tapped. */
+  const pad =
+    size === "sm"
+      ? "px-5 py-2 text-[0.9rem]"
+      : "px-5 py-2.5 text-[0.9rem] sm:px-8 sm:py-3.5 sm:text-[1rem]";
 
   const face =
     variant === "solid"

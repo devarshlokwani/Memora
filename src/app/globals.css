@@ -91,6 +91,12 @@ body {
   background-image: var(--fibre);
 }
 
+/* The story runs the full height of the window and ends on its own terms.
+   Anything below it would cut that short. */
+body[data-story="on"] > footer {
+  display: none;
+}
+
 /* ---------------------------------------------------------------- drawn edges
 
    The hand-drawn look comes from lopsided corner radii: each corner gets a

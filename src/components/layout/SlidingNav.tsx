@@ -2,12 +2,20 @@
 
 import gsap from "gsap";
 import Link from "next/link";
-import { Fragment, useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 
 import { UNDERLINE_PATH } from "@/components/ui/DrawnUnderline";
 import { prefersReducedMotion } from "@/lib/motion";
 
-export type NavItem = { id: string; label: string; href: string };
+export type NavItem = {
+  id: string;
+  label: string;
+  href: string;
+  /** Shown instead of the label — the wordmark sits in the row as an item. */
+  node?: React.ReactNode;
+  /** Off for an item the underline would not suit, such as the wordmark. */
+  marked?: boolean;
+};
 
 /**
  * Nav where each item owns its own underline and only the selected one is drawn.
@@ -29,8 +37,6 @@ export function SlidingNav({
   activeId,
   className = "",
   onSelect,
-  center,
-  splitAt,
   onSelectedRect,
 }: {
   items: NavItem[];
@@ -38,9 +44,6 @@ export function SlidingNav({
   activeId?: string | null;
   className?: string;
   onSelect?: (id: string) => void;
-  /** Sits in the middle of the row; the marks are per item either side of it. */
-  center?: React.ReactNode;
-  splitAt?: number;
   /**
    * Where the selected item is on screen. The landing page uses this to line the
    * gap in the panel below up with the nav, so the two move together.
@@ -100,12 +103,10 @@ export function SlidingNav({
 
   return (
     <ul className={`relative flex items-center gap-7 ${className}`}>
-      {items.map((item, index) => (
-        <Fragment key={item.id}>
-          {center && index === (splitAt ?? Math.ceil(items.length / 2)) && (
-            <li className="mx-2">{center}</li>
-          )}
-          <li>
+      {items.map((item) => {
+        const marked = item.marked !== false;
+        return (
+          <li key={item.id}>
             <Link
               href={item.href}
               ref={(el) => {
@@ -113,36 +114,39 @@ export function SlidingNav({
               }}
               onClick={() => onSelect?.(item.id)}
               aria-current={activeId === item.id ? "page" : undefined}
-              className={`relative block py-1 text-[0.95rem] transition-colors ${
-                activeId === item.id ? "text-ink" : "text-ink-soft hover:text-ink"
-              }`}
+              aria-label={item.node ? item.label : undefined}
+              className={`relative block text-[0.95rem] transition-colors ${
+                item.node ? "px-2 py-0.5" : "py-1"
+              } ${activeId === item.id ? "text-ink" : "text-ink-soft hover:text-ink"}`}
             >
-              {item.label}
-              <svg
-                viewBox="0 0 200 12"
-                preserveAspectRatio="none"
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-x-0 -bottom-1 h-[0.42em] w-full overflow-visible"
-              >
-                <path
-                  ref={(el) => {
-                    pathRefs.current[item.id] = el;
-                  }}
-                  d={UNDERLINE_PATH}
-                  pathLength={100}
-                  fill="none"
-                  stroke="var(--color-ink)"
-                  strokeWidth="2.6"
-                  strokeLinecap="round"
-                  vectorEffect="non-scaling-stroke"
-                  strokeDasharray={100}
-                  strokeDashoffset={100}
-                />
-              </svg>
+              {item.node ?? item.label}
+              {marked && (
+                <svg
+                  viewBox="0 0 200 12"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-0 -bottom-1 h-[0.42em] w-full overflow-visible"
+                >
+                  <path
+                    ref={(el) => {
+                      pathRefs.current[item.id] = el;
+                    }}
+                    d={UNDERLINE_PATH}
+                    pathLength={100}
+                    fill="none"
+                    stroke="var(--color-ink)"
+                    strokeWidth="2.6"
+                    strokeLinecap="round"
+                    vectorEffect="non-scaling-stroke"
+                    strokeDasharray={100}
+                    strokeDashoffset={100}
+                  />
+                </svg>
+              )}
             </Link>
           </li>
-        </Fragment>
-      ))}
+        );
+      })}
     </ul>
   );
 }

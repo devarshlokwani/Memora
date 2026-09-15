@@ -4,8 +4,8 @@ import gsap from "gsap";
 import { useEffect, useLayoutEffect, useRef } from "react";
 
 import { EASE, prefersReducedMotion } from "@/lib/motion";
+import { NOTCH_DEPTH, notchPath } from "@/lib/notch";
 
-const NOTCH_DEPTH = 38;
 /** How close to the panel's ends the gap is allowed to get. */
 const MARGIN = 48;
 
@@ -24,23 +24,6 @@ const MARGIN = 48;
  * width is not something a border can describe. The path is rewritten on each
  * animation frame; nothing re-renders, so the tween stays cheap.
  */
-function notchPath(w: number, centre: number, notch: number) {
-  const half = Math.max(notch, 0) / 2;
-  if (half <= 0) return "";
-
-  const cx = Math.min(Math.max(centre, MARGIN + half), w - MARGIN - half);
-  const left = cx - half;
-  const right = cx + half;
-
-  return [
-    `M ${left} 0`,
-    // Down into the valley and back up: a slack curve, like a book lying open.
-    `C ${left + half * 0.62} 0 ${cx - half * 0.16} ${NOTCH_DEPTH} ${cx} ${NOTCH_DEPTH}`,
-    `C ${cx + half * 0.16} ${NOTCH_DEPTH} ${right - half * 0.62} 0 ${right} 0`,
-    "Z",
-  ].join(" ");
-}
-
 export function NotchPanel({
   notchCentre,
   notchWidth,
