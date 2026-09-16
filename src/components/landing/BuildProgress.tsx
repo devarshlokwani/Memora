@@ -3,6 +3,7 @@
 import gsap from "gsap";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
+import { CARD, CARD_QUIET, CARD_REST } from "@/components/ui/card";
 import { prefersReducedMotion } from "@/lib/motion";
 
 /**
@@ -31,9 +32,12 @@ export function BuildProgress() {
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
-    const observer = new IntersectionObserver(([entry]) => setSeen(entry.isIntersecting), {
-      threshold: 0.4,
-    });
+    const observer = new IntersectionObserver(
+      ([entry]) => setSeen(entry.isIntersecting),
+      {
+        threshold: 0.4,
+      },
+    );
     observer.observe(host);
     return () => observer.disconnect();
   }, []);
@@ -52,7 +56,9 @@ export function BuildProgress() {
     if (!seen || prefersReducedMotion()) return;
 
     const mark = (i: number, state: State) =>
-      setStates((current) => current.map((value, n) => (n === i ? state : value)));
+      setStates((current) =>
+        current.map((value, n) => (n === i ? state : value)),
+      );
 
     const timeline = gsap.timeline({ repeat: -1, repeatDelay: 1.4 });
 
@@ -64,7 +70,11 @@ export function BuildProgress() {
     MODULES.forEach((_, i) => {
       timeline
         .call(() => mark(i, "writing"))
-        .to(barRefs.current[i], { scaleX: 1, duration: WRITE, ease: "power1.inOut" })
+        .to(barRefs.current[i], {
+          scaleX: 1,
+          duration: WRITE,
+          ease: "power1.inOut",
+        })
         .call(() => mark(i, "done"))
         .to({}, { duration: PAUSE });
     });
@@ -82,8 +92,10 @@ export function BuildProgress() {
           return (
             <li
               key={module.title}
-              className={`rounded-2xl border px-4 py-3 transition-colors duration-500 ${
-                state === "queued" ? "border-dashed border-rule" : "border-rule-soft bg-card/70"
+              /* Same card as everywhere else, lying flat until it is being
+                 written and picked up off the page once it is. */
+              className={`px-4 py-3 transition-shadow duration-500 motion-reduce:transition-none ${CARD} ${
+                state === "queued" ? CARD_QUIET : CARD_REST
               }`}
             >
               <div className="flex items-baseline justify-between gap-3">
@@ -92,7 +104,9 @@ export function BuildProgress() {
                     state === "queued" ? "text-ink-soft/70" : "text-ink"
                   }`}
                 >
-                  <span className="font-hand text-base text-ink-faint">Module {i + 1}</span>{" "}
+                  <span className="font-hand text-base text-ink-faint">
+                    Module {i + 1}
+                  </span>{" "}
                   {module.title}
                 </p>
                 <p className="shrink-0 text-[0.8rem] text-ink-soft">

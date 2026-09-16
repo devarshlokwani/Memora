@@ -7,7 +7,7 @@ import { ScoreTable, type Result } from "@/components/landing/ScoreTable";
 import { DrawnMark } from "@/components/ui/DrawnMark";
 import { DrawnUnderline } from "@/components/ui/DrawnUnderline";
 import { PushButton } from "@/components/ui/PushButton";
-import { SketchFrame } from "@/components/ui/SketchFrame";
+import { CARD, CARD_RAISED, CARD_REST } from "@/components/ui/card";
 import { prefersReducedMotion } from "@/lib/motion";
 
 type Sample = {
@@ -177,12 +177,12 @@ export function DemoCard() {
       <div className="relative aspect-square w-full">
         {DECK.map((card, i) => {
           const isFront = i === index;
-          const inverted = i % 2 === 1;
-          const ink = inverted ? "text-paper" : "text-ink";
-          const faint = inverted ? "text-paper/55" : "text-ink-faint";
-          // The reason under the answer is a second thought, not marginalia:
-          // mahogany is the site's marking colour and too loud for a whole line.
-          const muted = inverted ? "text-paper/70" : "text-ink-soft";
+          /* Every card the same, and the one on top picked up off the page.
+             They used to alternate ink and paper, which made a deck of five read
+             as five unrelated things. A deck is one set of cards, and the
+             formats deck further down the page says so with the same two
+             shadows. */
+          const face = `${CARD} ${isFront ? CARD_RAISED : CARD_REST}`;
 
           return (
             <div
@@ -201,35 +201,33 @@ export function DemoCard() {
                   className="flip-inner relative h-full w-full"
                   data-flipped={flipped[i]}
                 >
-                  <div className="flip-face absolute inset-0" inert={flipped[i]}>
-                    <SketchFrame seed={card.id} invert={inverted} />
+                  <div className={`flip-face absolute inset-0 ${face}`} inert={flipped[i]}>
                     <button
                       type="button"
                       onClick={() => setFlipped((f) => f.map((v, n) => (n === i ? true : v)))}
                       className="relative flex h-full w-full flex-col justify-between p-8 text-left"
                     >
                       <span className="flex items-baseline justify-between gap-4">
-                        <span className={`font-hand text-lg ${faint}`}>{card.topic}</span>
-                        <span className={`font-hand text-lg ${faint}`}>
+                        <span className="font-hand text-lg text-ink-faint">{card.topic}</span>
+                        <span className="font-hand text-lg text-ink-faint">
                           {i + 1} / {DECK.length}
                         </span>
                       </span>
-                      <span className={`font-reading text-[1.6rem] leading-snug ${ink}`}>
+                      <span className="font-reading text-[1.6rem] leading-snug text-ink">
                         {card.front}
                       </span>
-                      <span className={`font-hand text-lg ${faint}`}>turn me over &rarr;</span>
+                      <span className="font-hand text-lg text-ink-faint">turn me over &rarr;</span>
                     </button>
                   </div>
 
                   <div
-                    className="flip-face flip-face-back absolute inset-0"
+                    className={`flip-face flip-face-back absolute inset-0 ${face}`}
                     inert={!flipped[i]}
                   >
-                    <SketchFrame seed={`${card.id}-back`} invert={inverted} />
                     <div className="relative flex h-full flex-col p-8">
                       <span className="flex items-baseline justify-between gap-4">
-                        <span className={`font-hand text-lg ${faint}`}>the answer</span>
-                        <span className={`font-hand text-lg ${faint}`}>
+                        <span className="font-hand text-lg text-ink-faint">the answer</span>
+                        <span className="font-hand text-lg text-ink-faint">
                           {i + 1} / {DECK.length}
                         </span>
                       </span>
@@ -238,39 +236,26 @@ export function DemoCard() {
                           where the eye already is. */}
                       <div className="grid flex-1 place-items-center">
                         {grade !== null && isFront && (
-                          <DrawnMark
-                            type={grade}
-                            className="h-14 w-14"
-                            colour={
-                              inverted
-                                ? grade === "knew"
-                                  ? "var(--color-knew-dark)"
-                                  : "var(--color-missed-dark)"
-                                : undefined
-                            }
-                          />
+                          <DrawnMark type={grade} className="h-14 w-14" />
                         )}
                       </div>
 
-                      <p className={`font-reading text-[2rem] leading-tight ${ink}`}>
+                      <p className="font-reading text-[2rem] leading-tight text-ink">
                         {card.back}
                       </p>
-                      <p className={`mt-2 text-[0.92rem] leading-relaxed ${muted}`}>{card.note}</p>
+                      {/* The reason under the answer is a second thought, not
+                          marginalia: mahogany is the marking colour and far too
+                          loud for a whole line of it. */}
+                      <p className="mt-2 text-[0.92rem] leading-relaxed text-ink-soft">
+                        {card.note}
+                      </p>
 
                       {grade === null ? (
                         <div className="mt-6 flex items-center gap-3">
-                          <GradeButton
-                            tone="missed"
-                            inverted={inverted}
-                            onClick={() => mark("missed")}
-                          >
+                          <GradeButton tone="missed" onClick={() => mark("missed")}>
                             Missed it
                           </GradeButton>
-                          <GradeButton
-                            tone="knew"
-                            inverted={inverted}
-                            onClick={() => mark("knew")}
-                          >
+                          <GradeButton tone="knew" onClick={() => mark("knew")}>
                             Knew it
                           </GradeButton>
                         </div>
@@ -281,11 +266,7 @@ export function DemoCard() {
                             onClick={advance}
                             // Always "next": the deck loops, so nothing is ever finished.
                             aria-label="Next card"
-                            className={`grid h-11 w-11 shrink-0 place-items-center rounded-full border transition-transform hover:translate-x-0.5 ${
-                              inverted
-                                ? "border-paper text-paper hover:bg-paper hover:text-ink"
-                                : "border-ink text-ink hover:bg-ink hover:text-paper"
-                            }`}
+                            className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-ink text-ink transition-transform hover:translate-x-0.5 hover:bg-ink hover:text-paper"
                           >
                             <ArrowRight />
                           </button>
@@ -339,29 +320,23 @@ export function DemoCard() {
  */
 function GradeButton({
   tone,
-  inverted,
   onClick,
   children,
 }: {
   tone: Grade;
-  inverted: boolean;
   onClick: () => void;
   children: React.ReactNode;
 }) {
-  // Mahogany is 3:1 on an ink card. The brighter red is the one that reads there.
-  const line = inverted ? "var(--color-missed-dark)" : "var(--color-accent)";
-  const rest = inverted ? "border-paper text-paper" : "border-ink text-ink";
-
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={tone === "knew" ? "I knew it" : "I missed it"}
-      className={`group rounded-full border-[1.5px] bg-transparent px-4 py-2 text-[0.9rem] font-medium ${rest}`}
+      className="group rounded-full border-[1.5px] border-ink bg-transparent px-4 py-2 text-[0.9rem] font-medium text-ink"
     >
       <span className="relative inline-block">
         {children}
-        <DrawnUnderline colour={line} />
+        <DrawnUnderline colour="var(--color-accent)" />
       </span>
     </button>
   );

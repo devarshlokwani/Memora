@@ -3,7 +3,7 @@
 import gsap from "gsap";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { SketchCard } from "@/components/ui/SketchFrame";
+import { CARD, CARD_QUIET, CARD_RAISED } from "@/components/ui/card";
 import { EASE, prefersReducedMotion } from "@/lib/motion";
 import { drawnRectPath } from "@/lib/sketch";
 
@@ -167,8 +167,21 @@ function Intake() {
     <>
       {FILES.map((file, i) => (
         <g key={file.name} data-rise="">
-          <Box x={file.x} y={file.y} w={118} h={132} seed={`file-${i}`} rotate={file.r}>
-            <text x={59} y={26} textAnchor="middle" className="font-hand text-[14px]" fill={INK}>
+          <Box
+            x={file.x}
+            y={file.y}
+            w={118}
+            h={132}
+            seed={`file-${i}`}
+            rotate={file.r}
+          >
+            <text
+              x={59}
+              y={26}
+              textAnchor="middle"
+              className="font-hand text-[14px]"
+              fill={INK}
+            >
               {file.name}
             </text>
             {[0, 1, 2, 3, 4].map((line) => (
@@ -201,7 +214,13 @@ function Intake() {
 
       <g data-rise="">
         <Box x={150} y={240} w={260} h={46} seed="tray">
-          <text x={130} y={28} textAnchor="middle" className="text-[13px]" fill={INK}>
+          <text
+            x={130}
+            y={28}
+            textAnchor="middle"
+            className="text-[13px]"
+            fill={INK}
+          >
             one body of material
           </text>
         </Box>
@@ -302,7 +321,14 @@ const SCHEDULE = [
 function Drill() {
   return (
     <>
-      <Chip x={180} y={10} w={200} h={38} seed="topic" label="Topic · Glycolysis" />
+      <Chip
+        x={180}
+        y={10}
+        w={200}
+        h={38}
+        seed="topic"
+        label="Topic · Glycolysis"
+      />
 
       <g clipPath="url(#drill-reveal)">
         {FORMATS.map((format, i) => {
@@ -353,7 +379,12 @@ function Drill() {
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <text x={296} y={166} className="font-hand text-[14px]" fill="var(--color-ink-soft)">
+        <text
+          x={296}
+          y={166}
+          className="font-hand text-[14px]"
+          fill="var(--color-ink-soft)"
+        >
           answer one
         </text>
 
@@ -428,9 +459,12 @@ export function CoursePipeline() {
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
-    const observer = new IntersectionObserver(([entry]) => setSeen(entry.isIntersecting), {
-      threshold: 0.3,
-    });
+    const observer = new IntersectionObserver(
+      ([entry]) => setSeen(entry.isIntersecting),
+      {
+        threshold: 0.3,
+      },
+    );
     observer.observe(host);
     return () => observer.disconnect();
   }, []);
@@ -490,36 +524,35 @@ export function CoursePipeline() {
             const on = step.id === stage;
             return (
               <li key={step.id}>
-                <SketchCard
-                  seed={`step-${step.id}`}
-                  tilt={false}
-                  filled={on}
-                  dashed={!on}
-                  stroke={on ? "var(--color-ink)" : "var(--color-rule)"}
+                {/* The step you are on is picked up off the page and the rest
+                    lie flat on it, which is the same thing the formats deck says
+                    with the same two shadows. It used to be a drawn edge, solid
+                    or dashed; the drawn edge is right for a mark on a page and
+                    wrong for a thing lying on one. */}
+                <button
+                  type="button"
+                  onClick={() => pick(step.id)}
+                  aria-pressed={on}
+                  className={`block w-full px-5 py-4 text-left transition-shadow duration-300 motion-reduce:transition-none ${CARD} ${
+                    on ? CARD_RAISED : CARD_QUIET
+                  }`}
                 >
-                  <button
-                    type="button"
-                    onClick={() => pick(step.id)}
-                    aria-pressed={on}
-                    className="block w-full rounded-[1.4rem] px-5 py-4 text-left"
-                  >
-                    <span className="flex items-baseline gap-3">
-                      <span
-                        className={`font-hand text-2xl ${on ? "text-accent" : "text-ink-faint"}`}
-                      >
-                        {i + 1}
-                      </span>
-                      <span
-                        className={`text-[1.02rem] font-semibold ${on ? "text-ink" : "text-ink-soft"}`}
-                      >
-                        {step.title}
-                      </span>
+                  <span className="flex items-baseline gap-3">
+                    <span
+                      className={`font-hand text-2xl ${on ? "text-accent" : "text-ink-faint"}`}
+                    >
+                      {i + 1}
                     </span>
-                    <span className="mt-1.5 block text-[0.92rem] leading-relaxed text-ink-soft">
-                      {step.body}
+                    <span
+                      className={`text-[1.02rem] font-semibold ${on ? "text-ink" : "text-ink-soft"}`}
+                    >
+                      {step.title}
                     </span>
-                  </button>
-                </SketchCard>
+                  </span>
+                  <span className="mt-1.5 block text-[0.92rem] leading-relaxed text-ink-soft">
+                    {step.body}
+                  </span>
+                </button>
               </li>
             );
           })}
@@ -541,7 +574,13 @@ export function CoursePipeline() {
               <g ref={sceneRef} key={stage}>
                 <defs>
                   <clipPath id={scene.clip}>
-                    <rect data-clip="" x={0} y={scene.rect.y} width={W} height={scene.rect.h} />
+                    <rect
+                      data-clip=""
+                      x={0}
+                      y={scene.rect.y}
+                      width={W}
+                      height={scene.rect.h}
+                    />
                   </clipPath>
                 </defs>
                 {scene.node}

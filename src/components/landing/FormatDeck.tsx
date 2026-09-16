@@ -4,6 +4,16 @@ import { useRef, useState } from "react";
 
 import { FORMAT_ART } from "@/components/landing/formatArt";
 import {
+  CARD,
+  CARD_FOOT,
+  CARD_KICKER,
+  CARD_RAISED,
+  CARD_REST,
+  CARD_RULE,
+  CARD_TAG,
+  CARD_WELL,
+} from "@/components/ui/card";
+import {
   CARD_TYPES,
   MODE_BLURBS,
   MODE_LABELS,
@@ -204,17 +214,15 @@ export function FormatDeck() {
                   transition:
                     "transform 260ms cubic-bezier(0.22, 1.32, 0.4, 1), box-shadow 260ms ease-out",
                 }}
-                className={`h-full w-full origin-bottom rounded-[1.35rem] bg-card p-2.5 motion-reduce:!transition-none ${
-                  here
-                    ? "shadow-[0_2px_5px_-2px_rgba(11,9,10,0.18),0_26px_46px_-18px_rgba(11,9,10,0.5)]"
-                    : "shadow-[0_2px_4px_-2px_rgba(11,9,10,0.14),0_14px_28px_-16px_rgba(11,9,10,0.4)]"
+                className={`h-full w-full origin-bottom p-2.5 motion-reduce:!transition-none ${CARD} ${
+                  here ? CARD_RAISED : CARD_REST
                 }`}
               >
                 {/* The picture sits in a well of its own, a shade down from the
                   card, the way a photograph is mounted rather than printed
                   straight onto the board. */}
                 <div
-                  className={`relative h-[44%] overflow-hidden rounded-[0.95rem] bg-paper-deep transition-opacity duration-300 motion-reduce:transition-none ${
+                  className={`relative h-[44%] overflow-hidden transition-opacity duration-300 motion-reduce:transition-none ${CARD_WELL} ${
                     faced ? "opacity-100" : "opacity-0"
                   }`}
                 >
@@ -224,7 +232,7 @@ export function FormatDeck() {
 
                   <span
                     aria-hidden="true"
-                    className="absolute bottom-2 right-2 rounded-full bg-ink px-2 py-[3px] text-[0.6rem] font-semibold tracking-[0.12em] text-paper"
+                    className={`absolute bottom-2 right-2 ${CARD_TAG}`}
                   >
                     {face.mark}
                   </span>
@@ -235,19 +243,15 @@ export function FormatDeck() {
                     faced ? "opacity-100" : "opacity-0"
                   }`}
                 >
-                  <p className="text-[0.6rem] font-semibold uppercase tracking-[0.18em] text-ink-soft/70">
-                    {face.kicker}
-                  </p>
+                  <p className={CARD_KICKER}>{face.kicker}</p>
                   <h3 className="mt-1 font-reading text-[1.2rem] leading-tight text-ink">
                     {MODE_LABELS[type]}
                   </h3>
                   <p className="mt-2 text-[0.78rem] leading-relaxed text-ink-soft">
                     {MODE_BLURBS[type]}
                   </p>
-                  <div className="mt-auto border-t border-rule-soft pt-2.5">
-                    <p className="text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-ink-soft/60">
-                      {face.foot}
-                    </p>
+                  <div className={`mt-auto pt-2.5 ${CARD_RULE}`}>
+                    <p className={CARD_FOOT}>{face.foot}</p>
                   </div>
                 </div>
               </div>
