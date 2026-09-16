@@ -43,7 +43,7 @@ export function WaitlistForm({
     <form action={submit} className={centred ? "mx-auto max-w-md" : "max-w-md"}>
       <input type="hidden" name="source" value={source} />
 
-      <div className="flex items-end gap-3 border-b-[1.5px] border-ink pb-2">
+      <div className="flex items-center gap-3 border-b-[1.5px] border-ink pb-2">
         <label htmlFor={`waitlist-${source}`} className="sr-only">
           Your email address
         </label>
@@ -53,14 +53,23 @@ export function WaitlistForm({
           type="email"
           required
           autoComplete="email"
-          placeholder="you@university.ac.uk"
+          /* An instruction rather than an example. A specimen address reads
+             as a format to match, and this one read as a requirement: it is a
+             university domain, which is exactly what most of these people are
+             not sure they count as having. */
+          placeholder="Enter your email here"
           disabled={pending}
           className="min-w-0 flex-1 bg-transparent text-[1rem] text-ink outline-none placeholder:text-ink-soft/55 disabled:opacity-60"
         />
+        {/* An edge that arrives as you come to it. Sitting bare on the line
+            this read as the end of the sentence rather than the thing to
+            press; drawn round, it is plainly a button, and it keeps out of the
+            way until the pointer is near. The border is there at rest and
+            merely transparent, so nothing shifts sideways when it appears. */}
         <button
           type="submit"
           disabled={pending}
-          className="shrink-0 font-reading text-[1.05rem] text-ink transition-transform duration-150 ease-out hover:-translate-y-px disabled:opacity-60"
+          className="shrink-0 rounded-full border-[1.5px] border-transparent px-3.5 py-1 font-reading text-[1.05rem] text-ink transition-[transform,border-color,background-color,color] duration-150 ease-out hover:-translate-y-px hover:border-ink hover:bg-ink hover:text-paper focus-visible:border-ink disabled:opacity-60"
         >
           {pending ? "One moment" : "Join the waitlist"}
         </button>

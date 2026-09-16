@@ -1,3 +1,9 @@
+"use client";
+
+/* A client component only because of `onNavigate`: a link that animates its
+   way to another page has to handle its own click, and a handler cannot be
+   attached from the server. Everything else about it is still plain CSS. */
+
 import Link from "next/link";
 
 /**
@@ -12,6 +18,7 @@ import Link from "next/link";
 export function PushButton({
   href,
   onPress,
+  onNavigate,
   children,
   variant = "solid",
   size = "md",
@@ -21,6 +28,13 @@ export function PushButton({
   href?: string;
   /** Makes it a button rather than a link, for things that happen in place. */
   onPress?: () => void;
+  /**
+   * Handles the click while leaving it a real link. Return true to say it has
+   * been dealt with and the browser should not follow the href as well. For
+   * anything that animates its way to another page: the address still has to
+   * be there to be opened in a tab, copied or crawled.
+   */
+  onNavigate?: () => boolean | void;
   children: React.ReactNode;
   variant?: "solid" | "outline";
   size?: "sm" | "md";
@@ -73,6 +87,11 @@ export function PushButton({
       target={external ? "_blank" : undefined}
       rel={external ? "noreferrer" : undefined}
       className={shell}
+      onClick={(event) => {
+        // A modifier click is somebody asking for a tab. Leave it alone.
+        if (!onNavigate || event.metaKey || event.ctrlKey || event.shiftKey) return;
+        if (onNavigate()) event.preventDefault();
+      }}
     >
       {inside}
     </Link>

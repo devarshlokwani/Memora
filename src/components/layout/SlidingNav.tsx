@@ -31,11 +31,15 @@ export type NavItem = {
  */
 const DRAW = 0.42;
 const ERASE = 0.26;
+/** The usual space between items, as a number so it can be overridden. */
+const GAP = 28;
 
 export function SlidingNav({
   items,
   activeId,
   className = "",
+  gap = GAP,
+  reversed = false,
   onSelect,
   onSelectedRect,
 }: {
@@ -43,6 +47,15 @@ export function SlidingNav({
   /** The item whose underline is drawn. */
   activeId?: string | null;
   className?: string;
+  /** Pixels between items. The small print needs a gap the width of the notch. */
+  gap?: number;
+  /**
+   * Drawn in paper rather than ink, for a row that sits on an inked ground.
+   * Everything the row says, it says in one tone or the other: which item you
+   * are on, which you are pointing at, and the line drawn under the one you
+   * are reading.
+   */
+  reversed?: boolean;
   /**
    * Returns true when it has dealt with the click itself, which stops the link
    * navigating. These are real links so they can be opened in a new tab and
@@ -92,7 +105,12 @@ export function SlidingNav({
   reportSelected.current = () => {
     if (!onSelectedRect) return;
     const el = activeId ? itemRefs.current[activeId] : null;
-    onSelectedRect(el ? el.getBoundingClientRect() : null);
+    const box = el ? el.getBoundingClientRect() : null;
+    /* A row that is not laid out at all reports a box of nothing. That happens
+       on a phone, where this row is hidden and the wordmark and the waitlist
+       button stand in for it, and passing the empty box on drew a stub of a gap
+       clinging to the left end of the panel under a nav it did not belong to. */
+    onSelectedRect(box && box.width > 0 ? box : null);
   };
 
   useLayoutEffect(() => {
@@ -107,56 +125,90 @@ export function SlidingNav({
     return () => window.removeEventListener("resize", reposition);
   }, []);
 
-  return (
-    <ul className={`relative flex items-center gap-7 ${className}`}>
-      {items.map((item) => {
-        const marked = item.marked !== false;
-        return (
-          <li key={item.id}>
-            <Link
-              href={item.href}
-              ref={(el) => {
-                itemRefs.current[item.id] = el;
-              }}
-              onClick={(event) => {
-                // A modified click is someone asking for a new tab; leave it be.
-                if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-                if (onSelect?.(item.id)) event.preventDefault();
-              }}
-              aria-current={activeId === item.id ? "page" : undefined}
-              aria-label={item.node ? item.label : undefined}
-              className={`relative block text-[0.95rem] transition-colors ${
-                item.node ? "px-2 py-0.5" : "py-1"
-              } ${activeId === item.id ? "text-ink" : "text-ink-soft hover:text-ink"}`}
+  const entry = (item: NavItem) => {
+    const marked = item.marked !== false;
+    return (
+      <li key={item.id}>
+        <Link
+          href={item.href}
+          ref={(el) => {
+            itemRefs.current[item.id] = el;
+          }}
+          onClick={(event) => {
+            // A modified click is someone asking for a new tab; leave it be.
+            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+            if (onSelect?.(item.id)) event.preventDefault();
+          }}
+          aria-current={activeId === item.id ? "page" : undefined}
+          aria-label={item.node ? item.label : undefined}
+          className={`relative block text-[0.95rem] transition-colors ${
+            item.node ? "px-2 py-0.5" : "py-1"
+          } ${
+            reversed
+              ? activeId === item.id
+                ? "text-paper"
+                : "text-paper/55 hover:text-paper"
+              : activeId === item.id
+                ? "text-ink"
+                : "text-ink-soft hover:text-ink"
+          }`}
+        >
+          {item.node ?? item.label}
+          {marked && (
+            <svg
+              viewBox="0 0 200 12"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 -bottom-1 h-[0.42em] w-full overflow-visible"
             >
-              {item.node ?? item.label}
-              {marked && (
-                <svg
-                  viewBox="0 0 200 12"
-                  preserveAspectRatio="none"
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-x-0 -bottom-1 h-[0.42em] w-full overflow-visible"
-                >
-                  <path
-                    ref={(el) => {
-                      pathRefs.current[item.id] = el;
-                    }}
-                    d={UNDERLINE_PATH}
-                    pathLength={100}
-                    fill="none"
-                    stroke="var(--color-ink)"
-                    strokeWidth="2.6"
-                    strokeLinecap="round"
-                    vectorEffect="non-scaling-stroke"
-                    strokeDasharray={100}
-                    strokeDashoffset={100}
-                  />
-                </svg>
-              )}
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
+              <path
+                ref={(el) => {
+                  pathRefs.current[item.id] = el;
+                }}
+                d={UNDERLINE_PATH}
+                pathLength={100}
+                fill="none"
+                stroke={reversed ? "var(--color-paper)" : "var(--color-ink)"}
+                strokeWidth="2.6"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+                strokeDasharray={100}
+                strokeDashoffset={100}
+              />
+            </svg>
+          )}
+        </Link>
+      </li>
+    );
+  };
+
+  /* The wordmark is the middle of the row, and the row is the middle of the
+     page, so the wordmark has to be the middle of the page. A single centred
+     flex line does not give that: it centres the whole run of items, and the
+     mark drifts by half the difference between the two sides. Two equal columns
+     either side of it do. */
+  const middle = items.findIndex((item) => item.node);
+
+  if (middle === -1) {
+    return (
+      <ul className={`relative flex items-center ${className}`} style={{ gap }}>
+        {items.map(entry)}
+      </ul>
+    );
+  }
+
+  return (
+    <div
+      className={`relative grid grid-cols-[1fr_auto_1fr] items-center ${className}`}
+      style={{ gap }}
+    >
+      <ul className="flex items-center justify-end" style={{ gap }}>
+        {items.slice(0, middle).map(entry)}
+      </ul>
+      <ul className="flex items-center">{entry(items[middle])}</ul>
+      <ul className="flex items-center justify-start" style={{ gap }}>
+        {items.slice(middle + 1).map(entry)}
+      </ul>
+    </div>
   );
 }

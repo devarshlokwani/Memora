@@ -1,38 +1,28 @@
 "use client";
 
 import gsap from "gsap";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { Logo } from "@/components/layout/Logo";
 import { NavRow } from "@/components/layout/NavRow";
-import { type NavItem } from "@/components/layout/SlidingNav";
+import { NAV_ITEMS, rememberNav } from "@/components/layout/navItems";
+import { useRouteCurtain } from "@/components/layout/RouteCurtain";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { HeroStory } from "@/components/landing/HeroStory";
 import { NotchPanel } from "@/components/landing/NotchPanel";
 import { EASE, prefersReducedMotion } from "@/lib/motion";
-import { NOTCH_PADDING } from "@/lib/notch";
+import { NOTCH_HANDOVER, NOTCH_PADDING, NOTCH_WALK } from "@/lib/notch";
 
 export type SectionId = "hero" | "try" | "how" | "formats";
+
+/** Whether a value out of the address bar names a section we have. */
+function readable(id: string | null): id is SectionId {
+  return id === "hero" || id === "try" || id === "how" || id === "formats";
+}
 
 /** Everything the sweep can arrive at. The story is what it leaves. */
 type Landing = Exclude<SectionId, "hero">;
 
-/* The wordmark is a nav item like any other, sitting in the middle of the row:
-   it opens the story that introduces Memora, and the gap in the panel tracks it
-   the same way it tracks the rest. It carries no underline: a drawn line under
-   the wordmark reads as a mistake rather than as a selection, so the gap alone
-   says it is the one you are on.
-
-   Nothing signs in yet, so the row is the three sections and the wordmark, and
-   the call to action out on the right is the waitlist. */
-const ITEMS: NavItem[] = [
-  { id: "try", label: "Try a card", href: "/?s=try" },
-  { id: "how", label: "How it works", href: "/?s=how" },
-  { id: "hero", label: "Memora", href: "/?s=hero", node: <Logo />, marked: false },
-  { id: "formats", label: "Formats", href: "/?s=formats" },
-];
 
 export function LandingShell({
   sections,
@@ -48,11 +38,32 @@ export function LandingShell({
   /** The story has been read to the end and the way onward can be offered. */
   const [storyEnded, setStoryEnded] = useState(false);
   /* The nav's highlight and the section on screen are the same thing except
-     during a sweep, where the nav has already arrived and the page has not. */
-  const [navActive, setNavActive] = useState<SectionId>("try");
+     during a sweep, where the nav has already arrived and the page has not, and
+     on the way to the waitlist, where the highlight goes on ahead to a page
+     this component does not own. */
+  const [navActive, setNavActive] = useState<SectionId | "waitlist">("try");
+  /** Set while the gap is walking to an item that lives on another page. */
+  const [handing, setHanding] = useState(false);
   const [curtain, setCurtain] = useState(false);
+  /* Whether the section in the address bar has been read yet.
+     
+     Until it has, the nav is told it has no selected item at all, and so it
+     reports no position and the panel cuts no gap. The order of a mount is why:
+     the nav settles, and reports, before this component gets its turn to correct
+     the section from ?s=. Left to itself it would report the section the state
+     happens to start on, the panel would take that as where the gap has always
+     been, and correcting it a frame later would be an animation, which is the
+     gap sliding across the nav every time anyone arrived here from elsewhere on
+     the site. Nothing to slide from, and it is simply in the right place. */
+  const [settled, setSettled] = useState(false);
+  /** Sweeps to another route the way `startSweep` sweeps between sections. */
+  const cross = useRouteCurtain();
+  const router = useRouter();
   const barRef = useRef<HTMLDivElement>(null);
   const barItem = useRef<DOMRect | null>(null);
+  /** The last box the nav gave us, kept so the gap can be placed again
+      when the panel under it changes shape rather than the nav above it. */
+  const navItem = useRef<DOMRect | null>(null);
   const barNotchRef = useRef<SVGSVGElement>(null);
   const panelNotchRef = useRef<SVGSVGElement>(null);
 
@@ -61,17 +72,63 @@ export function LandingShell({
   const frameRef = useRef<HTMLDivElement>(null);
   const firstPaint = useRef(true);
 
-  // The section lives in ?s= so a link from anywhere else on the site opens on
-  // the right one. A hash cannot do this job: Next navigates with pushState,
-  // which never fires hashchange, so a footer link would quietly do nothing.
+  /* The section lives in ?s= so a link from anywhere else on the site opens on
+     the right one. A hash cannot do this job: Next navigates with pushState,
+     which never fires hashchange, so a footer link would quietly do nothing. */
   const params = useSearchParams();
   useEffect(() => {
     const id = params.get("s");
-    if (id === "hero" || id === "try" || id === "how" || id === "formats") {
+    if (readable(id)) {
       setActive(id);
       setNavActive(id);
     }
   }, [params]);
+
+  /* The same question asked once more, on the way in, of the address bar
+     itself rather than of the hook.
+
+     The hook hands back nothing at all until after hydration, which is by
+     design: the page is prerendered, and a prerender has no query string to
+     read. So the first painted frame of every arrival here was whatever the
+     state happens to start on, and the section, the nav mark and the gap under
+     it all corrected themselves a frame later. The gap sliding across the nav
+     from the wrong item is what that looked like. The address bar knows, and a
+     layout effect is before the paint and only ever on the client, so asking it
+     there costs nothing and settles the page before it is seen. */
+  useLayoutEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("s");
+    if (readable(id)) {
+      setActive(id);
+      setNavActive(id);
+    }
+    setSettled(true);
+  }, []);
+
+  /* So the small print can leave the gap where it found it. Written on every
+     change rather than on the way out, because there is no way out to hook:
+     you leave this page by following a link in a footer. */
+  useEffect(() => {
+    rememberNav(navActive);
+  }, [navActive]);
+
+  /**
+   * Picking the waitlist, which is in the row but not on this page.
+   *
+   * The gap walks to it here and the page changes once it has arrived, so the
+   * panel on the other side can set the gap down where this one left it. Left
+   * to itself the link simply went, and the gap was cut afresh under the
+   * waitlist on arrival: the one item in the row that did not slide.
+   */
+  const handOver = useCallback(
+    (href: string) => {
+      if (handing || prefersReducedMotion() || notch.centre === null) return false;
+      setHanding(true);
+      setNavActive("waitlist");
+      window.setTimeout(() => router.push(href), NOTCH_HANDOVER);
+      return true;
+    },
+    [handing, notch.centre, router],
+  );
 
   /* The story is the whole page while it is running: a footer sitting under it
      ends the scroll early, and the closing line and the bar that arrives with
@@ -215,8 +272,9 @@ export function LandingShell({
 
   // Nav rects arrive in viewport coordinates; the gap needs them relative to
   // the panel, which is a different box and can be scrolled.
-  const placeNotch = useCallback((rect: DOMRect | null) => {
+  const place = useCallback(() => {
     const panel = panelRef.current;
+    const rect = navItem.current;
     if (!panel || !rect) {
       setNotch({ centre: null, width: 0 });
       return;
@@ -227,6 +285,23 @@ export function LandingShell({
       width: rect.width + NOTCH_PADDING,
     });
   }, []);
+
+  const placeNotch = useCallback(
+    (rect: DOMRect | null) => {
+      navItem.current = rect;
+      place();
+    },
+    [place],
+  );
+
+  /* The story's panel runs the full width of the page and a section's panel is
+     centred inside it, so leaving the story slides the panel sideways underneath
+     a gap that was measured against the other one. The nav itself has not moved
+     and so will not report again: work it out here instead. It happens behind
+     the curtain, which is the only reason the gap is allowed to travel. */
+  useLayoutEffect(() => {
+    place();
+  }, [active, place]);
 
   // Swapping sections changes the panel's height. Left alone it jumps, which
   // undoes the sense that the gap and the panel are one moving object.
@@ -266,10 +341,17 @@ export function LandingShell({
           gap reveals this exact colour. */}
       <header className="relative z-50 bg-paper">
         <NavRow
-          items={ITEMS}
-          activeId={navActive}
+          items={NAV_ITEMS}
+          activeId={settled ? navActive : null}
           onSelectedRect={placeNotch}
           onSelect={(id) => {
+            /* The waitlist is a page, not a section, so it gets the handover
+               rather than a section swap. Not the full-screen slide: that one
+               belongs to the bar at the foot of the story, where you have read
+               the whole thing and are being shown the way on. From up here it
+               would be a wipe across the window in front of somebody who has
+               not scrolled anywhere yet. */
+            if (id === "waitlist") return handOver("/waitlist");
             setNavActive(id as SectionId);
             choose(id as SectionId);
             return true;
@@ -279,7 +361,7 @@ export function LandingShell({
 
       {/* Phone: tabs sit under the wordmark, where the nav links cannot fit. */}
       <div className="flex gap-5 px-6 pb-3 text-sm md:hidden">
-        {ITEMS.filter((i) => i.id !== "hero").map((item) => (
+        {NAV_ITEMS.filter((i) => i.id !== "hero" && i.id !== "waitlist").map((item) => (
           <button
             key={item.id}
             type="button"
@@ -315,6 +397,10 @@ export function LandingShell({
               notchRef={panelNotchRef}
               notchCentre={notch.centre}
               notchWidth={notch.width}
+              /* Quicker only on the way to another page, where the page is
+                 being held until the gap arrives. Between sections it keeps the
+                 pace of the site, because nothing is waiting on it. */
+              travel={handing ? NOTCH_WALK : undefined}
             >
               <div ref={frameRef} className="overflow-hidden">
                 <div ref={contentRef} key={active} className="px-6 py-14 sm:px-10 sm:py-16">
@@ -331,7 +417,7 @@ export function LandingShell({
           underneath changes section. Inside the story it was unmounted the
           moment the new section arrived, mid-flight. */}
       <BottomNav
-        items={ITEMS}
+        items={NAV_ITEMS}
         activeId={navActive}
         barRef={barRef}
         notchRef={barNotchRef}
@@ -341,6 +427,11 @@ export function LandingShell({
           barItem.current = rect;
         }}
         onSelect={(id) => {
+          if (id === "waitlist") {
+            if (!cross) return false;
+            cross("/waitlist", "waitlist");
+            return true;
+          }
           // The wordmark in this bar is the story you are already reading, so
           // it takes you back to the top of it rather than sweeping anywhere.
           if (id === "hero") {

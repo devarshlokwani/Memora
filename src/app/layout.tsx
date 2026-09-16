@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Caveat, Instrument_Sans, Instrument_Serif } from "next/font/google";
 
+import { RouteCurtain } from "@/components/layout/RouteCurtain";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { PaperMarks } from "@/components/ui/PaperMarks";
 
@@ -43,8 +44,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Behind everything, and the height of the whole document rather than
             the viewport, so the marks scroll with the page they are drawn on. */}
         <PaperMarks />
-        <div className="flex flex-1 flex-col">{children}</div>
-        <SiteFooter />
+        {/* Wrapped here rather than on any page: the slide has to stay up
+            across a navigation, and a layout is what survives one. */}
+        <RouteCurtain>
+          <div className="flex flex-1 flex-col">{children}</div>
+          <SiteFooter />
+        </RouteCurtain>
       </body>
     </html>
   );

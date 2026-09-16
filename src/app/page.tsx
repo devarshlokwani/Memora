@@ -5,24 +5,15 @@ import { BuildProgress } from "@/components/landing/BuildProgress";
 import { CoursePipeline } from "@/components/landing/CoursePipeline";
 import { DemoCard } from "@/components/landing/DemoCard";
 import { Faq } from "@/components/landing/Faq";
+import { FormatDeck } from "@/components/landing/FormatDeck";
 import { LandingShell } from "@/components/landing/LandingShell";
 import { SectionIntro } from "@/components/landing/SectionIntro";
 import { WaitlistCta } from "@/components/landing/WaitlistCta";
 import { ScanDoc } from "@/components/landing/ScanDoc";
 import { DashedRule } from "@/components/ui/DashedRule";
 import { Marked } from "@/components/ui/Marked";
-import { SketchCard } from "@/components/ui/SketchFrame";
-import { CARD_TYPES, MODE_BLURBS, MODE_LABELS } from "@/lib/types";
 import { getUser } from "@/server/db/client";
 
-/** What each format is actually good for, the part a student has to decide. */
-const FORMAT_USES: Record<string, string> = {
-  flashcard: "Best for the ideas you have to be able to explain, not just recognise.",
-  mcq: "Closest to how most exams ask. The wrong options are real misconceptions.",
-  fill_blank: "For the sentence you need word-perfect: a definition, a law, a formula.",
-  match: "For sets that blur together: structures and functions, terms and dates.",
-  jargon: "For vocabulary you must produce from memory, not pick from a list.",
-};
 
 function Fact({ figure, label }: { figure: string; label: string }) {
   return (
@@ -138,37 +129,7 @@ function FormatsSection() {
         blurb="Recognition and recall are different skills, and exams test both. Switch formats when a topic stops sinking in. The material is the same; the demand on you is not."
       />
 
-      <ul className="mx-auto mt-14 grid max-w-4xl gap-5 sm:grid-cols-2">
-        {CARD_TYPES.map((type, i) => {
-          // Alternating ink and paper, so a grid of cards reads as a stack of them.
-          const inverted = i % 2 === 1;
-          return (
-            <li key={type}>
-              <SketchCard seed={`mode-${type}`} invert={inverted}>
-                <div className="p-6">
-                  <h3 className={`font-reading text-xl ${inverted ? "text-paper" : "text-ink"}`}>
-                    {MODE_LABELS[type]}
-                  </h3>
-                  <p
-                    className={`mt-2 text-[0.9rem] leading-relaxed ${
-                      inverted ? "text-paper/75" : "text-ink-soft"
-                    }`}
-                  >
-                    {MODE_BLURBS[type]}
-                  </p>
-                  <p
-                    className={`mt-4 font-hand text-lg leading-snug ${
-                      inverted ? "text-paper/60" : "text-ink-faint"
-                    }`}
-                  >
-                    {FORMAT_USES[type]}
-                  </p>
-                </div>
-              </SketchCard>
-            </li>
-          );
-        })}
-      </ul>
+      <FormatDeck />
 
       <p className="mx-auto mt-10 max-w-[58ch] text-center text-[0.95rem] leading-relaxed text-ink-soft">
         Or mix all five in one sitting. However you answer, the card is rescheduled the same way:

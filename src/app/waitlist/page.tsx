@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { WaitlistForm } from "@/components/landing/WaitlistForm";
-import { Logo } from "@/components/layout/Logo";
+import { PageShell } from "@/components/layout/PageShell";
 import { Marked } from "@/components/ui/Marked";
 
 export const metadata: Metadata = {
@@ -16,22 +16,15 @@ export const metadata: Metadata = {
  * Everything that offers the waitlist from somewhere it cannot be shown in place
  * comes here: the nav, the footer, anything linked from outside. A route always
  * works, where an anchor only works if the right section happens to be on screen.
+ *
+ * It wears the same nav as the landing page, with the gap in the panel cut under
+ * the waitlist, so arriving here reads as moving along the row rather than as
+ * leaving the site.
  */
 export default function WaitlistPage() {
   return (
-    <div className="flex flex-1 flex-col">
-      <header className="relative z-50 bg-paper">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-          <Link href="/" aria-label="Memora home">
-            <Logo />
-          </Link>
-          <Link href="/" className="text-[0.95rem] text-ink-soft transition-colors hover:text-ink">
-            Back to the site
-          </Link>
-        </div>
-      </header>
-
-      <main className="mx-auto w-full max-w-xl px-6 pb-28 pt-20 text-center">
+    <PageShell activeId="waitlist">
+      <div className="mx-auto max-w-xl py-6 text-center">
         <p className="font-hand text-2xl text-ink-soft">Not open yet,</p>
         <h1 className="mt-3 font-reading text-[2.8rem] leading-[1.08] tracking-[-0.015em] text-ink sm:text-[3.4rem]">
           Be there the <Marked>day it opens</Marked>
@@ -54,7 +47,7 @@ export default function WaitlistPage() {
             Privacy
           </Link>
         </p>
-      </main>
-    </div>
+      </div>
+    </PageShell>
   );
 }

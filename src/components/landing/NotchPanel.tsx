@@ -1,7 +1,7 @@
 "use client";
 
 import gsap from "gsap";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 
 import { EASE, prefersReducedMotion } from "@/lib/motion";
 import { NOTCH_DEPTH, notchPath } from "@/lib/notch";
@@ -30,6 +30,7 @@ export function NotchPanel({
   children,
   className = "",
   notchRef,
+  travel,
 }: {
   /** Pixels from the panel's left edge. */
   notchCentre: number | null;
@@ -42,6 +43,14 @@ export function NotchPanel({
    * rising out of the bar.
    */
   notchRef?: React.Ref<SVGSVGElement>;
+  /**
+   * How long the gap takes to slide, in seconds. The default is the pace of the
+   * site. Leaving the small print asks for quicker: there the page is held
+   * until the gap has arrived, so every hundredth of a second it spends
+   * travelling is a hundredth the reader spends waiting for a page they have
+   * already asked for.
+   */
+  travel?: number;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const pathRef = useRef<SVGPathElement>(null);
@@ -71,7 +80,12 @@ export function NotchPanel({
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
+  /* Laid out rather than merely effectful: the very first value has to be on
+     the screen in the frame the panel arrives, or every page opens with one
+     painted frame of no gap at all and the gap then pops into it. That frame is
+     what made arriving at the small print look like a new gap being cut, when
+     it is the same gap that was already there on the page you left. */
+  useLayoutEffect(() => {
     const to = {
       centre: notchCentre ?? width.current / 2,
       width: notchCentre === null ? 0 : notchWidth,
@@ -79,21 +93,27 @@ export function NotchPanel({
 
     if (!started.current || prefersReducedMotion()) {
       drawn.current = { ...to };
-      started.current = true;
+      /* Only a real gap counts as having started. A panel mounts before the nav
+         inside it has reported where its selected item is, so the first value it
+         is handed is nothing at all; treating that as the gap having been
+         somewhere meant the real one arriving a frame later was an animation,
+         and the gap slid in from the middle of the page every time a page
+         opened. It should simply be where it belongs, in the frame it appears. */
+      if (notchCentre !== null) started.current = true;
       redraw();
       return;
     }
 
     const tween = gsap.to(drawn.current, {
       ...to,
-      duration: 0.55,
+      duration: travel ?? 0.55,
       ease: EASE,
       onUpdate: redraw,
     });
     return () => {
       tween.kill();
     };
-  }, [notchCentre, notchWidth]);
+  }, [notchCentre, notchWidth, travel]);
 
   return (
     <div ref={hostRef} className={`relative ${className}`}>

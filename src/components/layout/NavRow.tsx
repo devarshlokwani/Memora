@@ -6,9 +6,10 @@ import { Logo } from "@/components/layout/Logo";
 import { SlidingNav, type NavItem } from "@/components/layout/SlidingNav";
 import { PushButton } from "@/components/ui/PushButton";
 
-/* A page rather than an anchor. The form on the landing page only exists on one
-   section and only after somebody has asked for it, so a link into it lands
-   nowhere from anywhere else. A route always has something to show. */
+/* Only the phone layout needs this. On anything wider the waitlist is one of
+   the items in the row. A page rather than an anchor either way: the form on the
+   landing page only exists on one section, and only once somebody has asked for
+   it, so a link into it lands nowhere from anywhere else. */
 const WAITLIST = "/waitlist";
 
 /**
@@ -41,8 +42,12 @@ export function NavRow({
         <Link href="/" aria-label="Memora home">
           <Logo />
         </Link>
-        <PushButton href={WAITLIST} size="sm">
-          Join the waitlist
+        {/* The phone layout has no row to click along, so this button stands
+            in for the waitlist item and is handled by whoever handles the row.
+            In the bar at the foot of the story that means the slide; at the top
+            of a page it means nothing, and the link simply goes. */}
+        <PushButton href={WAITLIST} size="sm" onNavigate={() => onSelect?.("waitlist")}>
+          Waitlist
         </PushButton>
       </div>
 
@@ -55,11 +60,6 @@ export function NavRow({
         />
       </div>
 
-      <div className="absolute right-6 top-1/2 hidden -translate-y-1/2 items-center gap-4 md:flex">
-        <PushButton href={WAITLIST} size="sm">
-          Join the waitlist
-        </PushButton>
-      </div>
     </div>
   );
 }

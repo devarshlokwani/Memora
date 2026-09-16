@@ -177,13 +177,17 @@ export function HeroStory({ onEnd }: { onEnd: (ended: boolean) => void }) {
           whole telling evenly rather than stretching any one part of it. */}
       <div ref={trackRef} className="relative h-[800vh]">
         {/* Stuck to the window while the track scrolls past behind it. Nothing
-            above this may clip its overflow, or it stops sticking. */}
+            above this may clip its overflow, or it stops sticking.
+
+            The two captions are lifted a layer. The canvas sets a z-index of
+            its own so the leader line can pass behind it, which also put the
+            strokes circling the brain over the top of the words at both ends. */}
         <div className="sticky top-0 h-[100svh] overflow-hidden">
           <StoryStage beats={BEATS} progress={progress} className="h-full w-full" />
 
           <div
             ref={introRef}
-            className="pointer-events-none absolute inset-x-0 top-[12%] text-center"
+            className="pointer-events-none absolute inset-x-0 top-[12%] z-[2] text-center"
           >
             <p className="font-hand text-2xl text-ink-soft">Hand over the PDF,</p>
             <h1 className="mt-2 font-reading text-[3rem] leading-[1.02] tracking-[-0.02em] text-ink sm:text-[4.6rem]">
@@ -195,7 +199,7 @@ export function HeroStory({ onEnd }: { onEnd: (ended: boolean) => void }) {
           <div
             ref={outroRef}
             style={{ opacity: 0 }}
-            className="pointer-events-none absolute inset-x-0 top-[14%] text-center"
+            className="pointer-events-none absolute inset-x-0 top-[14%] z-[2] text-center"
           >
             <p className="font-hand text-2xl text-ink-soft">And that is the whole of it,</p>
             <h2 className="mt-2 font-reading text-[2.4rem] leading-[1.06] tracking-[-0.015em] text-ink sm:text-[3.4rem]">

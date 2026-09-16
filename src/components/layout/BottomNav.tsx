@@ -112,6 +112,9 @@ export function BottomNav({
   return (
     <div
       ref={barRef}
+      /* So the route slide can find this and start out exactly the size of
+         it, rather than growing up the window in front of it. */
+      data-nav-bar=""
       /* Centred rather than stacked: while this is being grown up the
           window the row has to find the middle of it, and drift back to sitting
           in a bar when it shrinks again. Laid out from the top it would stay

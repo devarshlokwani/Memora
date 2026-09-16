@@ -32,3 +32,20 @@ export function notchPath(width: number, centre: number, notch: number, up = fal
     "Z",
   ].join(" ");
 }
+
+
+/* Moving the gap from one nav item to another when the two are on different
+   pages.
+
+   Within a page the gap simply slides, because the panel drawing it is still
+   the same panel. Across a page it cannot: the panel goes with the page, and
+   the next one puts its gap wherever its own selected item is. So the gap is
+   walked to the item just picked first, and only then is the page changed, and
+   the panel that arrives sets the gap down exactly where the last one left it.
+
+   Quicker than the gap moves anywhere else, because this is the one place
+   somebody is waiting on it: the page they asked for cannot arrive until the
+   walk is done, so the walk is the wait. A breath on the end so it has
+   properly landed before the swap. */
+export const NOTCH_WALK = 0.32;
+export const NOTCH_HANDOVER = NOTCH_WALK * 1000 + 40;

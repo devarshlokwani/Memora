@@ -93,6 +93,7 @@ export function StoryStage({
       if (cancelled) return;
 
       const { brainLights, buildBrain } = await import("@/lib/brainMesh");
+      const { buildThreads } = await import("@/lib/brainThreads");
       if (cancelled) return;
 
       let renderer: import("three").WebGLRenderer;
@@ -126,6 +127,13 @@ export function StoryStage({
       scene.add(brain);
       for (const light of brainLights(THREE)) scene.add(light);
 
+      /* Hung on the brain rather than on the scene, so the tangle keeps its
+         place around it as it turns, moves aside for a label and shrinks away
+         at the end. Loose in the scene it would sit where the brain used to be
+         the moment the brain went anywhere. */
+      const threads = buildThreads(THREE);
+      brain.add(threads.group);
+
       let width = 0;
       let height = 0;
       /** No room beside the brain, so the label goes under it instead. */
@@ -151,6 +159,7 @@ export function StoryStage({
 
       if (cancelled) {
         sizes.disconnect();
+        threads.dispose();
         releaseBrain();
         renderer.dispose();
         renderer.domElement.remove();
@@ -227,6 +236,13 @@ export function StoryStage({
         // between stops looks switched off rather than waiting.
         const alive = (1 - open) * (1 - close);
 
+        /* The tangle belongs to the two ends and to nothing in between. It is
+           drawn while the brain is still being introduced, unwrites itself as
+           the first beat takes over, and writes itself again once the last one
+           is done. Driven by the clock rather than by `alive`, because the ends
+           are the only place it is seen and a still tangle is a dead one. */
+        threads.set(Math.max(open, close), clock);
+
         /* Read before anything is written this frame, so measuring the cards
            never lands in the middle of the same frame's style changes. */
         const from = roomBeside(labelRefs.current[index], here.side);
@@ -254,7 +270,15 @@ export function StoryStage({
         // it gives way to the words rather than the other way about.
         const fit = narrow ? 1 : Math.min(1, room / (reach * 2));
 
-        brain.scale.setScalar(fit * (1 - close * 0.38));
+        /* Pulled in at both ends, and hardest at the opening.
+
+           The stage is a whole window tall but starts below the header, so its
+           bottom edge is off the foot of the screen before anyone has scrolled:
+           the brain at full size and dropped a whole unit was cut through the
+           cerebellum by the fold. Smaller and lifted, it stands clear of both
+           the fold and the words above it, and the strokes around it have
+           somewhere to go. */
+        brain.scale.setScalar(fit * (1 - open * 0.4) * (1 - close * 0.38));
 
         /* Standing in the middle of whatever the label has left it, and back in
            the middle of the stage at both ends where there is no label. Moving
@@ -263,7 +287,7 @@ export function StoryStage({
         brain.position.x = narrow ? 0 : (centrePx - width / 2) * perPixel * alive;
         // Lifted on a phone, where the label sits underneath rather than beside.
         brain.position.y =
-          (narrow ? 0.34 : 0) - open * 0.62 - close * 0.34 + Math.sin(clock * 0.44) * 0.022 * alive;
+          (narrow ? 0.34 : 0) - open * 0.3 - close * 0.34 + Math.sin(clock * 0.44) * 0.022 * alive;
         brain.updateMatrixWorld();
 
         // The label is up for the still part of the beat and gone by the turn.
@@ -380,6 +404,8 @@ export function StoryStage({
         brain.rotation.y = OPENING.turn;
         brain.rotation.x = OPENING.tilt;
         brain.updateMatrixWorld();
+        // The opening frame, which is where the tangle is at its fullest.
+        threads.set(1, 0);
         renderer.render(scene, camera);
       } else {
         frame = requestAnimationFrame(draw);
@@ -397,6 +423,7 @@ export function StoryStage({
            whole new page and a scroll to the top. Nothing is waiting on it, so
            it goes when the browser next has a moment. */
         const release = () => {
+          threads.dispose();
           releaseBrain();
           renderer.dispose();
         };
