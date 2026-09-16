@@ -14,14 +14,14 @@ Ink on paper. The interface is black and white on a warm off-white ground. Insid
 session, right and wrong are told apart by line weight, hatching and a drawn tick or cross rather
 than colour, so a card stays readable printed, dimmed, or by someone colourblind.
 
-The two exceptions are the grading buttons — missed it in red, knew it in green, as a stroke and
+The two exceptions are the grading buttons: missed it in red, knew it in green, as a stroke and
 nothing more. That is the one judgement a student makes often enough per sitting to want to
 recognise without reading it.
 
 Cards are drawn rather than constructed: every card outline is an SVG path generated at the
 card's real pixel size, with corners and edges that drift off true, and each card rests at a
 slight angle. The shape and angle come from a hash of the card id, so they are stable across
-renders and between server and browser — a card always sits the same way on the desk.
+renders and between server and browser, so a card always sits the same way on the desk.
 
 Cards come in a stack, and the stack alternates: ink on paper, then paper on ink, then back. A
 pile of identical cards reads as one card redrawn; alternating them is what makes it read as a
@@ -34,7 +34,7 @@ and the thing being drawn here is paper.
 ## Footer
 
 One footer, defined in the root layout, so every route gets the same one and no page has to
-remember to include it. Every link in it goes somewhere that exists — there is no Legal column
+remember to include it. Every link in it goes somewhere that exists. There is no Legal column
 because writing a privacy policy or terms of service is not something to invent; add the pages and
 the column follows.
 
@@ -48,14 +48,14 @@ The edge has to be a drawn path rather than a border, because a gap that changes
 width is not something a border can describe; the path is rewritten each animation frame, so
 nothing re-renders while it moves.
 
-Three things travel together when you change section — the gap, the nav underline beneath the
+Three things travel together when you change section: the gap, the nav underline beneath the
 item, and the height of the panel as the new content turns out to be taller or shorter. Animating
 only the first two and letting the height jump would break the illusion that the nav and the panel
 are one object.
 
 The nav underline marks what is selected and nothing else. It tracked the pointer at first, which
-made it twitch at every passing cursor — a mark that moves when you have not chosen anything is
-noise rather than information. Coming from nothing it fades in under the item rather than sliding
+made it twitch at every passing cursor, and a mark that moves when you have not chosen anything
+is noise rather than information. Coming from nothing it fades in under the item rather than sliding
 in from the edge of the nav, which would read as a stray line.
 
 The wordmark rises up inside the footer panel, which clips it, so it reads as the name surfacing
@@ -64,8 +64,8 @@ runs again every time you come back down. It is triggered off the footer rather 
 clip: the clip sits at the very bottom of the document, and a range measured from there can never
 finish because the page runs out of scroll before the end point arrives.
 
-Hover and press states — the buttons that lift off the page and push back down, the footer links
-that draw a line under themselves and send an arrow out — are CSS rather than GSAP. They are
+Hover and press states (the buttons that lift off the page and push back down, the footer links
+that draw a line under themselves and send an arrow out) are CSS rather than GSAP. They are
 per-element states on a dozen elements, and the browser runs them on the compositor with no
 JavaScript attached at all.
 
@@ -75,7 +75,7 @@ right place and the wordmark is simply present, it all just gets there without t
 ## Stack
 
 - **Next.js (App Router)** + TypeScript + Tailwind CSS v4
-- **Supabase** — Postgres, Auth, and Storage for the original files
+- **Supabase**: Postgres, Auth, and Storage for the original files
 - **Claude** (`claude-opus-5`) via the Anthropic SDK, with structured outputs for both AI passes
 - **unpdf** / **mammoth** for text extraction
 
@@ -127,18 +127,18 @@ Open http://localhost:3000, create an account, and upload something.
 Generation runs as two separate passes so a failure in one never costs you the other, and so a
 long course does not sit behind a single enormous request.
 
-**Pass 1 — structure.** Every uploaded document is extracted to text and split into deterministic
+**Pass 1, structure.** Every uploaded document is extracted to text and split into deterministic
 ~4,000-character chunks, each labelled `[C0]`, `[C1]`, and so on. Claude sees the labelled corpus
-and returns modules, topics, key terms, and — for every topic — the chunk indices its content came
+and returns modules, topics, key terms, and, for every topic, the chunk indices its content came
 from. Those citations are what make pass 2 cheap and accurate.
 
-**Pass 2 — cards.** One request per topic, sending only that topic's cited chunks plus a chunk of
+**Pass 2, cards.** One request per topic, sending only that topic's cited chunks plus a chunk of
 padding either side. Topics are generated one at a time from the browser with a progress bar, so
 you can start studying module 1 while module 4 is still being written.
 
 Both passes use structured outputs (`output_config.format` with a Zod schema), so the response is
 schema-valid JSON rather than prose that needs parsing. Card rows are validated again server-side
-before they are inserted — an MCQ whose correct index points outside its own options, or a
+before they are inserted. An MCQ whose correct index points outside its own options, or a
 fill-in-the-blank with no blank in it, is dropped rather than shown to a student.
 
 Very large uploads fall back to per-chunk excerpts for the structure pass, so every chunk stays
@@ -182,11 +182,11 @@ safe on both sides. `app/` holds routes and nothing else.
 
 ```
 src/
-  app/                        routes only — pages and API handlers
+  app/                        routes only: pages and API handlers
     api/
       courses/                create a course, extract its text
-      courses/[id]/outline/   pass 1 — structure
-      topics/[id]/cards/      pass 2 — cards for one topic
+      courses/[id]/outline/   pass 1, structure
+      topics/[id]/cards/      pass 2, cards for one topic
       reviews/                record an answer, reschedule the card
       cards/[id]/             edit or delete a card
       sessions/               record a finished study session

@@ -151,6 +151,20 @@ export function LandingShell({
     return () => window.clearTimeout(id);
   }, [active]);
 
+  /* And taken off again on the way out, whatever the way out was.
+
+     The mark is on the body, so it outlives this component, and the effect above
+     only ever clears it when the section changes. Leaving the story for another
+     page altogether, which is what the bar at the foot of it offers, unmounts
+     this without the section changing at all: the mark stayed behind, and the
+     waitlist arrived with its footer still hidden by a story that was over. */
+  useEffect(
+    () => () => {
+      document.body.dataset.story = "";
+    },
+    [],
+  );
+
   /**
    * Clicking the nav is local state plus a URL rewrite, not a navigation. The
    * section should change instantly rather than waiting on the router.
