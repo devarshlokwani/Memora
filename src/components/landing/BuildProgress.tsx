@@ -3,7 +3,7 @@
 import gsap from "gsap";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { CARD, CARD_QUIET, CARD_REST } from "@/components/ui/card";
+import { CARD, CARD_PENDING, CARD_REST } from "@/components/ui/card";
 import { prefersReducedMotion } from "@/lib/motion";
 
 /**
@@ -92,10 +92,10 @@ export function BuildProgress() {
           return (
             <li
               key={module.title}
-              /* Same card as everywhere else, lying flat until it is being
-                 written and picked up off the page once it is. */
-              className={`px-4 py-3 transition-shadow duration-500 motion-reduce:transition-none ${CARD} ${
-                state === "queued" ? CARD_QUIET : CARD_REST
+              /* A module still in the queue is the outline of a card. It
+                 becomes one the moment there is anything written on it. */
+              className={`px-4 py-3 transition-shadow duration-500 motion-reduce:transition-none ${
+                state === "queued" ? CARD_PENDING : `${CARD} ${CARD_REST}`
               }`}
             >
               <div className="flex items-baseline justify-between gap-3">

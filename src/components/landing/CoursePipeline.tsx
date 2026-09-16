@@ -3,7 +3,7 @@
 import gsap from "gsap";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
-import { CARD, CARD_QUIET, CARD_RAISED } from "@/components/ui/card";
+import { CARD, CARD_PENDING, CARD_RAISED } from "@/components/ui/card";
 import { EASE, prefersReducedMotion } from "@/lib/motion";
 import { drawnRectPath } from "@/lib/sketch";
 
@@ -524,17 +524,14 @@ export function CoursePipeline() {
             const on = step.id === stage;
             return (
               <li key={step.id}>
-                {/* The step you are on is picked up off the page and the rest
-                    lie flat on it, which is the same thing the formats deck says
-                    with the same two shadows. It used to be a drawn edge, solid
-                    or dashed; the drawn edge is right for a mark on a page and
-                    wrong for a thing lying on one. */}
+                {/* The step you are on is a card, picked up off the page. The
+                    rest are pencilled outlines of one, waiting to be filled in. */}
                 <button
                   type="button"
                   onClick={() => pick(step.id)}
                   aria-pressed={on}
-                  className={`block w-full px-5 py-4 text-left transition-shadow duration-300 motion-reduce:transition-none ${CARD} ${
-                    on ? CARD_RAISED : CARD_QUIET
+                  className={`block w-full px-5 py-4 text-left transition-shadow duration-300 motion-reduce:transition-none ${
+                    on ? `${CARD} ${CARD_RAISED}` : CARD_PENDING
                   }`}
                 >
                   <span className="flex items-baseline gap-3">

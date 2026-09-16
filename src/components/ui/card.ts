@@ -14,7 +14,19 @@
  * match is the treatment, not the markup.
  */
 
-export const CARD = "rounded-[1.35rem] bg-card";
+export const CARD = "rounded-[1.35rem] border border-transparent bg-card";
+
+/**
+ * Not chosen yet, or not written yet: an edge drawn as dashes with nothing
+ * behind it.
+ *
+ * The same shape as a card and plainly not one, which is the whole of what it
+ * has to say. A white card with a fainter shadow says the same thing much too
+ * quietly: three of them in a list and the one you are actually on is a guess.
+ * The border is there on a real card too, merely transparent, so nothing
+ * shifts by a pixel when one becomes the other.
+ */
+export const CARD_PENDING = "rounded-[1.35rem] border border-dashed border-rule";
 
 /** Lying on the page. */
 export const CARD_REST =
@@ -24,9 +36,6 @@ export const CARD_REST =
 export const CARD_RAISED =
   "shadow-[0_2px_5px_-2px_rgba(11,9,10,0.18),0_26px_46px_-18px_rgba(11,9,10,0.5)]";
 
-/** Waiting its turn. Present, but not yet anything to read. */
-export const CARD_QUIET =
-  "shadow-[0_1px_3px_-1px_rgba(11,9,10,0.1),0_8px_18px_-12px_rgba(11,9,10,0.28)]";
 
 /** The well a picture or a diagram is mounted in, a shade down from the card. */
 export const CARD_WELL = "rounded-[0.95rem] bg-paper-deep";
