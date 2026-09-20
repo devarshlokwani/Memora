@@ -22,6 +22,16 @@ create unique index waitlist_email_key on waitlist (lower(trim(email)));
 
 alter table waitlist enable row level security;
 
+-- A policy decides which rows a role may touch; it does not hand the role the
+-- privilege to touch the table at all. Both are needed, and the second one is
+-- normally supplied by the project's "automatically expose new tables"
+-- setting rather than by the schema. Spelling it out here means the waitlist
+-- keeps working with that setting turned off, which is what Supabase itself
+-- recommends, and it says in the schema exactly what the anonymous visitor is
+-- allowed to do: add a row, and nothing else. No select, so the list still
+-- cannot be read back through the key that ships to the browser.
+grant insert on table waitlist to anon, authenticated;
+
 create policy "anyone may join" on waitlist
   for insert to anon, authenticated
   with check (

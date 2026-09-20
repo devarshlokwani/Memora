@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { CardManager } from "@/components/course/CardManager";
 import { GenerateCards } from "@/components/course/GenerateCards";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/server/db/client";
 import type { Card } from "@/lib/types";
 
@@ -13,6 +14,11 @@ export default async function TopicCardsPage({
   params: Promise<{ id: string; topicId: string }>;
 }) {
   const { id, topicId } = await params;
+  // Unconfigured builds (no env vars) must not crash here: the proxy already
+  // sends a signed-out visitor to /setup, but a prerender pass calls this
+  // function directly, before the proxy ever runs.
+  if (!isSupabaseConfigured()) redirect("/setup");
+
   const supabase = await createClient();
   const {
     data: { user },

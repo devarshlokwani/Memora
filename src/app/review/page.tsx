@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { AppHeader } from "@/components/layout/AppHeader";
 import { StudySession } from "@/components/study/StudySession";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/server/db/client";
 import type { Card } from "@/lib/types";
 
@@ -10,6 +11,11 @@ import type { Card } from "@/lib/types";
 const REVIEW_POOL = 120;
 
 export default async function ReviewPage() {
+  // Unconfigured builds (no env vars) must not crash here: the proxy already
+  // sends a signed-out visitor to /setup, but a prerender pass calls this
+  // function directly, before the proxy ever runs.
+  if (!isSupabaseConfigured()) redirect("/setup");
+
   const supabase = await createClient();
   const {
     data: { user },

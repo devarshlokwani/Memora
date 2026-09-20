@@ -6,6 +6,7 @@ import { CourseSettings } from "@/components/course/CourseSettings";
 import { GenerateCards } from "@/components/course/GenerateCards";
 import { RetryOutline } from "@/components/course/RetryOutline";
 import { Swipe } from "@/components/ui/Swipe";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/server/db/client";
 import type { DocumentRow, Module, Topic } from "@/lib/types";
 
@@ -16,6 +17,11 @@ function formatSize(bytes: number) {
 
 export default async function CoursePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  // Unconfigured builds (no env vars) must not crash here: the proxy already
+  // sends a signed-out visitor to /setup, but a prerender pass calls this
+  // function directly, before the proxy ever runs.
+  if (!isSupabaseConfigured()) redirect("/setup");
+
   const supabase = await createClient();
   const {
     data: { user },
