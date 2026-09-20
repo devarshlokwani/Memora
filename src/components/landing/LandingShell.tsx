@@ -30,7 +30,19 @@ export function LandingShell({
   /** The story is not one of these. The shell renders it itself. */
   sections: Record<Exclude<SectionId, "hero">, React.ReactNode>;
 }) {
-  const [active, setActive] = useState<SectionId>("try");
+  /* The story, not a section.
+
+     Arriving at the site should be the scroll that introduces Memora: it is
+     the thing the wordmark in the middle of the row points at, and the only
+     part of the page that explains what this is before asking anything. The
+     three sections are what you go to once it has. Opening on one of them put
+     the argument after the evidence and left the story as something you had to
+     go looking for.
+
+     It is also the section the page prerenders as, since nothing has read the
+     address bar yet at that point, so the first painted frame of a bare visit
+     to `/` is already the right one. */
+  const [active, setActive] = useState<SectionId>("hero");
   const [notch, setNotch] = useState<{ centre: number | null; width: number }>({
     centre: null,
     width: 0,
@@ -41,7 +53,7 @@ export function LandingShell({
      during a sweep, where the nav has already arrived and the page has not, and
      on the way to the waitlist, where the highlight goes on ahead to a page
      this component does not own. */
-  const [navActive, setNavActive] = useState<SectionId | "waitlist">("try");
+  const [navActive, setNavActive] = useState<SectionId | "waitlist">("hero");
   /** Set while the gap is walking to an item that lives on another page. */
   const [handing, setHanding] = useState(false);
   const [curtain, setCurtain] = useState(false);

@@ -30,3 +30,12 @@ export const SITE_URL = resolve();
 /** The one sentence that describes Memora, used in more than one place. */
 export const SITE_DESCRIPTION =
   "Hand over your course material and get back a study structure and cards that drill it. Built for people who have exams on Monday.";
+
+/**
+ * When the waitlist page went public, as an ISO 8601 instant.
+ *
+ * A constant rather than a computed date on purpose: this is the day the page
+ * was published, so it must not move every time the site is rebuilt. Change it
+ * only if the page is genuinely republished.
+ */
+export const WAITLIST_OPENED = "2026-09-20T00:00:00.000Z";

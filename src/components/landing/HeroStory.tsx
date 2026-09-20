@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLayoutEffect, useRef } from "react";
 
 import { StoryStage, type Beat } from "@/components/landing/StoryStage";
-import { prefersReducedMotion } from "@/lib/motion";
+import { useReducedMotion } from "@/lib/motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -104,6 +104,9 @@ export function HeroStory({ onEnd }: { onEnd: (ended: boolean) => void }) {
   const outroRef = useRef<HTMLDivElement>(null);
   const progress = useRef(0);
   const ended = useRef(false);
+  /* The hook rather than the plain check, because the answer decides which of
+     two trees is returned and this component is prerendered. See the hook. */
+  const reduce = useReducedMotion();
 
   useLayoutEffect(() => {
     const track = trackRef.current;
@@ -142,14 +145,16 @@ export function HeroStory({ onEnd }: { onEnd: (ended: boolean) => void }) {
       onEnd(false);
     };
     // onEnd is a setter from the shell and stable for the life of the story.
+    // `reduce` is here so that the trigger is torn down if the preference turns
+    // on after mount and the track it is driving stops being rendered.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [reduce]);
 
   /* Told as a list when animation is switched off. There is no bar at the foot
      of it either: the bar exists to say the story has ended and there is more,
      and a list that simply finishes has already said that. The nav at the top
      of the page is where it always was. */
-  if (prefersReducedMotion()) {
+  if (reduce) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-16">
         <p className="font-hand text-2xl text-ink-soft">Hand over the PDF,</p>
