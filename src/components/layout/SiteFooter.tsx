@@ -49,7 +49,7 @@ export function SiteFooter() {
           <div className="grid gap-12 md:grid-cols-[1fr_1.9fr]">
             <div>
               <Link href="/" className="inline-flex items-center gap-3 text-ink">
-                <BrainMark className="h-10 w-11 shrink-0" />
+                <BrainMark className="h-12 w-14 shrink-0" />
                 <span className="font-reading text-[2rem] leading-none">Memora</span>
               </Link>
               <p className="mt-5 max-w-[42ch] text-[0.95rem] leading-relaxed text-ink-soft">

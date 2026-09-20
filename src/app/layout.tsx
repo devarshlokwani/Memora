@@ -3,6 +3,7 @@ import { Caveat, Instrument_Sans, Instrument_Serif } from "next/font/google";
 
 import { RouteCurtain } from "@/components/layout/RouteCurtain";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { SITE_DESCRIPTION, SITE_URL } from "@/lib/site";
 import { PaperMarks } from "@/components/ui/PaperMarks";
 
 import "./globals.css";
@@ -29,8 +30,37 @@ const hand = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Memora",
-  description: "Upload your course material. Get a study structure and cards that drill it.",
+  /* Absolute URLs are built from this. Without it every social preview points
+     at a relative path, which the machine unfurling the link cannot resolve. */
+  metadataBase: new URL(SITE_URL),
+
+  /* The template gives every other page a suffix for free: a page setting
+     `title: "Terms"` renders as "Terms | Memora", and only the landing page
+     uses the bare default. */
+  title: {
+    default: "Memora, a study deck built from your own notes",
+    template: "%s | Memora",
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: "Memora",
+
+  openGraph: {
+    type: "website",
+    siteName: "Memora",
+    title: "Memora, a study deck built from your own notes",
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    locale: "en_AU",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Memora, a study deck built from your own notes",
+    description: SITE_DESCRIPTION,
+  },
+
+  /* Nothing here is worth indexing beyond the landing page and the small
+     print, and robots.ts says which. This is the per-page default. */
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

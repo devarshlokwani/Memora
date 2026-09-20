@@ -451,7 +451,7 @@ export function StoryStage({
   return (
     <div ref={hostRef} className={`relative ${className}`}>
       {!ready && (
-        <BrainMark className="absolute left-1/2 top-1/2 h-32 w-36 -translate-x-1/2 -translate-y-1/2 text-ink/40" />
+        <BrainMark className="absolute left-1/2 top-1/2 h-32 w-36 -translate-x-1/2 -translate-y-1/2 opacity-40" />
       )}
 
       {/* Over the brain rather than behind it. A leader that vanishes where it

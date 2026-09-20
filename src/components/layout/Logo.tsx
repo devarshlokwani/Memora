@@ -1,40 +1,45 @@
+import brainMark from "@/assets/brain-mark.png";
+
 /**
- * A brain, drawn rather than constructed: open strokes, round caps, and folds
- * that do not repeat. Uses currentColor so it inks itself on paper and chalks
- * itself on the board without a second asset.
+ * The brain the whole site is signed with: the nav, the footer, the login
+ * screen, and the placeholder that holds the space while the 3D one loads.
+ *
+ * It was a drawn SVG using `currentColor`, which inked itself on paper and
+ * chalked itself on the board without a second asset. This is a fixed image
+ * instead, so it no longer takes its colour from the text around it. That is
+ * fine everywhere it is currently used, because all of them sit on paper, but
+ * it is the thing to remember before putting it on an ink ground: it will not
+ * invert, and it would need a light variant.
+ *
+ * The line drawing rather than the filled illustration, which is the other way
+ * round from the favicon. At favicon size the solid one reads as a brain and
+ * the outline turns to mush; at nav size the solid one is a dense grey blob
+ * beside a light serif wordmark, and the outline sits with it. Same subject,
+ * two drawings, each used where it survives.
+ *
+ * A plain `img` rather than `next/image`: every caller sizes this with utility
+ * classes, several of them with `h-auto w-auto` inside an absolutely
+ * positioned box, and the layout rules `next/image` imposes fight all of that
+ * for no benefit at this size. The file is a trimmed 240px copy, under 30 KB
+ * and already about twice the largest size it is ever drawn at.
  */
 export function BrainMark({ className = "" }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 48 42"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.9"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={brainMark.src}
+      alt=""
       aria-hidden="true"
-      className={className}
-    >
-      {/* Outline: bumpy skull-side, cerebellum tucked under at the back. */}
-      <path d="M23.5 7.2c-2.6-3.4-8.4-3-10 .9-4.6-.6-7.8 3.6-6.2 7.3-3.6 2.1-3.3 7.4.4 9-1.4 3.8 1.6 7.6 5.6 7.2.6 3.4 4.8 5.2 7.7 3.2" />
-      <path d="M23.5 7.2c2.6-3.4 8.4-3 10 .9 4.6-.6 7.8 3.6 6.2 7.3 3.6 2.1 3.3 7.4-.4 9 1.4 3.8-1.6 7.6-5.6 7.2-.6 3.4-4.8 5.2-7.7 3.2" />
-      {/* The fissure down the middle. */}
-      <path d="M23.5 7.2v27.6" />
-      {/* Folds. Deliberately uneven on each side. */}
-      <path d="M13.8 12.1c3.4 1.1 3.9 3.6 1.6 5.2 2.8 1 3 3.6.4 4.9" />
-      <path d="M11.6 26.4c3-1.3 5.6-.2 6.2 2.3" />
-      <path d="M17.9 9.9c1.2 2.1.6 3.8-1.2 4.6" />
-      <path d="M33.4 12.6c-3.3 1.3-3.6 3.8-1.2 5.2-2.7 1.2-2.7 3.8 0 4.9" />
-      <path d="M35.9 26.7c-3.1-1.1-5.6.1-6 2.6" />
-      <path d="M29.3 10.2c-1.1 2.2-.4 3.8 1.4 4.5" />
-    </svg>
+      className={`object-contain ${className}`}
+      draggable={false}
+    />
   );
 }
 
 export function Logo({ className = "" }: { className?: string }) {
   return (
     <span className={`inline-flex items-center gap-2.5 text-ink ${className}`}>
-      <BrainMark className="h-9 w-10 shrink-0" />
+      <BrainMark className="h-10 w-12 shrink-0" />
       <span className="font-reading text-[1.6rem] leading-none tracking-[-0.01em]">Memora</span>
     </span>
   );
