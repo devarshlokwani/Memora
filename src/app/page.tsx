@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { Suspense } from "react";
 
 import { BuildProgress } from "@/components/landing/BuildProgress";
 import { CoursePipeline } from "@/components/landing/CoursePipeline";
@@ -150,15 +149,17 @@ export default async function LandingPage() {
   if (await getUser()) redirect("/dashboard");
 
   return (
-    // LandingShell reads the section from the query string.
-    <Suspense>
-      <LandingShell
-        sections={{
-          try: <TrySection />,
-          how: <HowSection />,
-          formats: <FormatsSection />,
-        }}
-      />
-    </Suspense>
+    /* No Suspense boundary here on purpose. The shell reads the section from
+       the query string, and reading it suspends; a boundary around the whole
+       shell meant the server sent the page without it and the footer was the
+       first thing painted. The shell now keeps that read behind a boundary of
+       its own, small enough that its fallback is nothing at all. */
+    <LandingShell
+      sections={{
+        try: <TrySection />,
+        how: <HowSection />,
+        formats: <FormatsSection />,
+      }}
+    />
   );
 }

@@ -2,7 +2,7 @@
 
 import gsap from "gsap";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { NavRow } from "@/components/layout/NavRow";
 import { NAV_ITEMS, rememberNav } from "@/components/layout/navItems";
@@ -22,6 +22,37 @@ function readable(id: string | null): id is SectionId {
 
 /** Everything the sweep can arrive at. The story is what it leaves. */
 type Landing = Exclude<SectionId, "hero">;
+
+
+/**
+ * The section named in `?s=`, reported to the shell. Draws nothing.
+ *
+ * It is a component of its own, and behind its own boundary, because
+ * `useSearchParams` suspends: React cannot finish a component that calls it
+ * until the query string is known, so whatever Suspense boundary sits above it
+ * renders its fallback and streams the real thing in afterwards.
+ *
+ * With the call in the shell itself, that boundary was the one around the whole
+ * landing page. The first thing the browser painted was therefore the page
+ * without its shell, which is a bare footer at the top of an empty window, and
+ * the header and the story arrived a moment later and pushed it down. That was
+ * the flash of footer on arrival.
+ *
+ * Nothing else on the page needs the query string, so nothing else should wait
+ * for it. Reduced to this, the fallback is null, the shell renders on the
+ * server in one piece, and the only thing that arrives late is a component with
+ * no output.
+ */
+function SectionParam({ onRead }: { onRead: (id: SectionId) => void }) {
+  const params = useSearchParams();
+
+  useEffect(() => {
+    const id = params.get("s");
+    if (readable(id)) onRead(id);
+  }, [params, onRead]);
+
+  return null;
+}
 
 
 export function LandingShell({
@@ -86,15 +117,14 @@ export function LandingShell({
 
   /* The section lives in ?s= so a link from anywhere else on the site opens on
      the right one. A hash cannot do this job: Next navigates with pushState,
-     which never fires hashchange, so a footer link would quietly do nothing. */
-  const params = useSearchParams();
-  useEffect(() => {
-    const id = params.get("s");
-    if (readable(id)) {
-      setActive(id);
-      setNavActive(id);
-    }
-  }, [params]);
+     which never fires hashchange, so a footer link would quietly do nothing.
+
+     Read for us by `SectionParam` below rather than here, so that the shell
+     itself never suspends. See the note on that component. */
+  const readSection = useCallback((id: SectionId) => {
+    setActive(id);
+    setNavActive(id);
+  }, []);
 
   /* The same question asked once more, on the way in, of the address bar
      itself rather than of the hook.
@@ -361,6 +391,10 @@ export function LandingShell({
 
   return (
     <div className="flex flex-1 flex-col">
+      <Suspense fallback={null}>
+        <SectionParam onRead={readSection} />
+      </Suspense>
+
       {/* Fixed to the top of the page rather than the viewport. The gap is cut
           directly beneath it, so the two have to scroll together. A nav that
           follows you leaves its own notch behind. Solid, never translucent: the
